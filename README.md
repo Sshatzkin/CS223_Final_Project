@@ -1,2 +1,3 @@
 # CS223_Final_Project
-Building an Elm_
+
+For our final project, Allison Z and I have built a Farming Simulator in Elm.
