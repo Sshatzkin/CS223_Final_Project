@@ -5147,11 +5147,12 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $author$project$Plants$initPlants = _List_Nil;
 var $author$project$Main$initModel = function (flag) {
 	return {
-		count: 0,
+		coins: 0,
 		frame: 0,
-		player: {coins: 0, experience: 0},
+		plants: $author$project$Plants$initPlants,
 		window: {height: flag.height, width: flag.width}
 	};
 };
@@ -5162,12 +5163,11 @@ var $author$project$Main$init = function (flag) {
 		$author$project$Main$initModel(flag),
 		$elm$core$Platform$Cmd$none);
 };
-var $author$project$Main$Frame = function (a) {
+var $author$project$Msg$Frame = function (a) {
 	return {$: 'Frame', a: a};
 };
-var $author$project$Main$Increment = {$: 'Increment'};
-var $author$project$Main$NoOp = {$: 'NoOp'};
-var $author$project$Main$Reset = {$: 'Reset'};
+var $author$project$Msg$NoOp = {$: 'NoOp'};
+var $author$project$Msg$Reset = {$: 'Reset'};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$browser$Browser$AnimationManager$Delta = function (a) {
 	return {$: 'Delta', a: a};
@@ -5708,17 +5708,36 @@ var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				$elm$browser$Browser$Events$onAnimationFrameDelta($author$project$Main$Frame),
+				$elm$browser$Browser$Events$onAnimationFrameDelta($author$project$Msg$Frame),
 				$elm$browser$Browser$Events$onClick(
-				$elm$json$Json$Decode$succeed($author$project$Main$Increment)),
+				$elm$json$Json$Decode$succeed($author$project$Msg$NoOp)),
 				$elm$browser$Browser$Events$onKeyDown(
 				A2(
 					$elm$json$Json$Decode$map,
 					function (key) {
-						return (key === 'Escape') ? $author$project$Main$Reset : $author$project$Main$NoOp;
+						return (key === 'Escape') ? $author$project$Msg$Reset : $author$project$Msg$NoOp;
 					},
 					A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string)))
 			]));
+};
+var $author$project$Plants$addPlant = F2(
+	function (p, ps) {
+		return A2($elm$core$List$cons, p, ps);
+	});
+var $author$project$Plants$agePlant = function (p) {
+	return _Utils_update(
+		p,
+		{
+			age: A2($elm$core$Basics$max, p.age - 1, 0)
+		});
+};
+var $author$project$Plants$agePlants = function (ps) {
+	return A2(
+		$elm$core$List$map,
+		function (n) {
+			return $author$project$Plants$agePlant(n);
+		},
+		ps);
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5728,7 +5747,10 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{frame: model.frame + 1}),
+						{
+							frame: model.frame + 1,
+							plants: $author$project$Plants$agePlants(model.plants)
+						}),
 					$elm$core$Platform$Cmd$none);
 			case 'NoOp':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -5736,16 +5758,34 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{count: 0}),
+						{coins: 0}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'Increment':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{count: model.count + 1}),
+						{coins: model.coins + 1}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var p = msg.a;
+				var cost = msg.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							coins: model.coins - cost,
+							plants: A2($author$project$Plants$addPlant, p, model.plants)
+						}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Msg$Increment = {$: 'Increment'};
+var $elm$html$Html$button = _VirtualDom_node('button');
+var $author$project$Plants$newPlant = F3(
+	function (name, val, matAge) {
+		return {age: matAge, matAge: matAge, name: name, value: val};
+	});
+var $author$project$Plants$corn = A3($author$project$Plants$newPlant, 'Corn', 3, 500);
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -5757,9 +5797,75 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$Msg$BuyPlant = F2(
+	function (a, b) {
+		return {$: 'BuyPlant', a: a, b: b};
+	});
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$ViewHelpers$plantButton = F2(
+	function (plant, price) {
+		return A2(
+			$elm$html$Html$button,
+			_List_fromArray(
+				[
+					$elm$html$Html$Events$onClick(
+					A2($author$project$Msg$BuyPlant, plant, price))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(
+					'Buy ' + (plant.name + (' for ' + ($elm$core$String$fromInt(price) + ' Gold'))))
+				]));
+	});
+var $author$project$Plants$displayPlant = function (p) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$text('Name: ' + (p.name + ' ')),
+				$elm$html$Html$text(
+				'Value: ' + ($elm$core$String$fromInt(p.value) + ' ')),
+				$elm$html$Html$text(
+				'Age: ' + ($elm$core$String$fromInt(p.matAge - p.age) + '.'))
+			]));
+};
+var $author$project$Plants$plantsView = function (ps) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (n, acc) {
+					return A2(
+						$elm$core$List$cons,
+						$author$project$Plants$displayPlant(n),
+						acc);
+				}),
+			_List_Nil,
+			ps));
+};
+var $author$project$Plants$pumpkin = A3($author$project$Plants$newPlant, 'Pumpkin', 10, 2000);
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -5774,12 +5880,23 @@ var $author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Welcome to our game! Click to increment, press esc. to decrement.'),
+						$elm$html$Html$text('Welcome to our game! Click to earn coins press esc. to decrement.'),
 						$elm$html$Html$text(
-						'Clicks: ' + $elm$core$String$fromInt(model.count)),
-						$elm$html$Html$text(
-						'Coins: ' + $elm$core$String$fromInt(model.player.coins))
+						'Coins: ' + $elm$core$String$fromInt(model.coins))
 					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Msg$Increment)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Free Money')
+					])),
+				A2($author$project$ViewHelpers$plantButton, $author$project$Plants$corn, 1),
+				A2($author$project$ViewHelpers$plantButton, $author$project$Plants$pumpkin, 5),
+				$author$project$Plants$plantsView(model.plants),
 				A2(
 				$elm$html$Html$span,
 				_List_fromArray(

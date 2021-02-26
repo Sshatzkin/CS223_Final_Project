@@ -6,6 +6,13 @@ import Json.Decode as Decode
 import Html
 import Html exposing (Html, text)
 import Html.Attributes exposing (id)
+import Html.Events as Events
+
+-- Our Libraries
+import Msg exposing (Msg(..))
+import Plants as P
+import Plants exposing (Plant)
+import ViewHelpers as VH
 
 main : Program Flags Model Msg
 main =
@@ -27,23 +34,13 @@ type alias Flags =
 type alias Model =
     { frame : Float
     , window : Window
-    , count : Int 
-    , player : Player}
+    , coins : Int
+    , plants : List Plant}
 
 type alias Window = 
   { height : Float
   , width : Float 
   }
-
-type alias Plant = 
-  {
-    growth : Int
-  , value : Int 
-  }
-
-type alias Player = 
-  { coins : Int
-  , experience : Int}
 
 initModel : Flags -> Model
 initModel flag =
@@ -51,10 +48,8 @@ initModel flag =
     , window = 
       { width = flag.width 
       , height = flag.height}
-    , count = 0
-    , player = 
-      { coins = 0
-      , experience = 0 } 
+    , coins = 0
+    , plants = P.initPlants 
     }
 
 
@@ -64,12 +59,6 @@ init flag =
 
 
 -- UPDATE
-type Msg
-    = NoOp
-    | Reset
-    | Increment
-    | Frame Float
-
 keyDecoder : Decode.Decoder String
 keyDecoder =
     Decode.field "key" Decode.string
@@ -78,7 +67,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ BEvents.onAnimationFrameDelta Frame
-        , BEvents.onClick (Decode.succeed Increment)
+        , BEvents.onClick (Decode.succeed NoOp)
         , BEvents.onKeyDown
             (Decode.map
                 (\key ->
@@ -99,14 +88,16 @@ update msg model =
     in
     case msg of
         Frame _ ->
-          ({model | frame = model.frame + 1 }, Cmd.none)
+          ({model | frame = model.frame + 1, plants = P.agePlants model.plants }, Cmd.none)
         NoOp ->
-            ( model, Cmd.none )
+          ( model, Cmd.none )
         Reset ->
-            ({model | count = 0}, Cmd.none )
+          ({ model | coins = 0}, Cmd.none )
 
         Increment ->
-            ( { model | count = model.count + 1 }, Cmd.none )
+          ( { model | coins = model.coins + 1 }, Cmd.none )
+        BuyPlant p cost ->
+          ({ model | plants = (P.addPlant p model.plants), coins = model.coins - cost}, Cmd.none)
 
 
 
@@ -117,10 +108,13 @@ view model =
         [ id "game"]
         [ Html.span 
           []
-          [ text "Welcome to our game! Click to increment, press esc. to decrement."
-          , text ("Clicks: " ++ String.fromInt model.count)
-          , text ("Coins: " ++ String.fromInt model.player.coins)
+          [ text "Welcome to our game! Click to earn coins press esc. to decrement."
+          , text ("Coins: " ++ String.fromInt model.coins)
           ]
+        , Html.button [Events.onClick Increment] [Html.text "Free Money"]
+        , VH.plantButton P.corn 1
+        , VH.plantButton P.pumpkin 5
+        , P.plantsView model.plants
         , Html.span 
           [ id "frameRate"] 
           [ text ("Frame: " ++ String.fromFloat model.frame)]
