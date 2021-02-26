@@ -10,6 +10,16 @@ import Msg exposing (Msg(..))
 import Plants as P
 import Plants exposing (Plant)
 
+{-
+  Creates a buy button for a specific plant
+  
+  Args: 
+    plant - plant
+    price - price of that plant
+  
+  Returns:
+    An Html purchase button for the plant.
+-}
 plantButton : Plant -> Int -> Html Msg
 plantButton plant price =
   Html.button 
