@@ -22,19 +22,27 @@ import Plants exposing (Plant)
   Returns:
     The visual representation of the plant.
 -}
-displayPlant : Plant -> Html msg
-displayPlant p = 
-  let
-    classes = 
-      if (p.age == 0)
-      then [class "grown"]
-      else []
-  in
+displayPlant : Plant -> Int -> Html Msg
+displayPlant p index = 
+  if (p.age == 0)
+  then 
+    -- Plant is grown
     div 
-      ((class "plant")::classes)
+      [ class "plant"
+      , class "grown"
+      , Events.onClick (SellPlant index p)
+      ]
       [ text ("Name: " ++ p.name ++ " ")
-      , text ("Value: " ++ String.fromInt p.value ++ " ")
-      , text ("Age: " ++ String.fromInt (p.matAge - p.age) ++ ".")]
+      , text ("Harvest for " ++ String.fromInt p.value ++ " gold.")
+      ]
+  else
+    -- Not Grown
+    div 
+      [ class "plant"
+      ]
+      [ text ("Name: " ++ p.name ++ " ")
+      , text ("Age: " ++ String.fromInt (p.matAge - p.age) ++ ".")
+      ]
 
 {-
   Converts a list of plants to a viewable layout
@@ -45,11 +53,14 @@ displayPlant p =
   Returns:
     The visual representation of all of a player's plants.
 -}
-plantsView : List Plant -> Html msg
+plantsView : List Plant -> Html Msg
 plantsView ps =
-  div 
-  []
-  (List.foldl (\n acc -> (displayPlant n)::acc) [] ps)
+  let
+    views = List.indexedMap (\i p -> displayPlant p i) ps 
+  in
+    div 
+    []
+    (List.foldl (::) [] views)
 
 
 ---- Store Display ---- 

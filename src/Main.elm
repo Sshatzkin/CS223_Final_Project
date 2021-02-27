@@ -130,6 +130,10 @@ update msg model =
         else
           ({ model | plants = (P.addPlant p model.plants), coins = model.coins - cost}, Cmd.none)
 
+      SellPlant index plant ->
+      -- Called when a plant is harvested
+        ({model | coins = model.coins + (P.value plant), plants = P.removePlant index model.plants}, Cmd.none) 
+
 -- VIEW
 {-
   Called by the main to create the Html view.

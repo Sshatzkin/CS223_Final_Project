@@ -108,5 +108,7 @@ addPlant : Plant -> List Plant -> List Plant
 addPlant p ps =
   p::ps
 
-
+removePlant : Int -> List Plant -> List Plant
+removePlant i ps =
+  List.append (List.take i ps) (List.drop (i+1) ps)
 

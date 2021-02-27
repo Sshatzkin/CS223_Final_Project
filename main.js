@@ -5739,6 +5739,171 @@ var $author$project$Plants$agePlants = function (ps) {
 		},
 		ps);
 };
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
+var $author$project$Plants$removePlant = F2(
+	function (i, ps) {
+		return A2(
+			$elm$core$List$append,
+			A2($elm$core$List$take, i, ps),
+			A2($elm$core$List$drop, i + 1, ps));
+	});
+var $author$project$Plants$value = function (p) {
+	return p.value;
+};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -5765,7 +5930,7 @@ var $author$project$Main$update = F2(
 						model,
 						{coins: model.coins + 1}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'BuyPlant':
 				var p = msg.a;
 				var cost = msg.b;
 				return (_Utils_cmp(cost, model.coins) > 0) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
@@ -5774,6 +5939,17 @@ var $author$project$Main$update = F2(
 						{
 							coins: model.coins - cost,
 							plants: A2($author$project$Plants$addPlant, p, model.plants)
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var index = msg.a;
+				var plant = msg.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							coins: model.coins + $author$project$Plants$value(plant),
+							plants: A2($author$project$Plants$removePlant, index, model.plants)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -5834,42 +6010,52 @@ var $author$project$ViewHelpers$plantButton = F2(
 					'Buy ' + (plant.name + (' for ' + ($elm$core$String$fromInt(price) + ' Gold'))))
 				]));
 	});
+var $author$project$Msg$SellPlant = F2(
+	function (a, b) {
+		return {$: 'SellPlant', a: a, b: b};
+	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $author$project$ViewHelpers$displayPlant = function (p) {
-	var classes = (!p.age) ? _List_fromArray(
-		[
-			$elm$html$Html$Attributes$class('grown')
-		]) : _List_Nil;
-	return A2(
-		$elm$html$Html$div,
-		A2(
-			$elm$core$List$cons,
-			$elm$html$Html$Attributes$class('plant'),
-			classes),
-		_List_fromArray(
-			[
-				$elm$html$Html$text('Name: ' + (p.name + ' ')),
-				$elm$html$Html$text(
-				'Value: ' + ($elm$core$String$fromInt(p.value) + ' ')),
-				$elm$html$Html$text(
-				'Age: ' + ($elm$core$String$fromInt(p.matAge - p.age) + '.'))
-			]));
-};
+var $author$project$ViewHelpers$displayPlant = F2(
+	function (p, index) {
+		return (!p.age) ? A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('plant'),
+					$elm$html$Html$Attributes$class('grown'),
+					$elm$html$Html$Events$onClick(
+					A2($author$project$Msg$SellPlant, index, p))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Name: ' + (p.name + ' ')),
+					$elm$html$Html$text(
+					'Harvest for ' + ($elm$core$String$fromInt(p.value) + ' gold.'))
+				])) : A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('plant')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Name: ' + (p.name + ' ')),
+					$elm$html$Html$text(
+					'Age: ' + ($elm$core$String$fromInt(p.matAge - p.age) + '.'))
+				]));
+	});
 var $author$project$ViewHelpers$plantsView = function (ps) {
+	var views = A2(
+		$elm$core$List$indexedMap,
+		F2(
+			function (i, p) {
+				return A2($author$project$ViewHelpers$displayPlant, p, i);
+			}),
+		ps);
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (n, acc) {
-					return A2(
-						$elm$core$List$cons,
-						$author$project$ViewHelpers$displayPlant(n),
-						acc);
-				}),
-			_List_Nil,
-			ps));
+		A3($elm$core$List$foldl, $elm$core$List$cons, _List_Nil, views));
 };
 var $author$project$Plants$pumpkin = A3($author$project$Plants$newPlant, 'Pumpkin', 10, 2000);
 var $elm$html$Html$span = _VirtualDom_node('span');

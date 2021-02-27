@@ -8,3 +8,4 @@ type Msg
     | Increment
     | Frame Float
     | BuyPlant Plant Int
+    | SellPlant Int Plant
