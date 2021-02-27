@@ -8,19 +8,12 @@ import Html
 import Html exposing (Html, text, div, br)
 import Html.Attributes exposing (id, class)
 
-
--- TODO, add initial cost of plant to plant type
-  -- Edit - plantButton in view helpers
-  --      - Call to plant button in main
-          -- BuyPlant Msg type (remove cost from Msg type)
-          -- BuyPlant update -- to check the plant for cost. 
-          -- Add "cost p" function to abstract getting the cost of a plant
-
 type alias Plant = 
   { name : String
-  , value : Int
-  , age : Int 
-  , matAge : Int
+  , price : Int --The initial price of the plant (for buying)
+  , value : Int --The current value of the plant (for selling)
+  , countdown : Int --The countdown until the plant is mature
+  , matAge : Int --The age at which the plant is ready to harvest
   }
 
 {-
@@ -40,11 +33,12 @@ initPlants = []
   Returns:
     Plant with initialized with given values
 -}
-newPlant : String -> Int -> Int -> Plant
-newPlant name val matAge =
-   { name = name
+newPlant : String -> Int -> Int -> Int -> Plant
+newPlant name p val matAge =
+  { name = name
+  , price = p
   , value = val
-  , age = matAge
+  , countdown = matAge
   , matAge = matAge
   }
 
@@ -54,10 +48,10 @@ newPlant name val matAge =
 -}
 
 corn : Plant
-corn = newPlant "Corn" 3 400
+corn = newPlant "Corn" 1 3 400
 
 pumpkin : Plant
-pumpkin = newPlant "Pumpkin" 10 2000
+pumpkin = newPlant "Pumpkin" 5 10 2000
 
 
 -- GET / SET FUNCTIONS --
@@ -72,6 +66,9 @@ value : Plant -> Int
 value p =
   p.value
 
+price : Plant -> Int
+price p =
+  p.price
 
 -- UPDATE FUNCTIONS -- 
 
@@ -86,7 +83,7 @@ value p =
 -}
 agePlant : Plant -> Plant
 agePlant p =
-  {p | age = max (p.age - 1) 0}
+  {p | countdown = max (p.countdown - 1) 0}
 
 {-
   Updates the age of a list of plants

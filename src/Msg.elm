@@ -7,5 +7,6 @@ type Msg
     | Reset
     | Increment
     | Frame Float
-    | BuyPlant Plant Int -- Sends a plant and the cost of the plant
+    | BuyPlant Plant -- Sends a plant
     | SellPlant Int Plant
+    | AddCoins Int 

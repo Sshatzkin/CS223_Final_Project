@@ -128,17 +128,21 @@ update msg model =
       -- Called to increment player coins by 1
         ( { model | coins = model.coins + 1 }, Cmd.none )
 
-      BuyPlant p cost ->
+      BuyPlant p ->
       -- Called by plant purchase buttons to initiate plant purchase
-        if (cost > model.coins)
+        if (p.price > model.coins)
         then
           (model, Cmd.none)
         else
-          ({ model | plants = (P.addPlant p model.plants), coins = model.coins - cost}, Cmd.none)
-
+          ({ model | plants = (P.addPlant p model.plants), coins = model.coins - p.price}, Cmd.none)
+      
       SellPlant index plant ->
       -- Called when a plant is harvested
         ({model | coins = model.coins + (P.value plant), plants = P.removePlant index model.plants}, Cmd.none) 
+
+      AddCoins val ->
+      -- Called to add or subtract a given value from the player's total money
+        ( { model | coins = model.coins + val }, Cmd.none)
 
 -- VIEW
 {-
@@ -154,8 +158,8 @@ view model =
           , text ("Coins: " ++ String.fromInt model.coins)
           ]
         , Html.button [Events.onClick Increment] [Html.text "Free Money"]
-        , VH.plantButton P.corn 1
-        , VH.plantButton P.pumpkin 5
+        , VH.plantButton P.corn
+        , VH.plantButton P.pumpkin
         , VH.plantsView model.plants
         , Html.span 
           [ id "frameRate"] 

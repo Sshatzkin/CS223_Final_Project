@@ -24,7 +24,7 @@ import Plants exposing (Plant)
 -}
 displayPlant : Plant -> Int -> Html Msg
 displayPlant p index = 
-  if (p.age == 0)
+  if (p.countdown == 0)
   then 
     -- Plant is grown
     div 
@@ -41,7 +41,7 @@ displayPlant p index =
       [ class "plant"
       ]
       [ text ("Name: " ++ p.name ++ " ")
-      , text ("Age: " ++ String.fromInt (p.matAge - p.age) ++ ".")
+      , text ("Age: " ++ String.fromInt (p.matAge - p.countdown) ++ ".")
       ]
 
 {-
@@ -74,8 +74,8 @@ plantsView ps =
   Returns:
     An Html purchase button for the plant.
 -}
-plantButton : Plant -> Int -> Html Msg
-plantButton plant price =
+plantButton : Plant -> Html Msg
+plantButton plant =
   Html.button 
-  [Events.onClick (BuyPlant plant price)]
-  [text ("Buy " ++ plant.name ++ " for " ++ (String.fromInt price) ++ " Gold")]
+  [Events.onClick (BuyPlant plant)]
+  [text ("Buy " ++ plant.name ++ " for " ++ (String.fromInt plant.price) ++ " Gold")]
