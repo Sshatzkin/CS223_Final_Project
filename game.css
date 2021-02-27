@@ -1,6 +1,6 @@
 body {
   margin: 0px;
-  font-size: 2em;
+  font-size: 2em; 
   font-family: 'DotGothic16', sans-serif;
 }
 
@@ -69,5 +69,5 @@ canvas {
 }
 
 .plant.grown {
-  color: red;
+  color: green;
 }
