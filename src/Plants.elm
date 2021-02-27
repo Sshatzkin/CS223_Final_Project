@@ -8,6 +8,14 @@ import Html
 import Html exposing (Html, text, div, br)
 import Html.Attributes exposing (id, class)
 
+
+-- TODO, add initial cost of plant to plant type
+  -- Edit - plantButton in view helpers
+  --      - Call to plant button in main
+          -- BuyPlant Msg type (remove cost from Msg type)
+          -- BuyPlant update -- to check the plant for cost. 
+          -- Add "cost p" function to abstract getting the cost of a plant
+
 type alias Plant = 
   { name : String
   , value : Int

@@ -14,6 +14,11 @@ import Plants as P
 import Plants exposing (Plant)
 import ViewHelpers as VH
 
+-- TODO - Look into canvas to decide how we want to do visual
+
+-- TODO FIGURE OUT HOW TO DO LOCAL STORAGE THANKS
+
+-- TODO TOGGLE BETWEEN PAGES
 
 {-
   The main of the entire application
@@ -100,6 +105,7 @@ subscriptions model =
             )
         ]
 
+-- TODO , create a new Msg "AddCoins Int" that updates money
 {-
   This function is called by main every time a new Msg is sent. Case for Msg.
 -}

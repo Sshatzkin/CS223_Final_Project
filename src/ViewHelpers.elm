@@ -59,7 +59,7 @@ plantsView ps =
     views = List.indexedMap (\i p -> displayPlant p i) ps 
   in
     div 
-    []
+    [id "plant_container"]
     (List.foldl (::) [] views)
 
 

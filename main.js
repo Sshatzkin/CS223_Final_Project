@@ -6054,7 +6054,10 @@ var $author$project$ViewHelpers$plantsView = function (ps) {
 		ps);
 	return A2(
 		$elm$html$Html$div,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('plant_container')
+			]),
 		A3($elm$core$List$foldl, $elm$core$List$cons, _List_Nil, views));
 };
 var $author$project$Plants$pumpkin = A3($author$project$Plants$newPlant, 'Pumpkin', 10, 2000);

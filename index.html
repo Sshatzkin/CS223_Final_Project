@@ -23,7 +23,6 @@
     
     <script>
       var node = document.getElementById('game');
-      console.log(node)
       var flags = node.offsetHeight < 100 ? {width: window.innerWidth, height: window.innerHeight - 5} : {width: node.offsetWidth, height: node.offsetHeight};
       var app = Elm.Main.init(
         { node: node
