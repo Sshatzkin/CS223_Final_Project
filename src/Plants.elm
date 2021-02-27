@@ -6,7 +6,7 @@ module Plants exposing (..)
 
 import Html
 import Html exposing (Html, text, div, br)
-import Html.Attributes exposing (id)
+import Html.Attributes exposing (id, class)
 
 type alias Plant = 
   { name : String
@@ -46,7 +46,7 @@ newPlant name val matAge =
 -}
 
 corn : Plant
-corn = newPlant "Corn" 3 500
+corn = newPlant "Corn" 3 400
 
 pumpkin : Plant
 pumpkin = newPlant "Pumpkin" 10 2000
@@ -108,37 +108,5 @@ addPlant : Plant -> List Plant -> List Plant
 addPlant p ps =
   p::ps
 
--- DISPLAY FUNCTIONS -- 
 
-{-
-  Converts a Plant to an Html msg that can be displayed
-  
-  Args: 
-    p - plant
-  
-  Returns:
-    The visual representation of the plant.
--}
-displayPlant : Plant -> Html msg
-displayPlant p = 
-  div 
-    []
-    [ text ("Name: " ++ p.name ++ " ")
-    , text ("Value: " ++ String.fromInt p.value ++ " ")
-    , text ("Age: " ++ String.fromInt (p.matAge - p.age) ++ ".")]
-
-{-
-  Converts a list of plants to a viewable layout
-  
-  Args: 
-    ps - list of plants
-  
-  Returns:
-    The visual representation of all of a player's plants.
--}
-plantsView : List Plant -> Html msg
-plantsView ps =
-  div 
-  []
-  (List.foldl (\n acc -> (displayPlant n)::acc) [] ps)
 

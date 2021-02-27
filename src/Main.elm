@@ -58,7 +58,7 @@ initModel flag =
     , window = 
       { width = flag.width  -- This is where we use flags to set the model
       , height = flag.height}
-    , coins = 0
+    , coins = 5
     , plants = P.initPlants -- We define initial plants in Plants module
     }
 
@@ -124,7 +124,11 @@ update msg model =
 
       BuyPlant p cost ->
       -- Called by plant purchase buttons to initiate plant purchase
-        ({ model | plants = (P.addPlant p model.plants), coins = model.coins - cost}, Cmd.none)
+        if (cost > model.coins)
+        then
+          (model, Cmd.none)
+        else
+          ({ model | plants = (P.addPlant p model.plants), coins = model.coins - cost}, Cmd.none)
 
 -- VIEW
 {-
@@ -142,7 +146,7 @@ view model =
         , Html.button [Events.onClick Increment] [Html.text "Free Money"]
         , VH.plantButton P.corn 1
         , VH.plantButton P.pumpkin 5
-        , P.plantsView model.plants
+        , VH.plantsView model.plants
         , Html.span 
           [ id "frameRate"] 
           [ text ("Frame: " ++ String.fromFloat model.frame)]

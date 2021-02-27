@@ -5150,7 +5150,7 @@ var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $author$project$Plants$initPlants = _List_Nil;
 var $author$project$Main$initModel = function (flag) {
 	return {
-		coins: 0,
+		coins: 5,
 		frame: 0,
 		plants: $author$project$Plants$initPlants,
 		window: {height: flag.height, width: flag.width}
@@ -5741,7 +5741,6 @@ var $author$project$Plants$agePlants = function (ps) {
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		var _v0 = 1;
 		switch (msg.$) {
 			case 'Frame':
 				return _Utils_Tuple2(
@@ -5769,7 +5768,7 @@ var $author$project$Main$update = F2(
 			default:
 				var p = msg.a;
 				var cost = msg.b;
-				return _Utils_Tuple2(
+				return (_Utils_cmp(cost, model.coins) > 0) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
@@ -5785,7 +5784,7 @@ var $author$project$Plants$newPlant = F3(
 	function (name, val, matAge) {
 		return {age: matAge, matAge: matAge, name: name, value: val};
 	});
-var $author$project$Plants$corn = A3($author$project$Plants$newPlant, 'Corn', 3, 500);
+var $author$project$Plants$corn = A3($author$project$Plants$newPlant, 'Corn', 3, 400);
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -5835,10 +5834,18 @@ var $author$project$ViewHelpers$plantButton = F2(
 					'Buy ' + (plant.name + (' for ' + ($elm$core$String$fromInt(price) + ' Gold'))))
 				]));
 	});
-var $author$project$Plants$displayPlant = function (p) {
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $author$project$ViewHelpers$displayPlant = function (p) {
+	var classes = (!p.age) ? _List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('grown')
+		]) : _List_Nil;
 	return A2(
 		$elm$html$Html$div,
-		_List_Nil,
+		A2(
+			$elm$core$List$cons,
+			$elm$html$Html$Attributes$class('plant'),
+			classes),
 		_List_fromArray(
 			[
 				$elm$html$Html$text('Name: ' + (p.name + ' ')),
@@ -5848,7 +5855,7 @@ var $author$project$Plants$displayPlant = function (p) {
 				'Age: ' + ($elm$core$String$fromInt(p.matAge - p.age) + '.'))
 			]));
 };
-var $author$project$Plants$plantsView = function (ps) {
+var $author$project$ViewHelpers$plantsView = function (ps) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
@@ -5858,7 +5865,7 @@ var $author$project$Plants$plantsView = function (ps) {
 				function (n, acc) {
 					return A2(
 						$elm$core$List$cons,
-						$author$project$Plants$displayPlant(n),
+						$author$project$ViewHelpers$displayPlant(n),
 						acc);
 				}),
 			_List_Nil,
@@ -5896,7 +5903,7 @@ var $author$project$Main$view = function (model) {
 					])),
 				A2($author$project$ViewHelpers$plantButton, $author$project$Plants$corn, 1),
 				A2($author$project$ViewHelpers$plantButton, $author$project$Plants$pumpkin, 5),
-				$author$project$Plants$plantsView(model.plants),
+				$author$project$ViewHelpers$plantsView(model.plants),
 				A2(
 				$elm$html$Html$span,
 				_List_fromArray(

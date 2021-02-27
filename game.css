@@ -63,3 +63,11 @@ td {
 canvas {
   display: block;
 }
+
+.plant {
+
+}
+
+.plant.grown {
+  color: red;
+}
