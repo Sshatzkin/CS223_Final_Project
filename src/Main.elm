@@ -14,6 +14,7 @@ import Msg exposing (Msg(..))
 import Plants as P
 import Plants exposing (Plant)
 import ViewHelpers as VH
+import Html
 
 -- TODO - Look into canvas to decide how we want to do visual
 
@@ -50,13 +51,14 @@ type alias Model =
     , window : Window -- The size of the game window
     , coins : Int     -- The number of coins the player currently has 
     , plants : List Plant -- The current list of a player's plants.
+    , page : Page --The current game page
     }
 
 type alias Window = 
   { height : Float
   , width : Float 
   }
-
+type Page = Farm | Store
 
 initModel : Flags -> Model
 initModel flag =
@@ -66,6 +68,7 @@ initModel flag =
       , height = flag.height}
     , coins = 5
     , plants = P.initPlants -- We define initial plants in Plants module
+    , page = Store
     }
 
 {-
@@ -144,8 +147,18 @@ update msg model =
 {-
   Called by the main to create the Html view.
 -}
+
 view : Model -> Html Msg
 view model =
+  Html.div
+    [ id "game"]
+    [ gameView model
+    , Html.span 
+          [ id "frameRate"] 
+          [ text ("Frame: " ++ String.fromFloat model.frame)]
+    ]
+
+{-
     Html.div  -- We need a containing div for all of these items
         [ id "game"]  -- The div's name is "game"
         [ Html.span 
@@ -161,3 +174,13 @@ view model =
           [ id "frameRate"] 
           [ text ("Frame: " ++ String.fromFloat model.frame)]
         ]
+-}
+
+{-
+  Determines which game page should be displayed
+-}
+gameView : Model -> Html Msg
+gameView model = 
+  case model.page of
+          Farm -> VH.displayFarm model.plants
+          Store -> VH.displayStore model.coins

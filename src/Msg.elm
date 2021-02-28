@@ -8,4 +8,4 @@ type Msg
     | Frame Float
     | BuyPlant Plant -- Sends a plant
     | SellPlant Int Plant
-    | AddCoins Int 
+    | AddCoins Int

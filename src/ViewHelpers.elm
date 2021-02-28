@@ -10,9 +10,27 @@ import Msg exposing (Msg(..))
 import Plants as P
 import Plants exposing (Plant)
 
----- Display Plants ----
+---- Farm Display ----
 -- DISPLAY FUNCTIONS -- 
+{-
+  Creates the page display of the player's farm and current plants
 
+  Args:
+    plants -- a list of the player's current plants
+  
+  Returns:
+    An Html view of the farm page
+-}
+displayFarm : List Plant -> Html Msg
+displayFarm plants =
+  Html.div
+    [ id "farm"]  -- The div's name is "farm"
+    [ Html.span 
+      []
+      [ text "Welcome to Mr. Chickie's Farm! Grow plants and harvest them to earn money."
+      ]
+    , plantsView plants
+    ]
 {-
   Converts a Plant to an Html msg that can be displayed
   
@@ -64,6 +82,29 @@ plantsView ps =
 
 
 ---- Store Display ---- 
+{-
+  Puts together the entire store display for purchasing seeds
+
+  Args:
+    coins -- the player's current amount of money
+  
+  Returns:
+    An Html view of the store page
+-}
+displayStore : Int -> Html Msg
+displayStore coins =
+  Html.div 
+    [ id "store"]  -- The div's name is "store"
+    [ Html.span 
+      []
+      [ text "Welcome to the seed store! Buy seeds to plant on your farm. "
+      , text ("Coins: " ++ String.fromInt coins)
+      ]
+    , Html.button [Events.onClick (AddCoins 5)] [Html.text "Free Money"]
+    , plantButton P.corn
+    , plantButton P.pumpkin
+    ]
+
 {-
   Creates a buy button for a specific plant
   

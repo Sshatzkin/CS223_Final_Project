@@ -5147,11 +5147,13 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $author$project$Main$Store = {$: 'Store'};
 var $author$project$Plants$initPlants = _List_Nil;
 var $author$project$Main$initModel = function (flag) {
 	return {
 		coins: 5,
 		frame: 0,
+		page: $author$project$Main$Store,
 		plants: $author$project$Plants$initPlants,
 		window: {height: flag.height, width: flag.width}
 	};
@@ -5954,15 +5956,6 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Msg$AddCoins = function (a) {
-	return {$: 'AddCoins', a: a};
-};
-var $elm$html$Html$button = _VirtualDom_node('button');
-var $author$project$Plants$newPlant = F4(
-	function (name, p, val, matAge) {
-		return {countdown: matAge, matAge: matAge, name: name, price: p, value: val};
-	});
-var $author$project$Plants$corn = A4($author$project$Plants$newPlant, 'Corn', 1, 3, 400);
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -5974,6 +5967,11 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $author$project$Msg$SellPlant = F2(
+	function (a, b) {
+		return {$: 'SellPlant', a: a, b: b};
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5991,30 +5989,8 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$Msg$BuyPlant = function (a) {
-	return {$: 'BuyPlant', a: a};
-};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$ViewHelpers$plantButton = function (plant) {
-	return A2(
-		$elm$html$Html$button,
-		_List_fromArray(
-			[
-				$elm$html$Html$Events$onClick(
-				$author$project$Msg$BuyPlant(plant))
-			]),
-		_List_fromArray(
-			[
-				$elm$html$Html$text(
-				'Buy ' + (plant.name + (' for ' + ($elm$core$String$fromInt(plant.price) + ' Gold'))))
-			]));
-};
-var $author$project$Msg$SellPlant = F2(
-	function (a, b) {
-		return {$: 'SellPlant', a: a, b: b};
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $author$project$ViewHelpers$displayPlant = F2(
 	function (p, index) {
 		return (!p.countdown) ? A2(
@@ -6060,14 +6036,13 @@ var $author$project$ViewHelpers$plantsView = function (ps) {
 			]),
 		A3($elm$core$List$foldl, $elm$core$List$cons, _List_Nil, views));
 };
-var $author$project$Plants$pumpkin = A4($author$project$Plants$newPlant, 'Pumpkin', 5, 10, 2000);
 var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$Main$view = function (model) {
+var $author$project$ViewHelpers$displayFarm = function (plants) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$id('game')
+				$elm$html$Html$Attributes$id('farm')
 			]),
 		_List_fromArray(
 			[
@@ -6076,9 +6051,55 @@ var $author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Welcome to our game! Click to earn coins press esc. to decrement.'),
+						$elm$html$Html$text('Welcome to Mr. Chickie\'s Farm! Grow plants and harvest them to earn money.')
+					])),
+				$author$project$ViewHelpers$plantsView(plants)
+			]));
+};
+var $author$project$Msg$AddCoins = function (a) {
+	return {$: 'AddCoins', a: a};
+};
+var $elm$html$Html$button = _VirtualDom_node('button');
+var $author$project$Plants$newPlant = F4(
+	function (name, p, val, matAge) {
+		return {countdown: matAge, matAge: matAge, name: name, price: p, value: val};
+	});
+var $author$project$Plants$corn = A4($author$project$Plants$newPlant, 'Corn', 1, 3, 400);
+var $author$project$Msg$BuyPlant = function (a) {
+	return {$: 'BuyPlant', a: a};
+};
+var $author$project$ViewHelpers$plantButton = function (plant) {
+	return A2(
+		$elm$html$Html$button,
+		_List_fromArray(
+			[
+				$elm$html$Html$Events$onClick(
+				$author$project$Msg$BuyPlant(plant))
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(
+				'Buy ' + (plant.name + (' for ' + ($elm$core$String$fromInt(plant.price) + ' Gold'))))
+			]));
+};
+var $author$project$Plants$pumpkin = A4($author$project$Plants$newPlant, 'Pumpkin', 5, 10, 2000);
+var $author$project$ViewHelpers$displayStore = function (coins) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('store')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$span,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Welcome to the seed store! Buy seeds to plant on your farm. '),
 						$elm$html$Html$text(
-						'Coins: ' + $elm$core$String$fromInt(model.coins))
+						'Coins: ' + $elm$core$String$fromInt(coins))
 					])),
 				A2(
 				$elm$html$Html$button,
@@ -6092,8 +6113,27 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$text('Free Money')
 					])),
 				$author$project$ViewHelpers$plantButton($author$project$Plants$corn),
-				$author$project$ViewHelpers$plantButton($author$project$Plants$pumpkin),
-				$author$project$ViewHelpers$plantsView(model.plants),
+				$author$project$ViewHelpers$plantButton($author$project$Plants$pumpkin)
+			]));
+};
+var $author$project$Main$gameView = function (model) {
+	var _v0 = model.page;
+	if (_v0.$ === 'Farm') {
+		return $author$project$ViewHelpers$displayFarm(model.plants);
+	} else {
+		return $author$project$ViewHelpers$displayStore(model.coins);
+	}
+};
+var $author$project$Main$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('game')
+			]),
+		_List_fromArray(
+			[
+				$author$project$Main$gameView(model),
 				A2(
 				$elm$html$Html$span,
 				_List_fromArray(
