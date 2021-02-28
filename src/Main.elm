@@ -3,6 +3,7 @@ module Main exposing (..)
 import Browser
 import Browser.Events as BEvents
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Html
 import Html exposing (Html, text)
 import Html.Attributes exposing (id)
@@ -105,7 +106,6 @@ subscriptions model =
             )
         ]
 
--- TODO , create a new Msg "AddCoins Int" that updates money
 {-
   This function is called by main every time a new Msg is sent. Case for Msg.
 -}
@@ -123,10 +123,6 @@ update msg model =
       Reset -> 
       -- Called to reset player coins
         ({ model | coins = 0}, Cmd.none )
-
-      Increment ->
-      -- Called to increment player coins by 1
-        ( { model | coins = model.coins + 1 }, Cmd.none )
 
       BuyPlant p ->
       -- Called by plant purchase buttons to initiate plant purchase
@@ -157,7 +153,7 @@ view model =
           [ text "Welcome to our game! Click to earn coins press esc. to decrement."
           , text ("Coins: " ++ String.fromInt model.coins)
           ]
-        , Html.button [Events.onClick Increment] [Html.text "Free Money"]
+        , Html.button [Events.onClick (AddCoins 5)] [Html.text "Free Money"]
         , VH.plantButton P.corn
         , VH.plantButton P.pumpkin
         , VH.plantsView model.plants
