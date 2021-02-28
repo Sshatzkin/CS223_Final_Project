@@ -11,6 +11,7 @@ import Html.Events as Events
 
 -- Our Libraries
 import Msg exposing (Msg(..))
+import Page exposing (Page(..))
 import Plants as P
 import Plants exposing (Plant)
 import ViewHelpers as VH
@@ -58,7 +59,6 @@ type alias Window =
   { height : Float
   , width : Float 
   }
-type Page = Farm | Store
 
 initModel : Flags -> Model
 initModel flag =
@@ -142,6 +142,9 @@ update msg model =
       AddCoins val ->
       -- Called to add or subtract a given value from the player's total money
         ( { model | coins = model.coins + val }, Cmd.none)
+      
+      ChangePage pg ->
+        ( { model | page = pg }, Cmd.none)
 
 -- VIEW
 {-
@@ -182,5 +185,5 @@ view model =
 gameView : Model -> Html Msg
 gameView model = 
   case model.page of
-          Farm -> VH.displayFarm model.plants
+          Farm -> VH.displayFarm model.coins model.plants
           Store -> VH.displayStore model.coins

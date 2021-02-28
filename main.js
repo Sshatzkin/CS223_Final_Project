@@ -5147,13 +5147,13 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
-var $author$project$Main$Store = {$: 'Store'};
+var $author$project$Page$Store = {$: 'Store'};
 var $author$project$Plants$initPlants = _List_Nil;
 var $author$project$Main$initModel = function (flag) {
 	return {
 		coins: 5,
 		frame: 0,
-		page: $author$project$Main$Store,
+		page: $author$project$Page$Store,
 		plants: $author$project$Plants$initPlants,
 		window: {height: flag.height, width: flag.width}
 	};
@@ -5947,17 +5947,28 @@ var $author$project$Main$update = F2(
 							plants: A2($author$project$Plants$removePlant, index, model.plants)
 						}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'AddCoins':
 				var val = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{coins: model.coins + val}),
 					$elm$core$Platform$Cmd$none);
+			default:
+				var pg = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{page: pg}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$core$String$fromFloat = _String_fromNumber;
+var $author$project$Msg$ChangePage = function (a) {
+	return {$: 'ChangePage', a: a};
+};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5967,11 +5978,6 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $author$project$Msg$SellPlant = F2(
-	function (a, b) {
-		return {$: 'SellPlant', a: a, b: b};
-	});
-var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5989,6 +5995,11 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $author$project$Msg$SellPlant = F2(
+	function (a, b) {
+		return {$: 'SellPlant', a: a, b: b};
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$ViewHelpers$displayPlant = F2(
@@ -6037,29 +6048,43 @@ var $author$project$ViewHelpers$plantsView = function (ps) {
 		A3($elm$core$List$foldl, $elm$core$List$cons, _List_Nil, views));
 };
 var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$ViewHelpers$displayFarm = function (plants) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$id('farm')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$span,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Welcome to Mr. Chickie\'s Farm! Grow plants and harvest them to earn money.')
-					])),
-				$author$project$ViewHelpers$plantsView(plants)
-			]));
-};
+var $author$project$ViewHelpers$displayFarm = F2(
+	function (coins, plants) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$id('farm')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$span,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Welcome to Mr. Chickie\'s Farm! Grow plants and harvest them to earn money.'),
+							$elm$html$Html$text(
+							'Coins: ' + $elm$core$String$fromInt(coins))
+						])),
+					$author$project$ViewHelpers$plantsView(plants),
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Msg$ChangePage($author$project$Page$Store))
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Go to Store')
+						]))
+				]));
+	});
 var $author$project$Msg$AddCoins = function (a) {
 	return {$: 'AddCoins', a: a};
 };
-var $elm$html$Html$button = _VirtualDom_node('button');
+var $author$project$Page$Farm = {$: 'Farm'};
 var $author$project$Plants$newPlant = F4(
 	function (name, p, val, matAge) {
 		return {countdown: matAge, matAge: matAge, name: name, price: p, value: val};
@@ -6113,13 +6138,24 @@ var $author$project$ViewHelpers$displayStore = function (coins) {
 						$elm$html$Html$text('Free Money')
 					])),
 				$author$project$ViewHelpers$plantButton($author$project$Plants$corn),
-				$author$project$ViewHelpers$plantButton($author$project$Plants$pumpkin)
+				$author$project$ViewHelpers$plantButton($author$project$Plants$pumpkin),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Msg$ChangePage($author$project$Page$Farm))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Go to Farm')
+					]))
 			]));
 };
 var $author$project$Main$gameView = function (model) {
 	var _v0 = model.page;
 	if (_v0.$ === 'Farm') {
-		return $author$project$ViewHelpers$displayFarm(model.plants);
+		return A2($author$project$ViewHelpers$displayFarm, model.coins, model.plants);
 	} else {
 		return $author$project$ViewHelpers$displayStore(model.coins);
 	}

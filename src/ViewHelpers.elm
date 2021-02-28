@@ -7,6 +7,7 @@ import Html.Events as Events
 
 -- Our Libraries
 import Msg exposing (Msg(..))
+import Page exposing (Page(..))
 import Plants as P
 import Plants exposing (Plant)
 
@@ -16,20 +17,23 @@ import Plants exposing (Plant)
   Creates the page display of the player's farm and current plants
 
   Args:
+    coins -- the player's current amount of money
     plants -- a list of the player's current plants
   
   Returns:
     An Html view of the farm page
 -}
-displayFarm : List Plant -> Html Msg
-displayFarm plants =
+displayFarm : Int -> List Plant -> Html Msg
+displayFarm coins plants =
   Html.div
     [ id "farm"]  -- The div's name is "farm"
     [ Html.span 
       []
       [ text "Welcome to Mr. Chickie's Farm! Grow plants and harvest them to earn money."
+      , text ("Coins: " ++ String.fromInt coins)
       ]
     , plantsView plants
+    , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
     ]
 {-
   Converts a Plant to an Html msg that can be displayed
@@ -103,6 +107,7 @@ displayStore coins =
     , Html.button [Events.onClick (AddCoins 5)] [Html.text "Free Money"]
     , plantButton P.corn
     , plantButton P.pumpkin
+    , Html.button [Events.onClick (ChangePage Farm)] [Html.text "Go to Farm"]
     ]
 
 {-
