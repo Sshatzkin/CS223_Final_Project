@@ -1,5 +1,9 @@
 module ViewHelpers exposing (..)
 
+import Canvas exposing (rect, shapes)
+import Canvas.Settings exposing (fill)
+import Canvas.Settings.Advanced exposing (rotate, transform, translate)
+import Color
 import Html
 import Html exposing (Html, text, div, br)
 import Html.Attributes exposing (id, class)
@@ -10,6 +14,14 @@ import Msg exposing (Msg(..))
 import Page exposing (Page(..))
 import Plants as P
 import Plants exposing (Plant)
+
+---- Type Definitions ----
+type alias Window = 
+  { width : Float 
+  , height : Float
+  }
+newWindow : Float -> Float -> Window
+newWindow w h = {width = w, height = h}
 
 ---- Farm Display ----
 -- DISPLAY FUNCTIONS -- 
@@ -23,8 +35,15 @@ import Plants exposing (Plant)
   Returns:
     An Html view of the farm page
 -}
-displayFarm : Int -> List Plant -> Html Msg
-displayFarm coins plants =
+displayFarm : Window -> Html Msg
+displayFarm w =
+  Canvas.toHtml (truncate w.width, truncate w.height) 
+    []
+    [ shapes [ fill Color.white ] [ rect ( 0, 0 ) 100 100 ]
+    , shapes [ fill Color.red ] [ rect ( 0, 0 ) 50 50 ]
+    , Canvas.text [] ( 25, 25 ) "Hello world"
+    ]
+{-
   Html.div
     [ id "farm"]  -- The div's name is "farm"
     [ Html.span 
@@ -35,6 +54,8 @@ displayFarm coins plants =
     , plantsView plants
     , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
     ]
+-}
+
 {-
   Converts a Plant to an Html msg that can be displayed
   

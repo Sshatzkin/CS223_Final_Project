@@ -2,6 +2,10 @@ module Main exposing (..)
 
 import Browser
 import Browser.Events as BEvents
+import Canvas exposing (rect, shapes)
+import Canvas.Settings exposing (fill)
+import Canvas.Settings.Advanced exposing (rotate, transform, translate)
+import Color
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Html
@@ -14,7 +18,7 @@ import Msg exposing (Msg(..))
 import Page exposing (Page(..))
 import Plants as P
 import Plants exposing (Plant)
-import ViewHelpers as VH
+import ViewHelpers as VH exposing (Window)
 import Html
 
 -- TODO - Look into canvas to decide how we want to do visual
@@ -55,17 +59,10 @@ type alias Model =
     , page : Page --The current game page
     }
 
-type alias Window = 
-  { height : Float
-  , width : Float 
-  }
-
 initModel : Flags -> Model
 initModel flag =
     { frame = 0 
-    , window = 
-      { width = flag.width  -- This is where we use flags to set the model
-      , height = flag.height}
+    , window = VH.newWindow flag.width flag.height
     , coins = 5
     , plants = P.initPlants -- We define initial plants in Plants module
     , page = Store
@@ -162,28 +159,10 @@ view model =
     ]
 
 {-
-    Html.div  -- We need a containing div for all of these items
-        [ id "game"]  -- The div's name is "game"
-        [ Html.span 
-          []
-          [ text "Welcome to our game! Click to earn coins press esc. to decrement."
-          , text ("Coins: " ++ String.fromInt model.coins)
-          ]
-        , Html.button [Events.onClick (AddCoins 5)] [Html.text "Free Money"]
-        , VH.plantButton P.corn
-        , VH.plantButton P.pumpkin
-        , VH.plantsView model.plants
-        , Html.span 
-          [ id "frameRate"] 
-          [ text ("Frame: " ++ String.fromFloat model.frame)]
-        ]
--}
-
-{-
   Determines which game page should be displayed
 -}
 gameView : Model -> Html Msg
 gameView model = 
   case model.page of
-          Farm -> VH.displayFarm model.coins model.plants
-          Store -> VH.displayStore model.coins
+    Farm -> VH.displayFarm model.window
+    Store -> VH.displayStore model.coins
