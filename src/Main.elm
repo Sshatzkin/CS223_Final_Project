@@ -164,5 +164,5 @@ view model =
 gameView : Model -> Html Msg
 gameView model = 
   case model.page of
-    Farm -> VH.displayFarm model.window
+    Farm -> VH.displayFarm model.window model.coins model.plants
     Store -> VH.displayStore model.coins
