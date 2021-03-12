@@ -37,13 +37,13 @@ newWindow w h = {width = w, height = h}
   Returns:
     An Html view of the farm page
 -}
-displayFarm : Window -> Int -> List (Plant) -> Html Msg
-displayFarm w coins plants =
+displayFarm : Float -> Window -> Int -> List (Plant) -> Html Msg
+displayFarm frame w coins plants =
   div
   []
   [ Canvas.toHtml (truncate w.width, truncate w.height) 
       []
-      ((displayFarmText w coins) ++ (renderPlants w plants))
+    ((displayFarmText w coins) ++ (renderPlants frame w plants))
   , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
   ]
     
@@ -91,19 +91,50 @@ displayFarmText w coins =
   Output:
     Canvas.Renderable
 -}
-renderPlant : Window -> Plant -> Canvas.Renderable
-renderPlant w p = 
+renderPlant : Float -> Window -> Plant -> Canvas.Renderable
+renderPlant frame w p = 
+  let rotation = degrees ((toFloat (p.matAge - p.countdown)) * 0.1)
+  in
+  
+  shapes [ transform [ translate (w.width / 2) (w.height / 2)
+                     , rotate rotation
+                     , translate (-w.width / 2) (-w.height / 2)
+                     ]
+         , fill (Color.yellow)
+         , align Center ]
+         [ rect (w.width / 2, w.height / 2) 100 100]
+  
+  {-
+  shapes [ fill Color.yellow , align Center ]
+         [ rect (w.width / 2, w.height / 2) (toFloat (p.matAge - p.countdown)) (toFloat (p.matAge - p.countdown))]
+  -}
+  {-
   case p.name of
-     "Corn" -> shapes [ fill Color.yellow ] [ rect ( w.width / 3, w.height / 3 ) 100 100 ]
-     _ -> shapes [ fill Color.orange ] [ rect ( w.width - (w.width / 3), w.height / 3 ) 100 100 ]
+    "Corn" -> shapes [ fill Color.yellow ] [ rect ( w.width / 3, w.height / 3 ) 100 100 ]
+    _ -> shapes [ fill Color.orange ] [ rect ( w.width - (w.width / 3), w.height / 3 ) 100 100 ]
+  -}
 
 {-
   Converts a list of plants into a list of Canvas Renderables
 -}
-renderPlants : Window -> List (Plant) -> List (Canvas.Renderable)
-renderPlants w ps = 
-  List.map (renderPlant w) ps
 
+clearScreen : Window -> Canvas.Renderable
+clearScreen w =
+  shapes [ fill Color.white ] [ rect ( 0, 0 ) w.width w.height]
+renderPlants : Float -> Window -> List (Plant) -> List (Canvas.Renderable)
+renderPlants frame w ps = 
+  List.map (renderPlant frame w) ps
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------
 ---OLD HTML DISPLAY FUNCTIONS---
 {-
   Converts a Plant to an Html msg that can be displayed
