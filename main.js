@@ -5203,7 +5203,7 @@ var $author$project$Button$newButton = F5(
 	function (x, y, width, height, btype) {
 		return {btype: btype, height: height, width: width, x: x, y: y};
 	});
-var $author$project$Button$plotButtons = F3(
+var $author$project$Button$farmButtons = F3(
 	function (width, height, ptypes) {
 		var yShift = height / 4;
 		var upgradeHeight = 20;
@@ -5243,13 +5243,9 @@ var $author$project$Button$plotButtons = F3(
 					]);
 			});
 		var _v0 = A2($elm$core$Debug$log, 'Height', heightMult);
-		return $elm$core$List$concat(
-			A2($elm$core$List$indexedMap, makeButtons, ptypes));
-	});
-var $author$project$Button$farmButtons = F3(
-	function (width, height, plants) {
 		return {
-			buttons: A3($author$project$Button$plotButtons, width, height, plants),
+			buttons: $elm$core$List$concat(
+				A2($elm$core$List$indexedMap, makeButtons, ptypes)),
 			page: $author$project$Page$Farm
 		};
 	});
@@ -5263,14 +5259,6 @@ var $author$project$Plants$getPTypes = function (plants) {
 };
 var $author$project$Button$initialButtons = F3(
 	function (width, height, plants) {
-		var _v0 = A2(
-			$elm$core$Debug$log,
-			'Farm Button Page ',
-			A3(
-				$author$project$Button$farmButtons,
-				width,
-				height,
-				$author$project$Plants$getPTypes(plants)));
 		return _List_fromArray(
 			[
 				A3(
@@ -5859,10 +5847,6 @@ var $author$project$Main$subscriptions = function (model) {
 					A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string)))
 			]));
 };
-var $author$project$Plants$addPlant = F2(
-	function (p, ps) {
-		return A2($elm$core$List$cons, p, ps);
-	});
 var $author$project$Plants$agePlant = function (p) {
 	return p.purchased ? _Utils_update(
 		p,
@@ -5910,8 +5894,8 @@ var $author$project$Button$clickedAnyButton = F4(
 				return _Debug_todo(
 					'Button',
 					{
-						start: {line: 114, column: 12},
-						end: {line: 114, column: 22}
+						start: {line: 157, column: 12},
+						end: {line: 157, column: 22}
 					})('TWO OR MORE BUTTONS WERE CLICKED THIS SHOULD NOT HAPPEN');
 			}
 		}
@@ -5941,8 +5925,8 @@ var $author$project$Plants$getPlant = F2(
 			return _Debug_todo(
 				'Plants',
 				{
-					start: {line: 93, column: 11},
-					end: {line: 93, column: 21}
+					start: {line: 110, column: 11},
+					end: {line: 110, column: 21}
 				})('Why can\'t this find the plant?');
 		} else {
 			if (!_v0.b.b) {
@@ -5952,8 +5936,8 @@ var $author$project$Plants$getPlant = F2(
 				return _Debug_todo(
 					'Plants',
 					{
-						start: {line: 95, column: 13},
-						end: {line: 95, column: 23}
+						start: {line: 112, column: 13},
+						end: {line: 112, column: 23}
 					})('THIS SHOULD NOT BE POSSIBLE');
 			}
 		}
@@ -6037,201 +6021,41 @@ var $author$project$Main$clickHandler = F3(
 		} else {
 			var btype = _v0.a;
 			var _v1 = A2($elm$core$Debug$log, 'Clicked Button', btype);
-			switch (btype.$) {
-				case 'Plot':
-					var ptype = btype.a;
-					var _v3 = A3($author$project$Plants$plotClicked, model.plants, ptype, model.coins);
-					if (_v3.$ === 'Nothing') {
-						return model;
-					} else {
-						var _v4 = _v3.a;
-						var plants = _v4.a;
-						var profit = _v4.b;
-						return _Utils_update(
-							model,
-							{coins: model.coins + profit, plants: plants});
-					}
-				case 'Upgrade':
-					var ptype = btype.a;
-					var _v5 = A3($author$project$Plants$upgradeClicked, model.plants, ptype, model.coins);
-					if (_v5.$ === 'Nothing') {
-						return model;
-					} else {
-						var _v6 = _v5.a;
-						var plants = _v6.a;
-						var profit = _v6.b;
-						var _v7 = A2(
-							$elm$core$Debug$log,
-							'Status',
-							_Utils_Tuple2(
-								A2($author$project$Plants$getPlant, ptype, plants),
-								profit));
-						return _Utils_update(
-							model,
-							{coins: model.coins + profit, plants: plants});
-					}
-				default:
+			if (btype.$ === 'Plot') {
+				var ptype = btype.a;
+				var _v3 = A3($author$project$Plants$plotClicked, model.plants, ptype, model.coins);
+				if (_v3.$ === 'Nothing') {
 					return model;
-			}
-		}
-	});
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
 				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
+					var _v4 = _v3.a;
+					var plants = _v4.a;
+					var profit = _v4.b;
+					return _Utils_update(
+						model,
+						{coins: model.coins + profit, plants: plants});
 				}
-			}
-		}
-	});
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
 			} else {
-				if (!list.b) {
-					return kept;
+				var ptype = btype.a;
+				var _v5 = A3($author$project$Plants$upgradeClicked, model.plants, ptype, model.coins);
+				if (_v5.$ === 'Nothing') {
+					return model;
 				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
+					var _v6 = _v5.a;
+					var plants = _v6.a;
+					var profit = _v6.b;
+					var _v7 = A2(
+						$elm$core$Debug$log,
+						'Status',
+						_Utils_Tuple2(
+							A2($author$project$Plants$getPlant, ptype, plants),
+							profit));
+					return _Utils_update(
+						model,
+						{coins: model.coins + profit, plants: plants});
 				}
 			}
 		}
 	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
-	});
-var $author$project$Plants$removePlant = F2(
-	function (i, ps) {
-		return A2(
-			$elm$core$List$append,
-			A2($elm$core$List$take, i, ps),
-			A2($elm$core$List$drop, i + 1, ps));
-	});
-var $author$project$Plants$value = function (p) {
-	return p.value;
-};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -6258,27 +6082,6 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{coins: 0}),
-					$elm$core$Platform$Cmd$none);
-			case 'BuyPlant':
-				var p = msg.a;
-				return (_Utils_cmp(p.price, model.coins) > 0) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							coins: model.coins - p.price,
-							plants: A2($author$project$Plants$addPlant, p, model.plants)
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'SellPlant':
-				var index = msg.a;
-				var plant = msg.b;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							coins: model.coins + $author$project$Plants$value(plant),
-							plants: A2($author$project$Plants$removePlant, index, model.plants)
-						}),
 					$elm$core$Platform$Cmd$none);
 			case 'AddCoins':
 				var val = msg.a;
@@ -6744,13 +6547,15 @@ var $author$project$ViewHelpers$renderPlot = F2(
 					case 'Raddish':
 						return $avh4$elm_color$Color$purple;
 					default:
-						var _v1 = A2($elm$core$Basics$modBy, 3, p.quantity - 1);
+						var _v1 = A2($elm$core$Basics$modBy, 4, p.quantity - 1);
 						switch (_v1) {
 							case 0:
 								return $avh4$elm_color$Color$green;
 							case 1:
-								return $avh4$elm_color$Color$orange;
+								return $avh4$elm_color$Color$yellow;
 							case 2:
+								return $avh4$elm_color$Color$orange;
+							case 3:
 								return $avh4$elm_color$Color$red;
 							default:
 								return $avh4$elm_color$Color$green;
@@ -6819,32 +6624,24 @@ var $author$project$ViewHelpers$renderUpgrade = F2(
 				]));
 	});
 var $author$project$ViewHelpers$renderButtonList = F2(
-	function (buttons, ps) {
+	function (bs, ps) {
 		var foo = function (b) {
 			var _v0 = b.btype;
-			switch (_v0.$) {
-				case 'Plot':
-					var ptype = _v0.a;
-					return A2(
-						$author$project$ViewHelpers$renderPlot,
-						b,
-						A2($author$project$Plants$getPlant, ptype, ps));
-				case 'Upgrade':
-					var ptype = _v0.a;
-					return A2(
-						$author$project$ViewHelpers$renderUpgrade,
-						b,
-						A2($author$project$Plants$getPlant, ptype, ps));
-				default:
-					return _Debug_todo(
-						'ViewHelpers',
-						{
-							start: {line: 156, column: 14},
-							end: {line: 156, column: 24}
-						})('This case should not occur');
+			if (_v0.$ === 'Plot') {
+				var ptype = _v0.a;
+				return A2(
+					$author$project$ViewHelpers$renderPlot,
+					b,
+					A2($author$project$Plants$getPlant, ptype, ps));
+			} else {
+				var ptype = _v0.a;
+				return A2(
+					$author$project$ViewHelpers$renderUpgrade,
+					b,
+					A2($author$project$Plants$getPlant, ptype, ps));
 			}
 		};
-		return A2($elm$core$List$map, foo, buttons);
+		return A2($elm$core$List$map, foo, bs);
 	});
 var $author$project$ViewHelpers$renderButtons = function (m) {
 	var buttonPage = A2($author$project$Button$getButtonPage, m.page, m.buttons);
@@ -7592,92 +7389,18 @@ var $author$project$ViewHelpers$displayFarm = function (m) {
 						$author$project$ViewHelpers$renderButtons(m))))
 			]));
 };
-var $author$project$Msg$AddCoins = function (a) {
-	return {$: 'AddCoins', a: a};
-};
-var $author$project$Msg$ChangePage = function (a) {
-	return {$: 'ChangePage', a: a};
-};
-var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$Msg$BuyPlant = function (a) {
-	return {$: 'BuyPlant', a: a};
-};
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$ViewHelpers$plantButton = function (plant) {
-	return A2(
-		$elm$html$Html$button,
-		_List_fromArray(
-			[
-				$elm$html$Html$Events$onClick(
-				$author$project$Msg$BuyPlant(plant))
-			]),
-		_List_fromArray(
-			[
-				$elm$html$Html$text(
-				'Buy ' + (plant.name + (' for ' + ($elm$core$String$fromInt(plant.price) + ' Gold'))))
-			]));
-};
-var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$ViewHelpers$displayStore = function (coins) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$id('store')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$span,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Welcome to the seed store! Buy seeds to plant on your farm. '),
-						$elm$html$Html$text(
-						'Coins: ' + $elm$core$String$fromInt(coins))
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Msg$AddCoins(5))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Free Money')
-					])),
-				$author$project$ViewHelpers$plantButton($author$project$Plants$corn),
-				$author$project$ViewHelpers$plantButton($author$project$Plants$pumpkin),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Msg$ChangePage($author$project$Page$Farm))
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Go to Farm')
-					]))
-			]));
-};
 var $author$project$Main$gameView = function (model) {
 	var _v0 = model.page;
 	if (_v0.$ === 'Farm') {
 		return $author$project$ViewHelpers$displayFarm(model);
 	} else {
-		return $author$project$ViewHelpers$displayStore(model.coins);
+		return $author$project$ViewHelpers$displayFarm(model);
 	}
 };
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,

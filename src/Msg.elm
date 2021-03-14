@@ -6,10 +6,8 @@ import Plants exposing (Plant)
 import Page exposing (Page)
 type Msg
     = NoOp
-    | Reset
-    | Frame Float
-    | Click Mouse.Event
-    | BuyPlant Plant -- Sends a plant
-    | SellPlant Int Plant
+    | Reset -- Reset coins to 0
+    | Frame Float -- Called on every frame - used to age plants and animate
+    | Click Mouse.Event -- Called on every mouse click, stores click info
     | AddCoins Int
     | ChangePage Page

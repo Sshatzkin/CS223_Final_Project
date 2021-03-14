@@ -16,7 +16,7 @@ type alias Model =
     , coins : Int     -- The number of coins the player currently has 
     , plants : List Plant -- The current list of a player's plants.
     , page : Page --The current game page
-    , buttons : Buttons -- All current game buttons
+    , buttons : Buttons -- All current game buttons (accross all pages)
     }
 
 ---- FLAGS ---- 
@@ -29,6 +29,10 @@ type alias Flags =
     }
 
 ---- INITIALIZATION ----
+
+{-
+  Takes flags from JS and initializes the model
+-}
 initModel : Flags -> Model
 initModel flag =
   let
@@ -39,5 +43,5 @@ initModel flag =
     , coins = 5
     , plants = initPlants -- We define initial plants in Plants module
     , page = Farm
-    , buttons = initialButtons flag.width flag.height initPlants
+    , buttons = (initialButtons flag.width flag.height initPlants) -- We define initialButtons in the Button module
     }

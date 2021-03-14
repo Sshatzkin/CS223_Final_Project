@@ -23,6 +23,10 @@ import String exposing (fromFloat)
 import String exposing (fromInt)
 
 ---- Small Helpers ----
+
+{-
+  Takes numbr of frames, returns string format time (60 frames / second)
+-}
 frameToTime : Float -> String
 frameToTime count =
   let
@@ -44,16 +48,14 @@ frameToTime count =
   in
     hourString ++ ":" ++ minString ++ ":" ++ secString
 
----- Farm Display with Canvas----
--- DISPLAY FUNCTIONS -- 
+-- FARM DISPLAY FUNCTIONS -- 
+
 {-
   Creates the Html page display of the player's farm and current plants
 
   Args:
-    w -- window from the model
-    coins -- the player's current amount of money
-    plants -- a list of the player's current plants
-  
+    m - model
+
   Returns:
     An Html view of the farm page
 -}
@@ -70,20 +72,20 @@ displayFarm m =
     [ Canvas.toHtml (truncate w.width, truncate w.height) 
       [Mouse.onClick Click]
       ((renderBG m)::(displayFarmText w coins) ++ (renderButtons m))
-    --, Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
     ]
 
 
 {-
-  Creates a renderable for the background
-
+  Creates a renderable for the canvas background
 -}
 renderBG : Model -> Canvas.Renderable
 renderBG m = 
-  shapes [ fill {- #80ffdb-} (Color.rgb255 128 255 235) ] [ rect ( 0, 0 ) m.window.width m.window.height ]
+  -- Color.rgb255 128 255 235 is the original green. White would be 255 255 255.
+  --  You can find more colors in the CSS file written in hex #.....
+  shapes [ fill (Color.rgb255 128 255 235) ] [ rect ( 0, 0 ) m.window.width m.window.height ]
 
 {-
-  Displays the header message for the farm
+  Displays the GUI for the Farm (header & coins)
 
   Args:
     w -- window from the model
@@ -106,15 +108,18 @@ displayFarmText w coins =
 
 
 {-
-  Produces the image of a single plot as a Canvas Renderable
+  Produces a Canvas Renderable from a single plot button
+
   Args:
-    b -- current button
-    p -- Plant
+    b - button
+    p - Plant
+
   Output:
-    Canvas.Renderable
+    Canvas.Renderable of button
 -}
 renderPlot : Button -> Plant -> Canvas.Renderable
-renderPlot b p = 
+renderPlot b p =
+  -- Want to render differently if purchased or not
   if p.purchased
   then
       let
@@ -125,16 +130,27 @@ renderPlot b p =
           Carrot -> Color.orange
           Raddish -> Color.purple
           Pepper ->
-            case (modBy 3 (p.quantity - 1)) of
+            case (modBy 4 (p.quantity - 1)) of
                0 -> Color.green
-               1 -> Color.orange
-               2 -> Color.red
+               1 -> Color.yellow
+               2 -> Color.orange
+               3 -> Color.red
                _ -> Color.green
         fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
       in
         shapes [ fill color ] [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height * fillPercent) ]
     else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
 
+{-
+  Produces a Canvas Renderable from a single upgrade button
+
+  Args:
+    b - button
+    p - Plant
+
+  Output:
+    Canvas.Renderable of button
+-}
 renderUpgrade : Button -> Plant -> Canvas.Renderable
 renderUpgrade b p = 
   if p.purchased
@@ -142,10 +158,17 @@ renderUpgrade b p =
   else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
 
 {-
-  Converts a list of plants into a list of Canvas Renderables
+  Converts a list of buttons into a list of Canvas Renderables
+
+  Args:
+    bs - List of buttons
+    ps - List of plants
+
+  Output:
+    Canvas.Renderable of button
 -}
 renderButtonList : List Button -> List Plant -> List (Canvas.Renderable)
-renderButtonList buttons ps =
+renderButtonList bs ps =
   let
     foo b =
       case b.btype of
@@ -153,116 +176,23 @@ renderButtonList buttons ps =
           renderPlot b (P.getPlant ptype ps)
         Upgrade ptype -> 
           renderUpgrade b (P.getPlant ptype ps)
-        _ -> Debug.todo "This case should not occur"
   in
-    List.map foo buttons
+    List.map foo bs
 
+{-
+  Produces a list of Canvas Renderables representing all buttons on the current page
+
+  Args:
+    m - Model
+
+  Output:
+    List of Canvas.Renderables of all buttons
+-}
 renderButtons : Model -> List (Canvas.Renderable)
 renderButtons m =
   let
+    -- Get list of buttons from current page
     buttonPage = (getButtonPage m.page m.buttons)
   in
+    -- Render the list of buttons
     renderButtonList buttonPage m.plants
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------
----OLD HTML DISPLAY FUNCTIONS---
-{-
-  Converts a Plant to an Html msg that can be displayed
-  
-  Args: 
-    p - plant
-  
-  Returns:
-    The visual representation of the plant.
--}
-displayPlant : Plant -> Int -> Html Msg
-displayPlant p index = 
-  if (p.countdown == 0)
-  then 
-    -- Plant is grown
-    Canvas.toHtml ( 50, 50 )
-      [ class "plant"
-      , class "grown"
-      , Events.onClick (SellPlant index p)
-      ]
-      --TODO: replace this with plant image
-      [ text [] (25, 25) ("Name: " ++ p.name ++ " ")
-      , text [] (30, 30) ("Harvest for " ++ String.fromInt p.value ++ " gold.")
-      ]
-  else
-    -- Not Grown
-    Canvas.toHtml ( 50, 50 ) 
-      [ class "plant"
-      ]
-      [ text [] (25, 25) ("Name: " ++ p.name ++ " ")
-      , text [] (30, 30) ("Age: " ++ String.fromInt (p.matAge - p.countdown) ++ ".")
-      ]
-
-
-{-
-  Converts a list of plants to a viewable layout
-  
-  Args: 
-    ps - list of plants
-  
-  Returns:
-    The visual representation of all of a player's plants.
--}
-plantsView : List Plant -> Html Msg
-plantsView ps =
-  let
-    views = List.indexedMap (\i p -> displayPlant p i) ps 
-  in
-    div 
-    [id "plant_container"]
-    (List.foldl (::) [] views)
-
-
----- Store Display ---- 
-{-
-  Puts together the entire store display for purchasing seeds
-
-  Args:
-    coins -- the player's current amount of money
-  
-  Returns:
-    An Html view of the store page
--}
-displayStore : Int -> Html Msg
-displayStore coins =
-  Html.div 
-    [ id "store"]  -- The div's name is "store"
-    [ Html.span 
-      []
-      [ Html.text "Welcome to the seed store! Buy seeds to plant on your farm. "
-      , Html.text ("Coins: " ++ String.fromInt coins)
-      ]
-    , Html.button [Events.onClick (AddCoins 5)] [Html.text "Free Money"]
-    , plantButton P.corn
-    , plantButton P.pumpkin
-    , Html.button [Events.onClick (ChangePage Farm)] [Html.text "Go to Farm"]
-    ]
-
-{-
-  Creates a buy button for a specific plant
-  
-  Args: 
-    plant - plant
-    price - price of that plant
-  
-  Returns:
-    An Html purchase button for the plant.
--}
-plantButton : Plant -> Html Msg
-plantButton plant =
-  Html.button 
-  [Events.onClick (BuyPlant plant)]
-  [Html.text ("Buy " ++ plant.name ++ " for " ++ (String.fromInt plant.price) ++ " Gold")]

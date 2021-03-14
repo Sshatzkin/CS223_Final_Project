@@ -23,8 +23,6 @@ import Plants exposing (Plant)
 import ViewHelpers as VH
 import Html
 
--- TODO FIGURE OUT HOW TO DO LOCAL STORAGE THANKS
-
 {-
   The main of the entire application
 -}
@@ -86,6 +84,7 @@ update msg model =
         ({model | frame = model.frame + 1, plants = P.agePlants model.plants }, Cmd.none)
 
       Click event ->
+      -- Called on every click
         let
           _ = Debug.log "Event" event.offsetPos
           (x, y) = event.offsetPos
@@ -95,19 +94,7 @@ update msg model =
 
       Reset -> 
       -- Called to reset player coins
-        ({ model | coins = 0}, Cmd.none )
-
-      BuyPlant p ->
-      -- Called by plant purchase buttons to initiate plant purchase
-        if (p.price > model.coins)
-        then
-          (model, Cmd.none)
-        else
-          ({ model | plants = (P.addPlant p model.plants), coins = model.coins - p.price}, Cmd.none)
-      
-      SellPlant index plant ->
-      -- Called when a plant is harvested
-        ({model | coins = model.coins + (P.value plant), plants = P.removePlant index model.plants}, Cmd.none) 
+        ({ model | coins = 0}, Cmd.none ) 
 
       AddCoins val ->
       -- Called to add or subtract a given value from the player's total money
@@ -120,14 +107,26 @@ update msg model =
       -- Called when we need a "NoOp"
         ( model, Cmd.none )
 
+{-
+  Takes a click and model, returns updated model (called by update on a click event)
+
+  Args:
+    x, y -> Click coordinates
+    model -> Current Model
+
+  Returns ->
+    new model 
+-}
 clickHandler : Float -> Float -> Model -> Model 
 clickHandler x y model =
+  -- First, check if anything was clicked
   case (clickedAnyButton x y model.page model.buttons) of 
     Nothing -> model
     Just btype -> 
       let
         _ = Debug.log "Clicked Button" btype
       in
+        -- If something was clicked, case the type of button
         case btype of 
           Plot ptype -> 
             case P.plotClicked model.plants ptype model.coins of
@@ -141,7 +140,6 @@ clickHandler x y model =
                   _ = Debug.log "Status" ((P.getPlant ptype plants), profit)
                 in
                   {model | plants = plants, coins = model.coins + profit}
-          _ -> model
 
 
 -- VIEW
@@ -166,4 +164,4 @@ gameView : Model -> Html Msg
 gameView model = 
   case model.page of
     Farm -> VH.displayFarm model
-    Store -> VH.displayStore model.coins
+    Store -> VH.displayFarm model

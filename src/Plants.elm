@@ -29,7 +29,11 @@ type PType
   | Pepper
 
 {-
-  Initial state of plants field in model
+  Initial state of plants in model
+
+  All plants are added at beginning of the game
+
+  The order of the plants here is the order in which they will appear in the game
 -}
 initPlants : List Plant
 initPlants = [corn, tomato, pumpkin, carrot, raddish, pepper]
@@ -62,7 +66,6 @@ newPlant ptype name p val matAge =
 {-
   We can define a list of plants here for quick use elsewhere
 -}
-
 corn : Plant
 corn = newPlant Corn "Corn" 1 3 300 
 
@@ -82,11 +85,25 @@ pepper : Plant
 pepper = newPlant Pepper "Pepper" 3000 5000 4000
 
 
--- GET / SET FUNCTIONS --
+---- GET / SET FUNCTIONS ----
+
+{-
+  Takes a plant identifier and a plant and returns True if this plant is of same type
+-}
 isType :  PType -> Plant -> Bool
 isType ptype plant =
   plant.ptype == ptype
 
+{-
+  Takes plant identifier and list of plants, returns correct plant
+
+  Args:
+    ptype -> Plant identifier
+    plants -> List of plants
+
+  Returns:
+    Plant with correct name
+-}
 getPlant : PType -> List Plant -> Plant
 getPlant ptype plants = 
   case List.filter (isType ptype) plants of
@@ -95,7 +112,16 @@ getPlant ptype plants =
     _::_ -> Debug.todo "THIS SHOULD NOT BE POSSIBLE"
 
 {-
-  Takes a plant name and a function that takes a plant and returns an a
+  Takes plant identifier and list of plants and a plant function, 
+    returns result of function applied to correct plant
+
+  Args:
+    func -> A function of type (Plant -> a), i.e. 'value' or 'isGrown'
+    ptype -> Plant identifier
+    plants -> List of plants
+
+  Returns:
+    Value of function applied to plant
 -}
 plantGet : (Plant -> a) -> PType -> List Plant -> a
 plantGet func ptype plants  =
@@ -103,7 +129,16 @@ plantGet func ptype plants  =
  
 
 {-
-  Takes a plant name and a function that alters that plant
+  Takes plant identifier and list of plants and a plant-altering function, 
+    returns list of plants with the correct modified plant
+
+  Args:
+    func -> A function of type (Plant -> Plant), i.e. 'resetAge' or 'upgradePlant'
+    ptype -> Plant identifier
+    plants -> List of plants
+
+  Returns:
+    List of plants with correct modification to specific plant
 -}
 plantSet : (Plant -> Plant) -> PType -> List Plant -> List Plant
 plantSet func ptype plants =
@@ -114,33 +149,44 @@ plantSet func ptype plants =
     else p)
   plants
 
+{-
+  Gets all the ptypes from a list of plants (used to initialize the buttons)
+-}
 getPTypes : List Plant -> List PType
 getPTypes plants =
   List.map (\ p -> p.ptype ) plants
+
 {-
-  Gets the value from a Plant object. 
+  Gets the value (without upgrades) from a Plant object. 
 -}
 value : Plant -> Int
 value p =
   p.value
 
-valueFromList : List Plant -> PType -> Int
-valueFromList plants ptype =
-  plantGet value ptype plants
-
+{-
+  Gets the value (with upgrades) from a Plant object
+-}
 harvestValue : Plant -> Int
 harvestValue p =
   p.value * p.quantity
 
+{-
+  Gets price of a plant
+-}
 price : Plant -> Int
 price p =
   p.price
 
-priceFromList : List Plant  -> PType -> Int
-priceFromList plants ptype =
-  plantGet price ptype plants
+{-
+  Checks if a given plant is fully grown
+-}
+isGrown : Plant -> Bool
+isGrown plant =
+  plant.countdown == 0
 
--- UPDATE FUNCTIONS -- 
+
+---- UPDATE FUNCTIONS ----
+
 {-
   Updates the age of a plant by one frame
   
@@ -169,50 +215,69 @@ agePlants : List Plant -> List Plant
 agePlants ps =
   List.map (\n -> agePlant n) ps
 
+{-
+  Resets the age of a plant (called when plant is harvested)
+-}
 resetAge : Plant -> Plant
 resetAge p =
   {p | countdown = p.matAge}
 
+{-
+  Switches plant between purchased and not (called when plant purchased)
+-}
 togglePurchase : Plant -> Plant
 togglePurchase p =
   {p | purchased = not p.purchased}
 
+{-
+  Defines the rate at which the price of an upgrade increases
+  
+  Args: 
+    lvl -> Current quantity of plant owned
+    oldPrice -> The price of the upgrade at the previous level
+  
+  Returns:
+    Price of the upgrade at the next level
+-}
 upgradeScale : Int -> Float -> Float
 upgradeScale lvl oldPrice =
   oldPrice * 1.10
 
+{-
+  Upgrades a specific plant
+  
+  Args: 
+    p - plant
+  
+  Returns:
+    Plants with upgrade executed 
+      (quantity increased, upgradePrice increased, other features executed)
+-}
 upgradePlant : Plant -> Plant
 upgradePlant p =
   let
     level = p.quantity
   in
     case (modBy 10 level) of
+      -- Every 10 levels of upgrade, decrease grow time by 0.75 (you can change these numbers)
        0 -> {p | quantity = level + 1, upgradePrice = upgradeScale level p.upgradePrice, matAge = round ((toFloat p.matAge) * 0.75)}
        _ -> {p | quantity = level + 1, upgradePrice = upgradeScale level p.upgradePrice}
 
 {-
-  Adds a plant to a list of plants
+  Responds to clicking on a plot -> 
+    Either attempts to purchase or attempts to harvest
   
   Args: 
-    p - plant
-    ps - plant list
+    plants - List of plants in model
+    ptype - Name of plant in the plot that was clicked
+    coins - Current coins that the player has 
   
   Returns:
-    Plants with the new plant appended
+    If plot can be purchased -> Just (updated plants, - purchase price)
+    If plot can be harvested -> Just (updated plants, harvest value)
+    Else -> Nothing
 -}
-addPlant : Plant -> List Plant -> List Plant
-addPlant p ps =
-  p::ps
-
-removePlant : Int -> List Plant -> List Plant
-removePlant i ps =
-  List.append (List.take i ps) (List.drop (i+1) ps)
-
-isGrown : Plant -> Bool
-isGrown plant =
-  plant.countdown == 0
-
-plotClicked : List Plant -> PType -> Int -> Maybe ((List Plant), Int)
+plotClicked : List Plant -> PType -> Int -> Maybe (List Plant, Int)
 plotClicked plants ptype coins =
   let
     plant = getPlant ptype plants
@@ -227,6 +292,20 @@ plotClicked plants ptype coins =
       then Just (plantSet togglePurchase ptype plants, -plant.price)
       else Nothing
 
+
+{-
+  Responds to clicking on an upgrade button -> 
+    Attempts to purchase upgrade
+  
+  Args: 
+    plants - List of plants in model
+    ptype - Name of plant in the plot that was clicked
+    coins - Current coins that the player has 
+  
+  Returns:
+    If upgrade can be purchased -> Just (updated plants, - purchase price)
+    Else -> Nothing
+-}
 upgradeClicked : List Plant -> PType -> Int -> Maybe ((List Plant), Int)
 upgradeClicked plants ptype coins =
   let
