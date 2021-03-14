@@ -14,9 +14,11 @@ import Html.Events.Extra.Mouse as Mouse
 -- Our Libraries
 import Window exposing (Window)
 import Msg exposing (Msg(..))
+import Model exposing (Model)
 import Page exposing (Page(..))
 import Plants as P
-import Plants exposing (Plant)
+import Plants exposing (Plant, PType (..))
+import Button exposing (BType (..), Button, Buttons, getButtonPage)
 
 
 
@@ -33,28 +35,21 @@ import Plants exposing (Plant)
   Returns:
     An Html view of the farm page
 -}
-displayFarm : Float -> Window -> Int -> List (Plant) -> Html Msg
-displayFarm frame w coins plants =
-  div
-  []
-  [ Canvas.toHtml (truncate w.width, truncate w.height) 
-    [Mouse.onClick Click]
-    ((displayFarmText w coins) ++ (renderPlants frame w plants))
-  , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
-  ]
-    
-{-
-  Html.div
-    [ id "farm"]  -- The div's name is "farm"
-    [ Html.span 
-      []
-      [ text "Welcome to Mr. Chickie's Farm! Grow plants and harvest them to earn money."
-      , text ("Coins: " ++ String.fromInt coins)
-      ]
-    , plantsView plants
+displayFarm : Model -> Html Msg
+displayFarm m =
+  let
+    frame = m.frame
+    w = m.window
+    coins = m.coins
+    plants = m.plants
+  in
+    div
+    []
+    [ Canvas.toHtml (truncate w.width, truncate w.height) 
+      [Mouse.onClick Click]
+      ((displayFarmText w coins) ++ (renderButtons m))
     , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
     ]
--}
 
 
 {-
@@ -79,48 +74,55 @@ displayFarmText w coins =
            (" Coins = " ++ String.fromInt coins)
   ]
 
+  
+clearScreen : Window -> Canvas.Renderable
+clearScreen w =
+  shapes [ fill Color.white ] [ rect ( 0, 0 ) w.width w.height]
+
 {-
-  Produces the image of a single plant as a Canvas Renderable
+  Produces the image of a single plot as a Canvas Renderable
   Args:
-    w -- current window in the model
+    b -- current button
     p -- Plant
   Output:
     Canvas.Renderable
 -}
-renderPlant : Float -> Window -> Plant -> Canvas.Renderable
-renderPlant frame w p = 
-  let rotation = degrees ((toFloat (p.matAge - p.countdown)) * 0.1)
-  in
-  
-  shapes [ transform [ translate (w.width / 2) (w.height / 2)
-                     , rotate rotation
-                     , translate (-w.width / 2) (-w.height / 2)
-                     ]
-         , fill (Color.yellow)
-         , align Center ]
-         [ rect (w.width / 2, w.height / 2) 100 100]
-  
-  {-
-  shapes [ fill Color.yellow , align Center ]
-         [ rect (w.width / 2, w.height / 2) (toFloat (p.matAge - p.countdown)) (toFloat (p.matAge - p.countdown))]
-  -}
-  {-
-  case p.name of
-    "Corn" -> shapes [ fill Color.yellow ] [ rect ( w.width / 3, w.height / 3 ) 100 100 ]
-    _ -> shapes [ fill Color.orange ] [ rect ( w.width - (w.width / 3), w.height / 3 ) 100 100 ]
-  -}
+renderPlot : Button -> Plant -> Canvas.Renderable
+renderPlot b p = 
+  case p.ptype of
+    Corn -> shapes [ fill Color.yellow ] [ rect ( b.x, b.y ) b.width b.height ]
+    Tomato -> shapes [ fill Color.red ] [ rect ( b.x, b.y ) b.width b.height ]
+    Pumpkin -> shapes [ fill Color.orange ] [ rect ( b.x, b.y ) b.width b.height ]
+    Carrot -> shapes [ fill Color.orange ] [ rect ( b.x, b.y ) b.width b.height ]
 
 {-
   Converts a list of plants into a list of Canvas Renderables
 -}
+renderPlots : List Button -> List Plant -> List (Canvas.Renderable)
+renderPlots buttons ps =
+  let
+    foo b =
+      case b.btype of
+        Plot ptype -> 
+          case (P.getPlant ptype ps) of
+            Nothing -> Debug.todo "Could not find plant to render"
+            Just p -> renderPlot b p
+        _ -> Debug.todo "This case should not occur"
+  in
+    List.map foo buttons
 
-clearScreen : Window -> Canvas.Renderable
-clearScreen w =
-  shapes [ fill Color.white ] [ rect ( 0, 0 ) w.width w.height]
-renderPlants : Float -> Window -> List (Plant) -> List (Canvas.Renderable)
-renderPlants frame w ps = 
-  List.map (renderPlant frame w) ps
-
+renderButtons : Model -> List (Canvas.Renderable)
+renderButtons m =
+  let
+    buttonPage = (getButtonPage m.page m.buttons)
+  in
+    renderPlots 
+      (List.filter 
+        (\ b -> case b.btype of 
+                  Plot _ -> True 
+                  _ -> False) 
+        buttonPage) 
+      m.plants
 
 
 

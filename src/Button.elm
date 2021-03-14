@@ -1,6 +1,6 @@
 module Button exposing (
     Button, Buttons, BType (..)
-    , initialButtons, clickedAnyButton)
+    , initialButtons, clickedAnyButton, getButtonPage)
 
 import Page exposing (Page(..))
 import Plants exposing (Plant, PType, getPTypes)
@@ -26,7 +26,7 @@ type alias ButtonPage =
 type alias Buttons =
   List ButtonPage
 
---
+-- Makes a new button
 newButton : Float -> Float -> Float -> Float -> BType -> Button
 newButton x y width height btype =
   { x = x
@@ -36,20 +36,28 @@ newButton x y width height btype =
   , btype = btype
   }
 
+-- Generates the plant plot buttons
 plotButtons : Float -> Float -> List PType -> List Button
-plotButtons width height plants =
+plotButtons width height ptypes =
   let
+    numPlotsPerRow = 4
+    plotwidth = 100
+    plotheight = 100
+    widthMult = (width / numPlotsPerRow)
+    startShift = (widthMult - plotwidth) / 2 
+
     makePlot : Int -> PType -> Button
     makePlot i p =
       newButton 
-        (toFloat ((i * 200) + 5)) 
-        (toFloat (i * 0))
-        (toFloat (150)) 
-        (toFloat (150)) 
+        (((toFloat i) * widthMult) + startShift) 
+        (height/2)
+        (toFloat (plotwidth)) 
+        (toFloat (plotheight)) 
         (Plot p)
   in
-    List.indexedMap makePlot plants
+    List.indexedMap makePlot ptypes
 
+-- Generates all buttons on the farm page (plot buttons and menu buttons)
 farmButtons : Float -> Float -> List PType -> ButtonPage
 farmButtons width height plants = 
   { page = Farm , buttons = (plotButtons width height plants)}
@@ -63,6 +71,12 @@ initialButtons width height plants =
 
 
 ---- Button Handling Functions
+getButtonPage : Page -> Buttons -> List Button
+getButtonPage page bpages =
+  List.concat 
+    <| List.filterMap (\ bpage -> if (bpage.page == page) then (Just bpage.buttons) else Nothing) bpages
+ 
+
 clickedButton : Float -> Float -> Button -> Maybe BType
 clickedButton x y button =
   if (x > button.x) && (x < (button.x + button.width)) && (y > button.y) && (y < (button.y + button.height))
@@ -72,9 +86,7 @@ clickedButton x y button =
 clickedAnyButton : Float -> Float -> Page -> Buttons -> Maybe BType
 clickedAnyButton x y page bpages =
   let
-    buttons = 
-      List.concat 
-        <| List.filterMap (\ bpage -> if (bpage.page == page) then (Just bpage.buttons) else Nothing) bpages
+    buttons = getButtonPage page bpages
     btypes = List.filterMap (clickedButton x y) buttons
   in
     case btypes of

@@ -5170,18 +5170,23 @@ var $author$project$Button$newButton = F5(
 		return {btype: btype, height: height, width: width, x: x, y: y};
 	});
 var $author$project$Button$plotButtons = F3(
-	function (width, height, plants) {
+	function (width, height, ptypes) {
+		var plotwidth = 100;
+		var plotheight = 100;
+		var numPlotsPerRow = 4;
+		var widthMult = width / numPlotsPerRow;
+		var startShift = (widthMult - plotwidth) / 2;
 		var makePlot = F2(
 			function (i, p) {
 				return A5(
 					$author$project$Button$newButton,
-					(i * 200) + 5,
-					i * 0,
-					150,
-					150,
+					(i * widthMult) + startShift,
+					height / 2,
+					plotwidth,
+					plotheight,
 					$author$project$Button$Plot(p));
 			});
-		return A2($elm$core$List$indexedMap, makePlot, plants);
+		return A2($elm$core$List$indexedMap, makePlot, ptypes);
 	});
 var $author$project$Button$farmButtons = F3(
 	function (width, height, plants) {
@@ -5831,16 +5836,20 @@ var $elm$core$List$append = F2(
 var $elm$core$List$concat = function (lists) {
 	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
 };
-var $elm$core$Debug$todo = _Debug_todo;
-var $author$project$Button$clickedAnyButton = F4(
-	function (x, y, page, bpages) {
-		var buttons = $elm$core$List$concat(
+var $author$project$Button$getButtonPage = F2(
+	function (page, bpages) {
+		return $elm$core$List$concat(
 			A2(
 				$elm$core$List$filterMap,
 				function (bpage) {
 					return _Utils_eq(bpage.page, page) ? $elm$core$Maybe$Just(bpage.buttons) : $elm$core$Maybe$Nothing;
 				},
 				bpages));
+	});
+var $elm$core$Debug$todo = _Debug_todo;
+var $author$project$Button$clickedAnyButton = F4(
+	function (x, y, page, bpages) {
+		var buttons = A2($author$project$Button$getButtonPage, page, bpages);
 		var btypes = A2(
 			$elm$core$List$filterMap,
 			A2($author$project$Button$clickedButton, x, y),
@@ -5855,8 +5864,8 @@ var $author$project$Button$clickedAnyButton = F4(
 				return _Debug_todo(
 					'Button',
 					{
-						start: {line: 83, column: 12},
-						end: {line: 83, column: 22}
+						start: {line: 95, column: 12},
+						end: {line: 95, column: 22}
 					})('TWO OR MORE BUTTONS WERE CLICKED THIS SHOULD NOT HAPPEN');
 			}
 		}
@@ -6561,10 +6570,6 @@ var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions = F3(
 				$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$eventDecoder));
 	});
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onClick = A2($mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions, 'click', $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$defaultOptions);
-var $elm$core$Basics$pi = _Basics_pi;
-var $elm$core$Basics$degrees = function (angleInDegrees) {
-	return (angleInDegrees * $elm$core$Basics$pi) / 180;
-};
 var $joakin$elm_canvas$Canvas$Internal$Canvas$SettingDrawOp = function (a) {
 	return {$: 'SettingDrawOp', a: a};
 };
@@ -6572,9 +6577,11 @@ var $joakin$elm_canvas$Canvas$Settings$fill = function (color) {
 	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingDrawOp(
 		$joakin$elm_canvas$Canvas$Internal$Canvas$Fill(color));
 };
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
+var $avh4$elm_color$Color$RgbaSpace = F4(
+	function (a, b, c, d) {
+		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
+	});
+var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
 var $joakin$elm_canvas$Canvas$Internal$Canvas$Rect = F3(
 	function (a, b, c) {
 		return {$: 'Rect', a: a, b: b, c: c};
@@ -6583,10 +6590,7 @@ var $joakin$elm_canvas$Canvas$rect = F3(
 	function (pos, width, height) {
 		return A3($joakin$elm_canvas$Canvas$Internal$Canvas$Rect, pos, width, height);
 	});
-var $joakin$elm_canvas$Canvas$Settings$Advanced$Rotate = function (a) {
-	return {$: 'Rotate', a: a};
-};
-var $joakin$elm_canvas$Canvas$Settings$Advanced$rotate = $joakin$elm_canvas$Canvas$Settings$Advanced$Rotate;
+var $avh4$elm_color$Color$red = A4($avh4$elm_color$Color$RgbaSpace, 204 / 255, 0 / 255, 0 / 255, 1.0);
 var $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableShapes = function (a) {
 	return {$: 'DrawableShapes', a: a};
 };
@@ -6602,10 +6606,123 @@ var $joakin$elm_canvas$Canvas$shapes = F2(
 					drawable: $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableShapes(ss)
 				}));
 	});
-var $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommands = function (a) {
-	return {$: 'SettingCommands', a: a};
+var $avh4$elm_color$Color$yellow = A4($avh4$elm_color$Color$RgbaSpace, 237 / 255, 212 / 255, 0 / 255, 1.0);
+var $author$project$ViewHelpers$renderPlot = F2(
+	function (b, p) {
+		var _v0 = p.ptype;
+		switch (_v0.$) {
+			case 'Corn':
+				return A2(
+					$joakin$elm_canvas$Canvas$shapes,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$yellow)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$joakin$elm_canvas$Canvas$rect,
+							_Utils_Tuple2(b.x, b.y),
+							b.width,
+							b.height)
+						]));
+			case 'Tomato':
+				return A2(
+					$joakin$elm_canvas$Canvas$shapes,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$red)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$joakin$elm_canvas$Canvas$rect,
+							_Utils_Tuple2(b.x, b.y),
+							b.width,
+							b.height)
+						]));
+			case 'Pumpkin':
+				return A2(
+					$joakin$elm_canvas$Canvas$shapes,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$orange)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$joakin$elm_canvas$Canvas$rect,
+							_Utils_Tuple2(b.x, b.y),
+							b.width,
+							b.height)
+						]));
+			default:
+				return A2(
+					$joakin$elm_canvas$Canvas$shapes,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$orange)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$joakin$elm_canvas$Canvas$rect,
+							_Utils_Tuple2(b.x, b.y),
+							b.width,
+							b.height)
+						]));
+		}
+	});
+var $author$project$ViewHelpers$renderPlots = F2(
+	function (buttons, ps) {
+		var foo = function (b) {
+			var _v0 = b.btype;
+			if (_v0.$ === 'Plot') {
+				var ptype = _v0.a;
+				var _v1 = A2($author$project$Plants$getPlant, ptype, ps);
+				if (_v1.$ === 'Nothing') {
+					return _Debug_todo(
+						'ViewHelpers',
+						{
+							start: {line: 108, column: 24},
+							end: {line: 108, column: 34}
+						})('Could not find plant to render');
+				} else {
+					var p = _v1.a;
+					return A2($author$project$ViewHelpers$renderPlot, b, p);
+				}
+			} else {
+				return _Debug_todo(
+					'ViewHelpers',
+					{
+						start: {line: 110, column: 14},
+						end: {line: 110, column: 24}
+					})('This case should not occur');
+			}
+		};
+		return A2($elm$core$List$map, foo, buttons);
+	});
+var $author$project$ViewHelpers$renderButtons = function (m) {
+	var buttonPage = A2($author$project$Button$getButtonPage, m.page, m.buttons);
+	return A2(
+		$author$project$ViewHelpers$renderPlots,
+		A2(
+			$elm$core$List$filter,
+			function (b) {
+				var _v0 = b.btype;
+				if (_v0.$ === 'Plot') {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			buttonPage),
+		m.plants);
 };
-var $elm$json$Json$Encode$float = _Json_wrap;
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$canvas = _VirtualDom_node('canvas');
+var $joakin$elm_canvas$Canvas$cnvs = A2($elm$html$Html$canvas, _List_Nil, _List_Nil);
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
 		return _Json_wrap(
@@ -6615,144 +6732,6 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn = F2(
-	function (name, args) {
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'type',
-					$elm$json$Json$Encode$string('function')),
-					_Utils_Tuple2(
-					'name',
-					$elm$json$Json$Encode$string(name)),
-					_Utils_Tuple2(
-					'args',
-					A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, args))
-				]));
-	});
-var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$rotate = function (angle) {
-	return A2(
-		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
-		'rotate',
-		_List_fromArray(
-			[
-				$elm$json$Json$Encode$float(angle)
-			]));
-};
-var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$scale = F2(
-	function (x, y) {
-		return A2(
-			$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
-			'scale',
-			_List_fromArray(
-				[
-					$elm$json$Json$Encode$float(x),
-					$elm$json$Json$Encode$float(y)
-				]));
-	});
-var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$transform = F6(
-	function (a, b, c, d, e, f) {
-		return A2(
-			$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
-			'transform',
-			_List_fromArray(
-				[
-					$elm$json$Json$Encode$float(a),
-					$elm$json$Json$Encode$float(b),
-					$elm$json$Json$Encode$float(c),
-					$elm$json$Json$Encode$float(d),
-					$elm$json$Json$Encode$float(e),
-					$elm$json$Json$Encode$float(f)
-				]));
-	});
-var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$translate = F2(
-	function (x, y) {
-		return A2(
-			$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
-			'translate',
-			_List_fromArray(
-				[
-					$elm$json$Json$Encode$float(x),
-					$elm$json$Json$Encode$float(y)
-				]));
-	});
-var $joakin$elm_canvas$Canvas$Settings$Advanced$transform = function (transforms) {
-	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommands(
-		A2(
-			$elm$core$List$map,
-			function (t) {
-				switch (t.$) {
-					case 'Rotate':
-						var angle = t.a;
-						return $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$rotate(angle);
-					case 'Scale':
-						var x = t.a;
-						var y = t.b;
-						return A2($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$scale, x, y);
-					case 'Translate':
-						var x = t.a;
-						var y = t.b;
-						return A2($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$translate, x, y);
-					default:
-						var m11 = t.a.m11;
-						var m12 = t.a.m12;
-						var m21 = t.a.m21;
-						var m22 = t.a.m22;
-						var dx = t.a.dx;
-						var dy = t.a.dy;
-						return A6($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$transform, m11, m12, m21, m22, dx, dy);
-				}
-			},
-			transforms));
-};
-var $joakin$elm_canvas$Canvas$Settings$Advanced$Translate = F2(
-	function (a, b) {
-		return {$: 'Translate', a: a, b: b};
-	});
-var $joakin$elm_canvas$Canvas$Settings$Advanced$translate = $joakin$elm_canvas$Canvas$Settings$Advanced$Translate;
-var $avh4$elm_color$Color$RgbaSpace = F4(
-	function (a, b, c, d) {
-		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
-	});
-var $avh4$elm_color$Color$yellow = A4($avh4$elm_color$Color$RgbaSpace, 237 / 255, 212 / 255, 0 / 255, 1.0);
-var $author$project$ViewHelpers$renderPlant = F3(
-	function (frame, w, p) {
-		var rotation = $elm$core$Basics$degrees((p.matAge - p.countdown) * 0.1);
-		return A2(
-			$joakin$elm_canvas$Canvas$shapes,
-			_List_fromArray(
-				[
-					$joakin$elm_canvas$Canvas$Settings$Advanced$transform(
-					_List_fromArray(
-						[
-							A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, w.width / 2, w.height / 2),
-							$joakin$elm_canvas$Canvas$Settings$Advanced$rotate(rotation),
-							A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, (-w.width) / 2, (-w.height) / 2)
-						])),
-					$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$yellow),
-					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
-				]),
-			_List_fromArray(
-				[
-					A3(
-					$joakin$elm_canvas$Canvas$rect,
-					_Utils_Tuple2(w.width / 2, w.height / 2),
-					100,
-					100)
-				]));
-	});
-var $author$project$ViewHelpers$renderPlants = F3(
-	function (frame, w, ps) {
-		return A2(
-			$elm$core$List$map,
-			A2($author$project$ViewHelpers$renderPlant, frame, w),
-			ps);
-	});
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$canvas = _VirtualDom_node('canvas');
-var $joakin$elm_canvas$Canvas$cnvs = A2($elm$html$Html$canvas, _List_Nil, _List_Nil);
 var $elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
 		return A2(
@@ -6779,7 +6758,24 @@ var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
 };
 var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$empty = _List_Nil;
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn = F2(
+	function (name, args) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'type',
+					$elm$json$Json$Encode$string('function')),
+					_Utils_Tuple2(
+					'name',
+					$elm$json$Json$Encode$string(name)),
+					_Utils_Tuple2(
+					'args',
+					A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, args))
+				]));
+	});
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$beginPath = A2($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn, 'beginPath', _List_Nil);
+var $elm$json$Json$Encode$float = _Json_wrap;
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$clearRect = F4(
 	function (x, y, width, height) {
 		return A2(
@@ -6818,6 +6814,7 @@ var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$arc = F6(
 					$elm$json$Json$Encode$bool(anticlockwise)
 				]));
 	});
+var $elm$core$Basics$pi = _Basics_pi;
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$circle = F3(
 	function (x, y, r) {
 		return A6($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$arc, x, y, r, 0, 2 * $elm$core$Basics$pi, false);
@@ -7431,36 +7428,39 @@ var $joakin$elm_canvas$Canvas$toHtml = F3(
 			entities);
 	});
 var $elm$core$Basics$truncate = _Basics_truncate;
-var $author$project$ViewHelpers$displayFarm = F4(
-	function (frame, w, coins, plants) {
-		return A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A3(
-					$joakin$elm_canvas$Canvas$toHtml,
-					_Utils_Tuple2(w.width | 0, w.height | 0),
-					_List_fromArray(
-						[
-							$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onClick($author$project$Msg$Click)
-						]),
-					_Utils_ap(
-						A2($author$project$ViewHelpers$displayFarmText, w, coins),
-						A3($author$project$ViewHelpers$renderPlants, frame, w, plants))),
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							$author$project$Msg$ChangePage($author$project$Page$Store))
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Go to Store')
-						]))
-				]));
-	});
+var $author$project$ViewHelpers$displayFarm = function (m) {
+	var w = m.window;
+	var plants = m.plants;
+	var frame = m.frame;
+	var coins = m.coins;
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A3(
+				$joakin$elm_canvas$Canvas$toHtml,
+				_Utils_Tuple2(w.width | 0, w.height | 0),
+				_List_fromArray(
+					[
+						$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onClick($author$project$Msg$Click)
+					]),
+				_Utils_ap(
+					A2($author$project$ViewHelpers$displayFarmText, w, coins),
+					$author$project$ViewHelpers$renderButtons(m))),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Msg$ChangePage($author$project$Page$Store))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Go to Store')
+					]))
+			]));
+};
 var $author$project$Msg$AddCoins = function (a) {
 	return {$: 'AddCoins', a: a};
 };
@@ -7530,7 +7530,7 @@ var $author$project$ViewHelpers$displayStore = function (coins) {
 var $author$project$Main$gameView = function (model) {
 	var _v0 = model.page;
 	if (_v0.$ === 'Farm') {
-		return A4($author$project$ViewHelpers$displayFarm, model.frame, model.window, model.coins, model.plants);
+		return $author$project$ViewHelpers$displayFarm(model);
 	} else {
 		return $author$project$ViewHelpers$displayStore(model.coins);
 	}
