@@ -4,6 +4,7 @@ module Button exposing (
 
 import Page exposing (Page(..))
 import Plants exposing (Plant, PType, getPTypes)
+import List
 
 type BType 
   = Plot PType
@@ -40,22 +41,40 @@ newButton x y width height btype =
 plotButtons : Float -> Float -> List PType -> List Button
 plotButtons width height ptypes =
   let
-    numPlotsPerRow = 4
+    numPlotsPerRow = 3
+    numRows = 2
     plotwidth = 100
     plotheight = 100
+    upgradeHeight = 20
     widthMult = (width / numPlotsPerRow)
-    startShift = (widthMult - plotwidth) / 2 
+    xShift = (widthMult - plotwidth) / 2 
+    yShift = height / 4
+
+    heightMult = (height - yShift) / (toFloat numRows)
+    _ = Debug.log "Height" heightMult
 
     makePlot : Int -> PType -> Button
     makePlot i p =
       newButton 
-        (((toFloat i) * widthMult) + startShift) 
-        (height/2)
+        (((toFloat (modBy numPlotsPerRow i)) * widthMult) + xShift) 
+        ((heightMult) * (toFloat (i // numPlotsPerRow)) + yShift)
         (toFloat (plotwidth)) 
         (toFloat (plotheight)) 
         (Plot p)
+    
+    makeUpgrade : Int -> PType -> Button
+    makeUpgrade i p =
+      newButton
+        (((toFloat (modBy numPlotsPerRow i)) * widthMult) + xShift) 
+        ((heightMult) * (toFloat (i // numPlotsPerRow)) + yShift + plotheight + 5)
+        (toFloat (plotwidth)) 
+        (toFloat (upgradeHeight)) 
+        (Upgrade p)
+
+    makeButtons i p =
+      [makePlot i p, makeUpgrade i p]
   in
-    List.indexedMap makePlot ptypes
+    List.concat (List.indexedMap makeButtons ptypes)
 
 -- Generates all buttons on the farm page (plot buttons and menu buttons)
 farmButtons : Float -> Float -> List PType -> ButtonPage

@@ -130,9 +130,17 @@ clickHandler x y model =
       in
         case btype of 
           Plot ptype -> 
-            case P.plotClicked model.plants ptype of
+            case P.plotClicked model.plants ptype model.coins of
               Nothing -> model
               Just (plants, profit) -> {model | plants = plants, coins = model.coins + profit}
+          Upgrade ptype ->
+            case P.upgradeClicked model.plants ptype model.coins of
+               Nothing -> model
+               Just (plants, profit) -> 
+                let
+                  _ = Debug.log "Status" ((P.getPlant ptype plants), profit)
+                in
+                  {model | plants = plants, coins = model.coins + profit}
           _ -> model
 
 
@@ -148,7 +156,7 @@ view model =
     [ gameView model
     , Html.span 
           [ id "frameRate"] 
-          [ text ("Frame: " ++ String.fromFloat model.frame)]
+          [ text ("Time: " ++ VH.frameToTime model.frame)]--("Frame: " ++ String.fromFloat model.frame)]
     ]
 
 {-

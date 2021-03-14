@@ -15,6 +15,9 @@ type alias Plant =
   , countdown : Int --The countdown until the plant is mature
   , matAge : Int --The age at which the plant is ready to harvest
   , ptype : PType -- The PlantType!
+  , purchased : Bool
+  , quantity : Int
+  , upgradePrice : Float
   }
 
 type PType 
@@ -22,12 +25,14 @@ type PType
   | Tomato
   | Pumpkin
   | Carrot
+  | Raddish
+  | Pepper
 
 {-
   Initial state of plants field in model
 -}
 initPlants : List Plant
-initPlants = [corn, tomato, pumpkin, carrot]
+initPlants = [corn, tomato, pumpkin, carrot, raddish, pepper]
 
 {-
   Creates a new plant 
@@ -48,6 +53,9 @@ newPlant ptype name p val matAge =
   , countdown = matAge
   , matAge = matAge
   , ptype = ptype
+  , purchased = False -- Initialized to False
+  , quantity = 1 -- Initialized to 0
+  , upgradePrice = upgradeScale 0 (toFloat p)
   }
 
 -- PLANTS LIST --
@@ -56,7 +64,7 @@ newPlant ptype name p val matAge =
 -}
 
 corn : Plant
-corn = newPlant Corn "Corn" 1 3 400 
+corn = newPlant Corn "Corn" 1 3 300 
 
 tomato : Plant
 tomato = newPlant Tomato "Tomato" 3 5 600
@@ -65,9 +73,13 @@ pumpkin : Plant
 pumpkin = newPlant Pumpkin "Pumpkin" 5 10 1500
 
 carrot : Plant
-carrot = newPlant Carrot "Carrot" 10 20 2000
+carrot = newPlant Carrot "Carrot" 10 20 1700
 
+raddish : Plant
+raddish = newPlant Raddish "Raddish" 100 300 2200
 
+pepper : Plant
+pepper = newPlant Pepper "Pepper" 3000 5000 4000
 
 
 -- GET / SET FUNCTIONS --
@@ -75,11 +87,11 @@ isType :  PType -> Plant -> Bool
 isType ptype plant =
   plant.ptype == ptype
 
-getPlant : PType -> List Plant -> Maybe Plant
+getPlant : PType -> List Plant -> Plant
 getPlant ptype plants = 
   case List.filter (isType ptype) plants of
-    [] -> Nothing
-    hd::[] -> Just hd
+    [] -> Debug.todo "Why can't this find the plant?"
+    hd::[] -> hd
     _::_ -> Debug.todo "THIS SHOULD NOT BE POSSIBLE"
 
 {-
@@ -87,9 +99,8 @@ getPlant ptype plants =
 -}
 plantGet : (Plant -> a) -> PType -> List Plant -> a
 plantGet func ptype plants  =
-  case getPlant ptype plants of
-    Nothing -> Debug.todo "Cannot apply function - plant not in list"
-    Just plant -> func plant
+  func (getPlant ptype plants)
+ 
 
 {-
   Takes a plant name and a function that alters that plant
@@ -117,6 +128,10 @@ valueFromList : List Plant -> PType -> Int
 valueFromList plants ptype =
   plantGet value ptype plants
 
+harvestValue : Plant -> Int
+harvestValue p =
+  p.value * p.quantity
+
 price : Plant -> Int
 price p =
   p.price
@@ -137,7 +152,9 @@ priceFromList plants ptype =
 -}
 agePlant : Plant -> Plant
 agePlant p =
-  {p | countdown = max (p.countdown - 1) 0}
+  if p.purchased
+  then {p | countdown = max (p.countdown - 1) 0}
+  else p
 
 {-
   Updates the age of a list of plants
@@ -155,6 +172,23 @@ agePlants ps =
 resetAge : Plant -> Plant
 resetAge p =
   {p | countdown = p.matAge}
+
+togglePurchase : Plant -> Plant
+togglePurchase p =
+  {p | purchased = not p.purchased}
+
+upgradeScale : Int -> Float -> Float
+upgradeScale lvl oldPrice =
+  oldPrice * 1.10
+
+upgradePlant : Plant -> Plant
+upgradePlant p =
+  let
+    level = p.quantity
+  in
+    case (modBy 10 level) of
+       0 -> {p | quantity = level + 1, upgradePrice = upgradeScale level p.upgradePrice, matAge = round ((toFloat p.matAge) * 0.75)}
+       _ -> {p | quantity = level + 1, upgradePrice = upgradeScale level p.upgradePrice}
 
 {-
   Adds a plant to a list of plants
@@ -178,11 +212,31 @@ isGrown : Plant -> Bool
 isGrown plant =
   plant.countdown == 0
 
-plotClicked : List Plant -> PType -> Maybe ((List Plant), Int)
-plotClicked plants ptype =
+plotClicked : List Plant -> PType -> Int -> Maybe ((List Plant), Int)
+plotClicked plants ptype coins =
   let
-    pvalue = valueFromList plants ptype
+    plant = getPlant ptype plants
   in
-    if (plantGet isGrown ptype plants)
-    then Just (plantSet resetAge ptype plants, pvalue)
+    if (plant.purchased)
+    then
+      if (isGrown plant)
+      then Just (plantSet resetAge ptype plants, harvestValue plant)
+      else Nothing
+    else
+      if (coins > plant.price)
+      then Just (plantSet togglePurchase ptype plants, -plant.price)
+      else Nothing
+
+upgradeClicked : List Plant -> PType -> Int -> Maybe ((List Plant), Int)
+upgradeClicked plants ptype coins =
+  let
+    plant = getPlant ptype plants
+  in
+    if (plant.purchased)
+    then
+      if (coins > (round plant.upgradePrice))
+      then Just (plantSet upgradePlant ptype plants, -(round plant.upgradePrice))
+      else Nothing
     else Nothing
+      
+

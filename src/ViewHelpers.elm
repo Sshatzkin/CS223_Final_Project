@@ -19,8 +19,30 @@ import Page exposing (Page(..))
 import Plants as P
 import Plants exposing (Plant, PType (..))
 import Button exposing (BType (..), Button, Buttons, getButtonPage)
+import String exposing (fromFloat)
+import String exposing (fromInt)
 
-
+---- Small Helpers ----
+frameToTime : Float -> String
+frameToTime count =
+  let
+    seconds = (round count) // 60
+    secString = 
+      if ((modBy 60 seconds) < 10)
+      then "0" ++ fromInt seconds
+      else fromInt (modBy 60 seconds)
+    mins = seconds // 60
+    minString = 
+      if (mins < 10)
+      then "0" ++ fromInt mins
+      else fromInt (modBy 60 mins)
+    hours = mins // 60
+    hourString = 
+      if (hours < 10)
+      then "0" ++ fromInt hours
+      else fromInt hours
+  in
+    hourString ++ ":" ++ minString ++ ":" ++ secString
 
 ---- Farm Display with Canvas----
 -- DISPLAY FUNCTIONS -- 
@@ -48,7 +70,7 @@ displayFarm m =
     [ Canvas.toHtml (truncate w.width, truncate w.height) 
       [Mouse.onClick Click]
       ((renderBG m)::(displayFarmText w coins) ++ (renderButtons m))
-    , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
+    --, Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
     ]
 
 
@@ -78,7 +100,7 @@ displayFarmText w coins =
            ( w.width / 2, w.height / 6 )
            " Grow plants and harvest them to earn money. "
   , text [ font { size = 24, family = "monospace" }, align Center ]
-           ( w.width / 2, w.height - (w.height / 10 ))
+           ( w.width / 2, w.height - (10))
            (" Coins = " ++ String.fromInt coins)
   ]
 
@@ -93,28 +115,44 @@ displayFarmText w coins =
 -}
 renderPlot : Button -> Plant -> Canvas.Renderable
 renderPlot b p = 
-  let
-    color = case p.ptype of
-      Corn -> Color.yellow
-      Tomato -> Color.red
-      Pumpkin -> Color.orange
-      Carrot -> Color.orange
-    fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
-  in
-    shapes [ fill color ] [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height * fillPercent) ]
+  if p.purchased
+  then
+      let
+        color = case p.ptype of
+          Corn -> Color.yellow
+          Tomato -> Color.red
+          Pumpkin -> Color.orange
+          Carrot -> Color.orange
+          Raddish -> Color.purple
+          Pepper ->
+            case (modBy 3 (p.quantity - 1)) of
+               0 -> Color.green
+               1 -> Color.orange
+               2 -> Color.red
+               _ -> Color.green
+        fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
+      in
+        shapes [ fill color ] [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height * fillPercent) ]
+    else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
+
+renderUpgrade : Button -> Plant -> Canvas.Renderable
+renderUpgrade b p = 
+  if p.purchased
+  then shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width b.height]
+  else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
 
 {-
   Converts a list of plants into a list of Canvas Renderables
 -}
-renderPlots : List Button -> List Plant -> List (Canvas.Renderable)
-renderPlots buttons ps =
+renderButtonList : List Button -> List Plant -> List (Canvas.Renderable)
+renderButtonList buttons ps =
   let
     foo b =
       case b.btype of
         Plot ptype -> 
-          case (P.getPlant ptype ps) of
-            Nothing -> Debug.todo "Could not find plant to render"
-            Just p -> renderPlot b p
+          renderPlot b (P.getPlant ptype ps)
+        Upgrade ptype -> 
+          renderUpgrade b (P.getPlant ptype ps)
         _ -> Debug.todo "This case should not occur"
   in
     List.map foo buttons
@@ -124,13 +162,7 @@ renderButtons m =
   let
     buttonPage = (getButtonPage m.page m.buttons)
   in
-    renderPlots 
-      (List.filter 
-        (\ b -> case b.btype of 
-                  Plot _ -> True 
-                  _ -> False) 
-        buttonPage) 
-      m.plants
+    renderButtonList buttonPage m.plants
 
 
 
