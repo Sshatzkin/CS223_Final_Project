@@ -9,20 +9,16 @@ import Html
 import Html exposing (Html, div, br)
 import Html.Attributes exposing (id, class)
 import Html.Events as Events
+import Html.Events.Extra.Mouse as Mouse
 
 -- Our Libraries
+import Window exposing (Window)
 import Msg exposing (Msg(..))
 import Page exposing (Page(..))
 import Plants as P
 import Plants exposing (Plant)
 
----- Type Definitions ----
-type alias Window = 
-  { width : Float 
-  , height : Float
-  }
-newWindow : Float -> Float -> Window
-newWindow w h = {width = w, height = h}
+
 
 ---- Farm Display with Canvas----
 -- DISPLAY FUNCTIONS -- 
@@ -42,7 +38,7 @@ displayFarm frame w coins plants =
   div
   []
   [ Canvas.toHtml (truncate w.width, truncate w.height) 
-      []
+    [Mouse.onClick Click]
     ((displayFarmText w coins) ++ (renderPlants frame w plants))
   , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
   ]

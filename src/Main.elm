@@ -14,18 +14,16 @@ import Html.Attributes exposing (id)
 import Html.Events as Events
 
 -- Our Libraries
+import Button exposing (clickedAnyButton, BType(..))
+import Model exposing (..)
 import Msg exposing (Msg(..))
 import Page exposing (Page(..))
 import Plants as P
 import Plants exposing (Plant)
-import ViewHelpers as VH exposing (Window)
+import ViewHelpers as VH
 import Html
 
--- TODO - Look into canvas to decide how we want to do visual
-
 -- TODO FIGURE OUT HOW TO DO LOCAL STORAGE THANKS
-
--- TODO TOGGLE BETWEEN PAGES
 
 {-
   The main of the entire application
@@ -39,34 +37,6 @@ main =
         , subscriptions = subscriptions
         }
 
----- FLAGS ---- 
-
-{-
-  Flags pass values from js to elm
--}
-type alias Flags =
-    { width : Float
-    , height : Float
-    }
-
-
-  ---- MODEL ---- 
-type alias Model =
-    { frame : Float   -- The current framecount of the app
-    , window : Window -- The size of the game window
-    , coins : Int     -- The number of coins the player currently has 
-    , plants : List Plant -- The current list of a player's plants.
-    , page : Page --The current game page
-    }
-
-initModel : Flags -> Model
-initModel flag =
-    { frame = 0 
-    , window = VH.newWindow flag.width flag.height
-    , coins = 5
-    , plants = P.initPlants -- We define initial plants in Plants module
-    , page = Store
-    }
 
 {-
   This function is called by the main on start
@@ -74,7 +44,6 @@ initModel flag =
 init : Flags -> ( Model, Cmd Msg )
 init flag =
     ( initModel flag, Cmd.none )
-
 
 ---- UPDATE ----
 
@@ -116,9 +85,13 @@ update msg model =
       -- Called on every animation frame
         ({model | frame = model.frame + 1, plants = P.agePlants model.plants }, Cmd.none)
 
-      NoOp ->   
+      Click event ->
+        let
+          _ = Debug.log "Event" event.offsetPos
+          (x, y) = event.offsetPos
+        in   
       -- Called when we need a "NoOp"
-        ( model, Cmd.none )
+        ( clickHandler x y model, Cmd.none)
 
       Reset -> 
       -- Called to reset player coins
@@ -142,6 +115,26 @@ update msg model =
       
       ChangePage pg ->
         ( { model | page = pg }, Cmd.none)
+
+      NoOp ->   
+      -- Called when we need a "NoOp"
+        ( model, Cmd.none )
+
+clickHandler : Float -> Float -> Model -> Model 
+clickHandler x y model =
+  case (clickedAnyButton x y model.page model.buttons) of 
+    Nothing -> model
+    Just btype -> 
+      let
+        _ = Debug.log "Clicked Button" btype
+      in
+        case btype of 
+          Plot ptype -> 
+            case P.plotClicked model.plants ptype of
+              Nothing -> model
+              Just (plants, profit) -> {model | plants = plants, coins = model.coins + profit}
+          _ -> model
+
 
 -- VIEW
 {-

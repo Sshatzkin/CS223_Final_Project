@@ -25,7 +25,18 @@
     <script>
       var node = document.getElementById('game');
       var container = document.getElementById('container');
-      var flags = container.offsetHeight < 100 ? {width: window.innerWidth, height: window.innerHeight - 5} : {width: container.offsetWidth, height: container.offsetHeight};
+
+      // Calculating inner width and height of container
+      var computedStyle = getComputedStyle(container);
+
+      containerHeight = container.clientHeight;  // height with padding
+      containerWidth = container.clientWidth;   // width with padding
+
+      containerHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+      containerWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
+
+
+      var flags = container.offsetHeight < 100 ? {width: window.innerWidth, height: window.innerHeight - 5} : {width: containerWidth, height: containerHeight};
       var app = Elm.Main.init(
         { node: node
         , flags : flags
