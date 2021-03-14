@@ -47,10 +47,18 @@ displayFarm m =
     []
     [ Canvas.toHtml (truncate w.width, truncate w.height) 
       [Mouse.onClick Click]
-      ((displayFarmText w coins) ++ (renderButtons m))
+      ((renderBG m)::(displayFarmText w coins) ++ (renderButtons m))
     , Html.button [Events.onClick (ChangePage Store)] [Html.text "Go to Store"]
     ]
 
+
+{-
+  Creates a renderable for the background
+
+-}
+renderBG : Model -> Canvas.Renderable
+renderBG m = 
+  shapes [ fill {- #80ffdb-} (Color.rgb255 128 255 235) ] [ rect ( 0, 0 ) m.window.width m.window.height ]
 
 {-
   Displays the header message for the farm
@@ -74,10 +82,6 @@ displayFarmText w coins =
            (" Coins = " ++ String.fromInt coins)
   ]
 
-  
-clearScreen : Window -> Canvas.Renderable
-clearScreen w =
-  shapes [ fill Color.white ] [ rect ( 0, 0 ) w.width w.height]
 
 {-
   Produces the image of a single plot as a Canvas Renderable
@@ -89,11 +93,15 @@ clearScreen w =
 -}
 renderPlot : Button -> Plant -> Canvas.Renderable
 renderPlot b p = 
-  case p.ptype of
-    Corn -> shapes [ fill Color.yellow ] [ rect ( b.x, b.y ) b.width b.height ]
-    Tomato -> shapes [ fill Color.red ] [ rect ( b.x, b.y ) b.width b.height ]
-    Pumpkin -> shapes [ fill Color.orange ] [ rect ( b.x, b.y ) b.width b.height ]
-    Carrot -> shapes [ fill Color.orange ] [ rect ( b.x, b.y ) b.width b.height ]
+  let
+    color = case p.ptype of
+      Corn -> Color.yellow
+      Tomato -> Color.red
+      Pumpkin -> Color.orange
+      Carrot -> Color.orange
+    fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
+  in
+    shapes [ fill color ] [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height * fillPercent) ]
 
 {-
   Converts a list of plants into a list of Canvas Renderables

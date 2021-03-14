@@ -6577,11 +6577,6 @@ var $joakin$elm_canvas$Canvas$Settings$fill = function (color) {
 	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingDrawOp(
 		$joakin$elm_canvas$Canvas$Internal$Canvas$Fill(color));
 };
-var $avh4$elm_color$Color$RgbaSpace = F4(
-	function (a, b, c, d) {
-		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
-	});
-var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
 var $joakin$elm_canvas$Canvas$Internal$Canvas$Rect = F3(
 	function (a, b, c) {
 		return {$: 'Rect', a: a, b: b, c: c};
@@ -6590,7 +6585,22 @@ var $joakin$elm_canvas$Canvas$rect = F3(
 	function (pos, width, height) {
 		return A3($joakin$elm_canvas$Canvas$Internal$Canvas$Rect, pos, width, height);
 	});
-var $avh4$elm_color$Color$red = A4($avh4$elm_color$Color$RgbaSpace, 204 / 255, 0 / 255, 0 / 255, 1.0);
+var $avh4$elm_color$Color$RgbaSpace = F4(
+	function (a, b, c, d) {
+		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
+	});
+var $avh4$elm_color$Color$scaleFrom255 = function (c) {
+	return c / 255;
+};
+var $avh4$elm_color$Color$rgb255 = F3(
+	function (r, g, b) {
+		return A4(
+			$avh4$elm_color$Color$RgbaSpace,
+			$avh4$elm_color$Color$scaleFrom255(r),
+			$avh4$elm_color$Color$scaleFrom255(g),
+			$avh4$elm_color$Color$scaleFrom255(b),
+			1.0);
+	});
 var $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableShapes = function (a) {
 	return {$: 'DrawableShapes', a: a};
 };
@@ -6606,72 +6616,59 @@ var $joakin$elm_canvas$Canvas$shapes = F2(
 					drawable: $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableShapes(ss)
 				}));
 	});
+var $author$project$ViewHelpers$renderBG = function (m) {
+	return A2(
+		$joakin$elm_canvas$Canvas$shapes,
+		_List_fromArray(
+			[
+				$joakin$elm_canvas$Canvas$Settings$fill(
+				A3($avh4$elm_color$Color$rgb255, 128, 255, 235))
+			]),
+		_List_fromArray(
+			[
+				A3(
+				$joakin$elm_canvas$Canvas$rect,
+				_Utils_Tuple2(0, 0),
+				m.window.width,
+				m.window.height)
+			]));
+};
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
+var $avh4$elm_color$Color$red = A4($avh4$elm_color$Color$RgbaSpace, 204 / 255, 0 / 255, 0 / 255, 1.0);
 var $avh4$elm_color$Color$yellow = A4($avh4$elm_color$Color$RgbaSpace, 237 / 255, 212 / 255, 0 / 255, 1.0);
 var $author$project$ViewHelpers$renderPlot = F2(
 	function (b, p) {
-		var _v0 = p.ptype;
-		switch (_v0.$) {
-			case 'Corn':
-				return A2(
-					$joakin$elm_canvas$Canvas$shapes,
-					_List_fromArray(
-						[
-							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$yellow)
-						]),
-					_List_fromArray(
-						[
-							A3(
-							$joakin$elm_canvas$Canvas$rect,
-							_Utils_Tuple2(b.x, b.y),
-							b.width,
-							b.height)
-						]));
-			case 'Tomato':
-				return A2(
-					$joakin$elm_canvas$Canvas$shapes,
-					_List_fromArray(
-						[
-							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$red)
-						]),
-					_List_fromArray(
-						[
-							A3(
-							$joakin$elm_canvas$Canvas$rect,
-							_Utils_Tuple2(b.x, b.y),
-							b.width,
-							b.height)
-						]));
-			case 'Pumpkin':
-				return A2(
-					$joakin$elm_canvas$Canvas$shapes,
-					_List_fromArray(
-						[
-							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$orange)
-						]),
-					_List_fromArray(
-						[
-							A3(
-							$joakin$elm_canvas$Canvas$rect,
-							_Utils_Tuple2(b.x, b.y),
-							b.width,
-							b.height)
-						]));
-			default:
-				return A2(
-					$joakin$elm_canvas$Canvas$shapes,
-					_List_fromArray(
-						[
-							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$orange)
-						]),
-					_List_fromArray(
-						[
-							A3(
-							$joakin$elm_canvas$Canvas$rect,
-							_Utils_Tuple2(b.x, b.y),
-							b.width,
-							b.height)
-						]));
-		}
+		var fillPercent = (p.matAge - p.countdown) / p.matAge;
+		var color = function () {
+			var _v0 = p.ptype;
+			switch (_v0.$) {
+				case 'Corn':
+					return $avh4$elm_color$Color$yellow;
+				case 'Tomato':
+					return $avh4$elm_color$Color$red;
+				case 'Pumpkin':
+					return $avh4$elm_color$Color$orange;
+				default:
+					return $avh4$elm_color$Color$orange;
+			}
+		}();
+		return A2(
+			$joakin$elm_canvas$Canvas$shapes,
+			_List_fromArray(
+				[
+					$joakin$elm_canvas$Canvas$Settings$fill(color)
+				]),
+			_List_fromArray(
+				[
+					A3(
+					$joakin$elm_canvas$Canvas$rect,
+					_Utils_Tuple2(b.x, b.height + b.y),
+					b.width,
+					((-1) * b.height) * fillPercent)
+				]));
 	});
 var $author$project$ViewHelpers$renderPlots = F2(
 	function (buttons, ps) {
@@ -6684,8 +6681,8 @@ var $author$project$ViewHelpers$renderPlots = F2(
 					return _Debug_todo(
 						'ViewHelpers',
 						{
-							start: {line: 108, column: 24},
-							end: {line: 108, column: 34}
+							start: {line: 116, column: 24},
+							end: {line: 116, column: 34}
 						})('Could not find plant to render');
 				} else {
 					var p = _v1.a;
@@ -6695,8 +6692,8 @@ var $author$project$ViewHelpers$renderPlots = F2(
 				return _Debug_todo(
 					'ViewHelpers',
 					{
-						start: {line: 110, column: 14},
-						end: {line: 110, column: 24}
+						start: {line: 118, column: 14},
+						end: {line: 118, column: 24}
 					})('This case should not occur');
 			}
 		};
@@ -7445,9 +7442,12 @@ var $author$project$ViewHelpers$displayFarm = function (m) {
 					[
 						$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onClick($author$project$Msg$Click)
 					]),
-				_Utils_ap(
-					A2($author$project$ViewHelpers$displayFarmText, w, coins),
-					$author$project$ViewHelpers$renderButtons(m))),
+				A2(
+					$elm$core$List$cons,
+					$author$project$ViewHelpers$renderBG(m),
+					_Utils_ap(
+						A2($author$project$ViewHelpers$displayFarmText, w, coins),
+						$author$project$ViewHelpers$renderButtons(m)))),
 				A2(
 				$elm$html$Html$button,
 				_List_fromArray(
