@@ -42,10 +42,10 @@ plotButtons width height plants =
     makePlot : Int -> PType -> Button
     makePlot i p =
       newButton 
-        (toFloat ((i * 20) + 5)) 
+        (toFloat ((i * 200) + 5)) 
         (toFloat (i * 0))
-        (toFloat (i * 10)) 
-        (toFloat (i * 10)) 
+        (toFloat (150)) 
+        (toFloat (150)) 
         (Plot p)
   in
     List.indexedMap makePlot plants
@@ -56,7 +56,10 @@ farmButtons width height plants =
 
 initialButtons : Float -> Float -> List Plant -> Buttons
 initialButtons width height plants =
-  [farmButtons width height (getPTypes plants)]
+  let
+    _ = Debug.log "Farm Button Page " (farmButtons width height (getPTypes plants))
+  in
+    [farmButtons width height (getPTypes plants)]
 
 
 ---- Button Handling Functions

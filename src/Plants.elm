@@ -19,13 +19,15 @@ type alias Plant =
 
 type PType 
   = Corn
+  | Tomato
   | Pumpkin
+  | Carrot
 
 {-
   Initial state of plants field in model
 -}
 initPlants : List Plant
-initPlants = [corn, pumpkin]
+initPlants = [corn, tomato, pumpkin, carrot]
 
 {-
   Creates a new plant 
@@ -56,8 +58,16 @@ newPlant ptype name p val matAge =
 corn : Plant
 corn = newPlant Corn "Corn" 1 3 400 
 
+tomato : Plant
+tomato = newPlant Tomato "Tomato" 3 5 600
+
 pumpkin : Plant
-pumpkin = newPlant Pumpkin "Pumpkin" 5 10 2000
+pumpkin = newPlant Pumpkin "Pumpkin" 5 10 1500
+
+carrot : Plant
+carrot = newPlant Carrot "Carrot" 10 20 2000
+
+
 
 
 -- GET / SET FUNCTIONS --

@@ -5148,16 +5148,20 @@ var $elm$browser$Browser$element = _Browser_element;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $author$project$Page$Farm = {$: 'Farm'};
-var $author$project$Plants$Corn = {$: 'Corn'};
+var $author$project$Plants$Carrot = {$: 'Carrot'};
 var $author$project$Plants$newPlant = F5(
 	function (ptype, name, p, val, matAge) {
 		return {countdown: matAge, matAge: matAge, name: name, price: p, ptype: ptype, value: val};
 	});
+var $author$project$Plants$carrot = A5($author$project$Plants$newPlant, $author$project$Plants$Carrot, 'Carrot', 10, 20, 2000);
+var $author$project$Plants$Corn = {$: 'Corn'};
 var $author$project$Plants$corn = A5($author$project$Plants$newPlant, $author$project$Plants$Corn, 'Corn', 1, 3, 400);
 var $author$project$Plants$Pumpkin = {$: 'Pumpkin'};
-var $author$project$Plants$pumpkin = A5($author$project$Plants$newPlant, $author$project$Plants$Pumpkin, 'Pumpkin', 5, 10, 2000);
+var $author$project$Plants$pumpkin = A5($author$project$Plants$newPlant, $author$project$Plants$Pumpkin, 'Pumpkin', 5, 10, 1500);
+var $author$project$Plants$Tomato = {$: 'Tomato'};
+var $author$project$Plants$tomato = A5($author$project$Plants$newPlant, $author$project$Plants$Tomato, 'Tomato', 3, 5, 600);
 var $author$project$Plants$initPlants = _List_fromArray(
-	[$author$project$Plants$corn, $author$project$Plants$pumpkin]);
+	[$author$project$Plants$corn, $author$project$Plants$tomato, $author$project$Plants$pumpkin, $author$project$Plants$carrot]);
 var $author$project$Button$Plot = function (a) {
 	return {$: 'Plot', a: a};
 };
@@ -5171,10 +5175,10 @@ var $author$project$Button$plotButtons = F3(
 			function (i, p) {
 				return A5(
 					$author$project$Button$newButton,
-					(i * 20) + 5,
+					(i * 200) + 5,
 					i * 0,
-					i * 10,
-					i * 10,
+					150,
+					150,
 					$author$project$Button$Plot(p));
 			});
 		return A2($elm$core$List$indexedMap, makePlot, plants);
@@ -5194,8 +5198,17 @@ var $author$project$Plants$getPTypes = function (plants) {
 		},
 		plants);
 };
+var $elm$core$Debug$log = _Debug_log;
 var $author$project$Button$initialButtons = F3(
 	function (width, height, plants) {
+		var _v0 = A2(
+			$elm$core$Debug$log,
+			'Farm Button Page ',
+			A3(
+				$author$project$Button$farmButtons,
+				width,
+				height,
+				$author$project$Plants$getPTypes(plants)));
 		return _List_fromArray(
 			[
 				A3(
@@ -5842,13 +5855,12 @@ var $author$project$Button$clickedAnyButton = F4(
 				return _Debug_todo(
 					'Button',
 					{
-						start: {line: 80, column: 12},
-						end: {line: 80, column: 22}
+						start: {line: 83, column: 12},
+						end: {line: 83, column: 22}
 					})('TWO OR MORE BUTTONS WERE CLICKED THIS SHOULD NOT HAPPEN');
 			}
 		}
 	});
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$Plants$isGrown = function (plant) {
 	return !plant.countdown;
 };
@@ -5883,8 +5895,8 @@ var $author$project$Plants$getPlant = F2(
 				return _Debug_todo(
 					'Plants',
 					{
-						start: {line: 73, column: 13},
-						end: {line: 73, column: 23}
+						start: {line: 83, column: 13},
+						end: {line: 83, column: 23}
 					})('THIS SHOULD NOT BE POSSIBLE');
 			}
 		}
@@ -5896,8 +5908,8 @@ var $author$project$Plants$plantGet = F3(
 			return _Debug_todo(
 				'Plants',
 				{
-					start: {line: 81, column: 16},
-					end: {line: 81, column: 26}
+					start: {line: 91, column: 16},
+					end: {line: 91, column: 26}
 				})('Cannot apply function - plant not in list');
 		} else {
 			var plant = _v0.a;
