@@ -6534,6 +6534,23 @@ var $elm$core$List$concatMap = F2(
 		return $elm$core$List$concat(
 			A2($elm$core$List$map, f, list));
 	});
+var $author$project$ViewHelpers$renderInitialPrice = F3(
+	function (ps, b, p) {
+		return p.purchased ? A3(
+			$joakin$elm_canvas$Canvas$text,
+			_List_Nil,
+			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
+			'') : A3(
+			$joakin$elm_canvas$Canvas$text,
+			_List_fromArray(
+				[
+					$joakin$elm_canvas$Canvas$Settings$Text$font(
+					{family: 'sans-serif', size: 24}),
+					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
+				]),
+			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
+			'$' + $elm$core$String$fromInt(p.price));
+	});
 var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
 var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
 var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
@@ -6650,8 +6667,21 @@ var $author$project$ViewHelpers$renderQuantity = F3(
 					{family: 'sans-serif', size: 24}),
 					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
 				]),
-			_Utils_Tuple2(b.x + (0.875 * ps.width), b.y + 30),
+			_Utils_Tuple2(b.x + (0.875 * ps.width), b.y + (0.3 * ps.height)),
 			$elm$core$String$fromInt(p.quantity));
+	});
+var $author$project$ViewHelpers$renderSellingPrice = F3(
+	function (ps, b, p) {
+		return A3(
+			$joakin$elm_canvas$Canvas$text,
+			_List_fromArray(
+				[
+					$joakin$elm_canvas$Canvas$Settings$Text$font(
+					{family: 'sans-serif', size: 16}),
+					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
+				]),
+			_Utils_Tuple2(b.x + (0.875 * ps.width), b.y + (0.6 * ps.height)),
+			'at $' + $elm$core$String$fromInt(p.value));
 	});
 var $author$project$ViewHelpers$renderUpgrade = F2(
 	function (b, p) {
@@ -6714,10 +6744,16 @@ var $author$project$ViewHelpers$renderButtonList = F3(
 					A2(
 						$elm$core$List$cons,
 						A3($author$project$ViewHelpers$renderQuantity, p, b, plant),
-						_List_fromArray(
-							[
-								A3($author$project$ViewHelpers$renderProgress, p, b, plant)
-							])));
+						A2(
+							$elm$core$List$cons,
+							A3($author$project$ViewHelpers$renderInitialPrice, p, b, plant),
+							A2(
+								$elm$core$List$cons,
+								A3($author$project$ViewHelpers$renderSellingPrice, p, b, plant),
+								_List_fromArray(
+									[
+										A3($author$project$ViewHelpers$renderProgress, p, b, plant)
+									])))));
 			} else {
 				var ptype = _v0.a;
 				return A2(

@@ -48,6 +48,31 @@ frameToTime count =
   in
     hourString ++ ":" ++ minString ++ ":" ++ secString
 
+{-
+  Determines the plant color based on the plant type
+
+  Input:
+    p - plant
+
+  Output
+    Color
+-}
+plantColor : Plant -> Color.Color
+plantColor p = 
+  case p.ptype of
+    Corn -> Color.yellow
+    Tomato -> Color.red
+    Pumpkin -> Color.orange
+    Carrot -> Color.orange
+    Raddish -> Color.purple
+    Pepper ->
+      case (modBy 4 (p.quantity - 1)) of
+        0 -> Color.green
+        1 -> Color.yellow
+        2 -> Color.orange
+        3 -> Color.red
+        _ -> Color.green
+
 -- FARM DISPLAY FUNCTIONS -- 
 
 {-
@@ -105,7 +130,6 @@ displayFarmText w coins =
            (" Coins = " ++ String.fromInt coins)
   ]
 
-
 {-
   Produces a Canvas Renderable from a single plot button
 
@@ -115,33 +139,7 @@ displayFarmText w coins =
 
   Output:
     Canvas.Renderable of button
--}
-
-{-
-  Determines the plant color based on the plant type
-
-  Input:
-    p - plant
-
-  Output
-    Color
--}
-plantColor : Plant -> Color.Color
-plantColor p = 
-  case p.ptype of
-    Corn -> Color.yellow
-    Tomato -> Color.red
-    Pumpkin -> Color.orange
-    Carrot -> Color.orange
-    Raddish -> Color.purple
-    Pepper ->
-      case (modBy 4 (p.quantity - 1)) of
-        0 -> Color.green
-        1 -> Color.yellow
-        2 -> Color.orange
-        3 -> Color.red
-        _ -> Color.green
-      
+-}    
 renderPlot : PlotSize -> Button -> Plant -> Canvas.Renderable
 renderPlot ps b p =
   -- Want to render differently if purchased or not
@@ -155,11 +153,12 @@ renderPlot ps b p =
     else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
 
 {-
-  Renders the progress bar
+  Produces a Canvas Renderable that represents the progress bar for harvests
 -}
 renderProgress : PlotSize -> Button -> Plant -> Canvas.Renderable
 renderProgress ps b p =
-  if p.purchased then
+  if p.purchased 
+  then
     let
       color = plantColor p
       fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
@@ -168,16 +167,32 @@ renderProgress ps b p =
                                 (0.15 * ps.width) 
                                 (-1 * ps.height * fillPercent)]
   else 
-    shapes [fill Color.gray] [rect ( b.x, b.y ) b.width 0]
+    --no progress bar if plant has not been purchased
+    shapes [fill Color.gray] [rect ( b.x, b.y ) b.width 0] 
 
 {-
-  Renders the plant quantity, which is displayed
+  Produces the text to display the quantity of the given plant the player owns
 -}
 renderQuantity : PlotSize -> Button -> Plant -> Canvas.Renderable
 renderQuantity ps b p =
-  text [ font { size = 24, family = "sans-serif" }, align Center] --text settings
-       (b.x + 0.875 * ps.width, b.y + 30)
-       (fromInt p.quantity)
+  text [ font { size = 24, family = "sans-serif" }, align Center]
+       ( b.x + 0.875 * ps.width, b.y + 0.3 * ps.height)
+       ( fromInt p.quantity)
+
+renderSellingPrice : PlotSize -> Button -> Plant -> Canvas.Renderable
+renderSellingPrice ps b p =
+  text [ font { size = 16, family = "sans-serif" }, align Center]
+       ( b.x + 0.875 * ps.width, b.y + 0.6 * ps.height)
+       ( "at $" ++ fromInt p.value)
+renderInitialPrice : PlotSize -> Button -> Plant -> Canvas.Renderable
+renderInitialPrice ps b p =
+  if p.purchased 
+  then
+    text [] ( b.x + 0.275 * ps.width, b.y + 0.5 * ps.height) ""
+  else 
+    text [ font { size = 24, family = "sans-serif" }, align Center ]
+         ( b.x + 0.275 * ps.width, b.y + 0.5 * ps.height)
+         ( "$" ++ fromInt p.price)
 
 {-
   Produces a List of Canvas Renderables from a single upgrade button
@@ -187,7 +202,7 @@ renderQuantity ps b p =
     p - Plant
 
   Output:
-    Canvas.Renderable of button with upgrade price text
+    List of Canvas.Renderable of button with upgrade price text
 -}
 renderUpgrade : Button -> Plant -> List (Canvas.Renderable)
 renderUpgrade b p = 
@@ -221,6 +236,8 @@ renderButtonList p bs ps =
           in
             renderPlot p b plant 
             :: (renderQuantity p b plant) 
+            :: (renderInitialPrice p b plant)
+            :: (renderSellingPrice p b plant)
             :: [renderProgress p b plant]
         Upgrade ptype -> 
           renderUpgrade b (P.getPlant ptype ps)
