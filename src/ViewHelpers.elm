@@ -4,7 +4,7 @@ import Array exposing (Array, get)
 import Canvas exposing (rect, shapes, text)
 import Canvas.Settings exposing (fill)
 import Canvas.Settings.Text exposing (font, align, TextAlign(..))
-import Canvas.Settings.Advanced exposing (rotate, transform, translate)
+import Canvas.Settings.Advanced exposing (rotate, transform, translate, shadow)
 import Canvas.Texture exposing (fromDomImage, Source, Texture)
 import Color
 import Html
@@ -187,10 +187,14 @@ renderPlot ps b p imgs =
             shapes [ fill color ] 
                    [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height)]
           Just i -> 
-            Canvas.texture [] 
-                           ( b.x
-                           , b.y) 
-                           i 
+            if p.countdown == 0 --plant ready to harvest
+            then
+              Canvas.texture [ shadow {blur = 10, color = Color.green, offset = (0, 0)}]
+                             ( b.x, b.y)
+                             i
+            else
+              Canvas.texture [] ( b.x, b.y) i
+        
     else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
 
 {-

@@ -6777,6 +6777,84 @@ var $author$project$ViewHelpers$plantImage = F2(
 				}
 		}
 	});
+var $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommands = function (a) {
+	return {$: 'SettingCommands', a: a};
+};
+var $elm$json$Json$Encode$float = _Json_wrap;
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowBlur = function (value) {
+	return A2(
+		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$field,
+		'shadowBlur',
+		$elm$json$Json$Encode$float(value));
+};
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
+var $elm$core$String$fromFloat = _String_fromNumber;
+var $avh4$elm_color$Color$toCssString = function (_v0) {
+	var r = _v0.a;
+	var g = _v0.b;
+	var b = _v0.c;
+	var a = _v0.d;
+	var roundTo = function (x) {
+		return $elm$core$Basics$round(x * 1000) / 1000;
+	};
+	var pct = function (x) {
+		return $elm$core$Basics$round(x * 10000) / 100;
+	};
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				'rgba(',
+				$elm$core$String$fromFloat(
+				pct(r)),
+				'%,',
+				$elm$core$String$fromFloat(
+				pct(g)),
+				'%,',
+				$elm$core$String$fromFloat(
+				pct(b)),
+				'%,',
+				$elm$core$String$fromFloat(
+				roundTo(a)),
+				')'
+			]));
+};
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowColor = function (color) {
+	return A2(
+		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$field,
+		'shadowColor',
+		$elm$json$Json$Encode$string(
+			$avh4$elm_color$Color$toCssString(color)));
+};
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowOffsetX = function (value) {
+	return A2(
+		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$field,
+		'shadowOffsetX',
+		$elm$json$Json$Encode$float(value));
+};
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowOffsetY = function (value) {
+	return A2(
+		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$field,
+		'shadowOffsetY',
+		$elm$json$Json$Encode$float(value));
+};
+var $joakin$elm_canvas$Canvas$Settings$Advanced$shadow = function (_v0) {
+	var blur = _v0.blur;
+	var color = _v0.color;
+	var offset = _v0.offset;
+	var _v1 = offset;
+	var x = _v1.a;
+	var y = _v1.b;
+	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommands(
+		_List_fromArray(
+			[
+				$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowBlur(blur),
+				$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowColor(color),
+				$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowOffsetX(x),
+				$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$shadowOffsetY(y)
+			]));
+};
 var $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableTexture = F2(
 	function (a, b) {
 		return {$: 'DrawableTexture', a: a, b: b};
@@ -6818,7 +6896,19 @@ var $author$project$ViewHelpers$renderPlot = F4(
 						]));
 			} else {
 				var i = planticon.a;
-				return A3(
+				return (!p.countdown) ? A3(
+					$joakin$elm_canvas$Canvas$texture,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Advanced$shadow(
+							{
+								blur: 10,
+								color: $avh4$elm_color$Color$green,
+								offset: _Utils_Tuple2(0, 0)
+							})
+						]),
+					_Utils_Tuple2(b.x, b.y),
+					i) : A3(
 					$joakin$elm_canvas$Canvas$texture,
 					_List_Nil,
 					_Utils_Tuple2(b.x, b.y),
@@ -7043,7 +7133,6 @@ var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn = F2(
 				]));
 	});
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$beginPath = A2($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn, 'beginPath', _List_Nil);
-var $elm$json$Json$Encode$float = _Json_wrap;
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$clearRect = F4(
 	function (x, y, width, height) {
 		return A2(
@@ -7308,39 +7397,6 @@ var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fill = function (fil
 			[
 				$elm$json$Json$Encode$string(
 				$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fillRuleToString(fillRule))
-			]));
-};
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
-var $elm$core$String$fromFloat = _String_fromNumber;
-var $avh4$elm_color$Color$toCssString = function (_v0) {
-	var r = _v0.a;
-	var g = _v0.b;
-	var b = _v0.c;
-	var a = _v0.d;
-	var roundTo = function (x) {
-		return $elm$core$Basics$round(x * 1000) / 1000;
-	};
-	var pct = function (x) {
-		return $elm$core$Basics$round(x * 10000) / 100;
-	};
-	return $elm$core$String$concat(
-		_List_fromArray(
-			[
-				'rgba(',
-				$elm$core$String$fromFloat(
-				pct(r)),
-				'%,',
-				$elm$core$String$fromFloat(
-				pct(g)),
-				'%,',
-				$elm$core$String$fromFloat(
-				pct(b)),
-				'%,',
-				$elm$core$String$fromFloat(
-				roundTo(a)),
-				')'
 			]));
 };
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fillStyle = function (color) {
