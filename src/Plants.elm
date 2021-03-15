@@ -10,14 +10,14 @@ import Html.Attributes exposing (id, class)
 
 type alias Plant = 
   { name : String
-  , price : Int --The initial price of the plant (for buying)
+  , price : Int --The initial price of the plant (if not yet purchased)
   , value : Int --The current value of the plant (for selling)
   , countdown : Int --The countdown until the plant is mature
   , matAge : Int --The age at which the plant is ready to harvest
   , ptype : PType -- The PlantType!
-  , purchased : Bool
-  , quantity : Int
-  , upgradePrice : Float
+  , purchased : Bool --Determines whether or not the player has made an initial purchase
+  , quantity : Int --The number of the plant the player has purchased
+  , upgradePrice : Float --The price of each subsequent plant purchase
   }
 
 type PType 
@@ -25,7 +25,7 @@ type PType
   | Tomato
   | Pumpkin
   | Carrot
-  | Raddish
+  | Radish
   | Pepper
 
 {-
@@ -36,7 +36,7 @@ type PType
   The order of the plants here is the order in which they will appear in the game
 -}
 initPlants : List Plant
-initPlants = [corn, tomato, pumpkin, carrot, raddish, pepper]
+initPlants = [corn, tomato, pumpkin, carrot, radish, pepper]
 
 {-
   Creates a new plant 
@@ -78,8 +78,8 @@ pumpkin = newPlant Pumpkin "Pumpkin" 5 10 1500
 carrot : Plant
 carrot = newPlant Carrot "Carrot" 10 20 1700
 
-raddish : Plant
-raddish = newPlant Raddish "Raddish" 100 300 2200
+radish : Plant
+radish = newPlant Radish "Radish" 100 300 2200
 
 pepper : Plant
 pepper = newPlant Pepper "Pepper" 3000 5000 4000

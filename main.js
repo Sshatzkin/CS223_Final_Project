@@ -4355,6 +4355,43 @@ function _Browser_load(url)
 		}
 	}));
 }
+
+
+
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var $elm$core$Array$foldr = F3(
@@ -5174,12 +5211,12 @@ var $author$project$Plants$Pepper = {$: 'Pepper'};
 var $author$project$Plants$pepper = A5($author$project$Plants$newPlant, $author$project$Plants$Pepper, 'Pepper', 3000, 5000, 4000);
 var $author$project$Plants$Pumpkin = {$: 'Pumpkin'};
 var $author$project$Plants$pumpkin = A5($author$project$Plants$newPlant, $author$project$Plants$Pumpkin, 'Pumpkin', 5, 10, 1500);
-var $author$project$Plants$Raddish = {$: 'Raddish'};
-var $author$project$Plants$raddish = A5($author$project$Plants$newPlant, $author$project$Plants$Raddish, 'Raddish', 100, 300, 2200);
+var $author$project$Plants$Radish = {$: 'Radish'};
+var $author$project$Plants$radish = A5($author$project$Plants$newPlant, $author$project$Plants$Radish, 'Radish', 100, 300, 2200);
 var $author$project$Plants$Tomato = {$: 'Tomato'};
 var $author$project$Plants$tomato = A5($author$project$Plants$newPlant, $author$project$Plants$Tomato, 'Tomato', 3, 5, 600);
 var $author$project$Plants$initPlants = _List_fromArray(
-	[$author$project$Plants$corn, $author$project$Plants$tomato, $author$project$Plants$pumpkin, $author$project$Plants$carrot, $author$project$Plants$raddish, $author$project$Plants$pepper]);
+	[$author$project$Plants$corn, $author$project$Plants$tomato, $author$project$Plants$pumpkin, $author$project$Plants$carrot, $author$project$Plants$radish, $author$project$Plants$pepper]);
 var $author$project$Button$Plot = function (a) {
 	return {$: 'Plot', a: a};
 };
@@ -5283,6 +5320,7 @@ var $author$project$Model$initModel = function (flag) {
 		buttons: A5($author$project$Button$initialButtons, flag.width, flag.height, 150, 120, initPlants),
 		coins: 5,
 		frame: 0,
+		images: flag.images,
 		page: $author$project$Page$Farm,
 		plants: initPlants,
 		plotSize: A2($author$project$Window$newPlotSize, 150, 120),
@@ -5296,6 +5334,7 @@ var $author$project$Main$init = function (flag) {
 		$author$project$Model$initModel(flag),
 		$elm$core$Platform$Cmd$none);
 };
+var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Msg$Frame = function (a) {
 	return {$: 'Frame', a: a};
 };
@@ -6107,6 +6146,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
+var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$ViewHelpers$frameToTime = function (count) {
 	var seconds = ($elm$core$Basics$round(count) / 60) | 0;
@@ -6529,6 +6569,50 @@ var $author$project$ViewHelpers$renderBG = function (m) {
 				m.window.height)
 			]));
 };
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $joakin$elm_canvas$Canvas$Internal$Texture$TImage = function (a) {
+	return {$: 'TImage', a: a};
+};
+var $joakin$elm_canvas$Canvas$Internal$Texture$decodeTextureImage = A2(
+	$elm$json$Json$Decode$andThen,
+	function (image) {
+		return A4(
+			$elm$json$Json$Decode$map3,
+			F3(
+				function (tagName, width, height) {
+					return (tagName === 'IMG') ? $elm$core$Maybe$Just(
+						$joakin$elm_canvas$Canvas$Internal$Texture$TImage(
+							{height: height, json: image, width: width})) : $elm$core$Maybe$Nothing;
+				}),
+			A2($elm$json$Json$Decode$field, 'tagName', $elm$json$Json$Decode$string),
+			A2($elm$json$Json$Decode$field, 'width', $elm$json$Json$Decode$float),
+			A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$float));
+	},
+	$elm$json$Json$Decode$value);
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $elm$core$Result$toMaybe = function (result) {
+	if (result.$ === 'Ok') {
+		var v = result.a;
+		return $elm$core$Maybe$Just(v);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $joakin$elm_canvas$Canvas$Texture$fromDomImage = function (value) {
+	return A2(
+		$elm$core$Maybe$andThen,
+		$elm$core$Basics$identity,
+		$elm$core$Result$toMaybe(
+			A2($elm$json$Json$Decode$decodeValue, $joakin$elm_canvas$Canvas$Internal$Texture$decodeTextureImage, value)));
+};
 var $elm$core$List$concatMap = F2(
 	function (f, list) {
 		return $elm$core$List$concat(
@@ -6551,6 +6635,41 @@ var $author$project$ViewHelpers$renderInitialPrice = F3(
 			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
 			'$' + $elm$core$String$fromInt(p.price));
 	});
+var $elm$core$Array$fromListHelp = F3(
+	function (list, nodeList, nodeListSize) {
+		fromListHelp:
+		while (true) {
+			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+			var jsArray = _v0.a;
+			var remainingItems = _v0.b;
+			if (_Utils_cmp(
+				$elm$core$Elm$JsArray$length(jsArray),
+				$elm$core$Array$branchFactor) < 0) {
+				return A2(
+					$elm$core$Array$builderToArray,
+					true,
+					{nodeList: nodeList, nodeListSize: nodeListSize, tail: jsArray});
+			} else {
+				var $temp$list = remainingItems,
+					$temp$nodeList = A2(
+					$elm$core$List$cons,
+					$elm$core$Array$Leaf(jsArray),
+					nodeList),
+					$temp$nodeListSize = nodeListSize + 1;
+				list = $temp$list;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue fromListHelp;
+			}
+		}
+	});
+var $elm$core$Array$fromList = function (list) {
+	if (!list.b) {
+		return $elm$core$Array$empty;
+	} else {
+		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+	}
+};
 var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
 var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
 var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
@@ -6568,7 +6687,7 @@ var $author$project$ViewHelpers$plantColor = function (p) {
 			return $avh4$elm_color$Color$orange;
 		case 'Carrot':
 			return $avh4$elm_color$Color$orange;
-		case 'Raddish':
+		case 'Radish':
 			return $avh4$elm_color$Color$purple;
 		default:
 			var _v1 = A2($elm$core$Basics$modBy, 4, p.quantity - 1);
@@ -6586,24 +6705,125 @@ var $author$project$ViewHelpers$plantColor = function (p) {
 			}
 	}
 };
-var $author$project$ViewHelpers$renderPlot = F3(
-	function (ps, b, p) {
-		if (p.purchased && (!p.countdown)) {
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
+var $elm$core$Basics$ge = _Utils_ge;
+var $elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
+var $elm$core$Array$getHelp = F3(
+	function (shift, index, tree) {
+		getHelp:
+		while (true) {
+			var pos = $elm$core$Array$bitMask & (index >>> shift);
+			var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (_v0.$ === 'SubTree') {
+				var subTree = _v0.a;
+				var $temp$shift = shift - $elm$core$Array$shiftStep,
+					$temp$index = index,
+					$temp$tree = subTree;
+				shift = $temp$shift;
+				index = $temp$index;
+				tree = $temp$tree;
+				continue getHelp;
+			} else {
+				var values = _v0.a;
+				return A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, values);
+			}
+		}
+	});
+var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var $elm$core$Array$tailIndex = function (len) {
+	return (len >>> 5) << 5;
+};
+var $elm$core$Array$get = F2(
+	function (index, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? $elm$core$Maybe$Nothing : ((_Utils_cmp(
+			index,
+			$elm$core$Array$tailIndex(len)) > -1) ? $elm$core$Maybe$Just(
+			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
+			A3($elm$core$Array$getHelp, startShift, index, tree)));
+	});
+var $author$project$ViewHelpers$plantImage = F2(
+	function (p, tarray) {
+		var _v0 = p.ptype;
+		switch (_v0.$) {
+			case 'Corn':
+				return A2($elm$core$Array$get, 0, tarray);
+			case 'Tomato':
+				return A2($elm$core$Array$get, 1, tarray);
+			case 'Pumpkin':
+				return A2($elm$core$Array$get, 2, tarray);
+			case 'Carrot':
+				return A2($elm$core$Array$get, 3, tarray);
+			case 'Radish':
+				return A2($elm$core$Array$get, 4, tarray);
+			default:
+				var _v1 = A2($elm$core$Basics$modBy, 4, p.quantity - 1);
+				switch (_v1) {
+					case 0:
+						return A2($elm$core$Array$get, 5, tarray);
+					case 1:
+						return A2($elm$core$Array$get, 6, tarray);
+					case 2:
+						return A2($elm$core$Array$get, 7, tarray);
+					case 3:
+						return A2($elm$core$Array$get, 8, tarray);
+					default:
+						return A2($elm$core$Array$get, 5, tarray);
+				}
+		}
+	});
+var $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableTexture = F2(
+	function (a, b) {
+		return {$: 'DrawableTexture', a: a, b: b};
+	});
+var $joakin$elm_canvas$Canvas$texture = F3(
+	function (settings, p, t) {
+		return A2(
+			$joakin$elm_canvas$Canvas$addSettingsToRenderable,
+			settings,
+			$joakin$elm_canvas$Canvas$Renderable(
+				{
+					commands: _List_Nil,
+					drawOp: $joakin$elm_canvas$Canvas$Internal$Canvas$NotSpecified,
+					drawable: A2($joakin$elm_canvas$Canvas$Internal$Canvas$DrawableTexture, p, t)
+				}));
+	});
+var $author$project$ViewHelpers$renderPlot = F4(
+	function (ps, b, p, imgs) {
+		if (p.purchased) {
+			var planticon = A2(
+				$author$project$ViewHelpers$plantImage,
+				p,
+				$elm$core$Array$fromList(imgs));
 			var color = $author$project$ViewHelpers$plantColor(p);
-			return A2(
-				$joakin$elm_canvas$Canvas$shapes,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$fill(color)
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$joakin$elm_canvas$Canvas$rect,
-						_Utils_Tuple2(b.x, b.height + b.y),
-						b.width,
-						(-1) * b.height)
-					]));
+			if (planticon.$ === 'Nothing') {
+				return A2(
+					$joakin$elm_canvas$Canvas$shapes,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$fill(color)
+						]),
+					_List_fromArray(
+						[
+							A3(
+							$joakin$elm_canvas$Canvas$rect,
+							_Utils_Tuple2(b.x, b.height + b.y),
+							b.width,
+							(-1) * b.height)
+						]));
+			} else {
+				var i = planticon.a;
+				return A3(
+					$joakin$elm_canvas$Canvas$texture,
+					_List_Nil,
+					_Utils_Tuple2(b.x, b.y),
+					i);
+			}
 		} else {
 			return A2(
 				$joakin$elm_canvas$Canvas$shapes,
@@ -6731,8 +6951,8 @@ var $author$project$ViewHelpers$renderUpgrade = F2(
 					]))
 			]);
 	});
-var $author$project$ViewHelpers$renderButtonList = F3(
-	function (p, bs, ps) {
+var $author$project$ViewHelpers$renderButtonList = F4(
+	function (p, bs, ps, imgs) {
 		var foo = function (b) {
 			var _v0 = b.btype;
 			if (_v0.$ === 'Plot') {
@@ -6740,7 +6960,7 @@ var $author$project$ViewHelpers$renderButtonList = F3(
 				var plant = A2($author$project$Plants$getPlant, ptype, ps);
 				return A2(
 					$elm$core$List$cons,
-					A3($author$project$ViewHelpers$renderPlot, p, b, plant),
+					A4($author$project$ViewHelpers$renderPlot, p, b, plant, imgs),
 					A2(
 						$elm$core$List$cons,
 						A3($author$project$ViewHelpers$renderQuantity, p, b, plant),
@@ -6765,8 +6985,9 @@ var $author$project$ViewHelpers$renderButtonList = F3(
 		return A2($elm$core$List$concatMap, foo, bs);
 	});
 var $author$project$ViewHelpers$renderButtons = function (m) {
+	var textures = A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images);
 	var buttonPage = A2($author$project$Button$getButtonPage, m.page, m.buttons);
-	return A3($author$project$ViewHelpers$renderButtonList, m.plotSize, buttonPage, m.plants);
+	return A4($author$project$ViewHelpers$renderButtonList, m.plotSize, buttonPage, m.plants, textures);
 };
 var $elm$html$Html$canvas = _VirtualDom_node('canvas');
 var $joakin$elm_canvas$Canvas$cnvs = A2($elm$html$Html$canvas, _List_Nil, _List_Nil);
@@ -7376,26 +7597,6 @@ var $elm$virtual_dom$VirtualDom$attribute = F2(
 			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
 var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
-var $joakin$elm_canvas$Canvas$Internal$Texture$TImage = function (a) {
-	return {$: 'TImage', a: a};
-};
-var $elm$json$Json$Decode$value = _Json_decodeValue;
-var $joakin$elm_canvas$Canvas$Internal$Texture$decodeTextureImage = A2(
-	$elm$json$Json$Decode$andThen,
-	function (image) {
-		return A4(
-			$elm$json$Json$Decode$map3,
-			F3(
-				function (tagName, width, height) {
-					return (tagName === 'IMG') ? $elm$core$Maybe$Just(
-						$joakin$elm_canvas$Canvas$Internal$Texture$TImage(
-							{height: height, json: image, width: width})) : $elm$core$Maybe$Nothing;
-				}),
-			A2($elm$json$Json$Decode$field, 'tagName', $elm$json$Json$Decode$string),
-			A2($elm$json$Json$Decode$field, 'width', $elm$json$Json$Decode$float),
-			A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$float));
-	},
-	$elm$json$Json$Decode$value);
 var $joakin$elm_canvas$Canvas$Internal$Texture$decodeImageLoadEvent = A2($elm$json$Json$Decode$field, 'target', $joakin$elm_canvas$Canvas$Internal$Texture$decodeTextureImage);
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -7553,10 +7754,18 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 		function (width) {
 			return A2(
 				$elm$json$Json$Decode$andThen,
-				function (height) {
-					return $elm$json$Json$Decode$succeed(
-						{height: height, width: width});
+				function (images) {
+					return A2(
+						$elm$json$Json$Decode$andThen,
+						function (height) {
+							return $elm$json$Json$Decode$succeed(
+								{height: height, images: images, width: width});
+						},
+						A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$float));
 				},
-				A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$float));
+				A2(
+					$elm$json$Json$Decode$field,
+					'images',
+					$elm$json$Json$Decode$list($elm$json$Json$Decode$value)));
 		},
 		A2($elm$json$Json$Decode$field, 'width', $elm$json$Json$Decode$float)))(0)}});}(this));

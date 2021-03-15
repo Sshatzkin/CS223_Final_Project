@@ -1,9 +1,11 @@
 module ViewHelpers exposing (..)
 
+import Array exposing (Array, get)
 import Canvas exposing (rect, shapes, text)
 import Canvas.Settings exposing (fill)
 import Canvas.Settings.Text exposing (font, align, TextAlign(..))
 import Canvas.Settings.Advanced exposing (rotate, transform, translate)
+import Canvas.Texture exposing (fromDomImage, Source, Texture)
 import Color
 import Html
 import Html exposing (Html, div, br)
@@ -64,7 +66,7 @@ plantColor p =
     Tomato -> Color.red
     Pumpkin -> Color.orange
     Carrot -> Color.orange
-    Raddish -> Color.purple
+    Radish -> Color.purple
     Pepper ->
       case (modBy 4 (p.quantity - 1)) of
         0 -> Color.green
@@ -72,6 +74,32 @@ plantColor p =
         2 -> Color.orange
         3 -> Color.red
         _ -> Color.green
+
+{-
+  Searches the given array of plant textures for the given plant type
+
+  Input:
+   p -- plant
+   tarray -- array of textures (images)
+  
+  Output:
+   Texture corresponding to the given plant
+-}
+plantImage : Plant -> Array Texture -> Maybe Texture
+plantImage p tarray =
+  case p.ptype of
+    Corn -> Array.get 0 tarray
+    Tomato -> get 1 tarray
+    Pumpkin -> get 2 tarray
+    Carrot -> get 3 tarray
+    Radish -> get 4 tarray
+    Pepper ->
+      case (modBy 4 (p.quantity - 1)) of
+        0 -> get 5 tarray
+        1 -> get 6 tarray
+        2 -> get 7 tarray
+        3 -> get 8 tarray
+        _ -> get 5 tarray
 
 -- FARM DISPLAY FUNCTIONS -- 
 
@@ -97,7 +125,12 @@ displayFarm m =
     [ Canvas.toHtml (truncate w.width, truncate w.height) 
       [Mouse.onClick Click]
       ((renderBG m)::(displayFarmText w coins) ++ (renderButtons m))
+
     ]
+
+displayImages : List Texture -> List Canvas.Renderable
+displayImages textures = 
+  List.map (\t -> (Canvas.texture [] (50, 50) t)) textures
 
 {-
   Creates a renderable for the canvas background
@@ -140,16 +173,24 @@ displayFarmText w coins =
   Output:
     Canvas.Renderable of button
 -}    
-renderPlot : PlotSize -> Button -> Plant -> Canvas.Renderable
-renderPlot ps b p =
+renderPlot : PlotSize -> Button -> Plant -> List Texture -> Canvas.Renderable
+renderPlot ps b p imgs =
   -- Want to render differently if purchased or not
-  if p.purchased && (p.countdown == 0)
+  if p.purchased --&& (p.countdown == 0)
   then
       let
         color = plantColor p
-        --fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
+        planticon = plantImage p (Array.fromList imgs)
       in
-        shapes [ fill color ] [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height)]
+        case planticon of
+          Nothing -> --could not find a corresponding plant image
+            shapes [ fill color ] 
+                   [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height)]
+          Just i -> 
+            Canvas.texture [] 
+                           ( b.x
+                           , b.y) 
+                           i 
     else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
 
 {-
@@ -179,11 +220,19 @@ renderQuantity ps b p =
        ( b.x + 0.875 * ps.width, b.y + 0.3 * ps.height)
        ( fromInt p.quantity)
 
+{-
+  Produces the text display of the selling price of the plant
+-}
 renderSellingPrice : PlotSize -> Button -> Plant -> Canvas.Renderable
 renderSellingPrice ps b p =
   text [ font { size = 16, family = "sans-serif" }, align Center]
        ( b.x + 0.875 * ps.width, b.y + 0.6 * ps.height)
        ( "at $" ++ fromInt p.value)
+
+{-
+  Produces the text display of the initial price of a plant 
+  if it has not yet been purchased
+-}
 renderInitialPrice : PlotSize -> Button -> Plant -> Canvas.Renderable
 renderInitialPrice ps b p =
   if p.purchased 
@@ -215,6 +264,13 @@ renderUpgrade b p =
   else 
     [shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]]
 
+--Testing Canvas Textures
+{-
+renderImage : Plant -> Canvas.Renderable
+renderImage p =
+  loadFromImageUrl "https://homepages.cae.wisc.edu/~ece533/images/monarch.png"
+-}
+
 {-
   Converts a list of buttons into a list of Canvas Renderables
 
@@ -225,8 +281,8 @@ renderUpgrade b p =
   Output:
     Canvas.Renderable of button
 -}
-renderButtonList : PlotSize -> List Button -> List Plant -> List (Canvas.Renderable)
-renderButtonList p bs ps =
+renderButtonList : PlotSize -> List Button -> List Plant -> List Texture -> List (Canvas.Renderable)
+renderButtonList p bs ps imgs =
   let
     foo b =
       case b.btype of
@@ -234,7 +290,7 @@ renderButtonList p bs ps =
           let 
             plant = P.getPlant ptype ps 
           in
-            renderPlot p b plant 
+            renderPlot p b plant imgs 
             :: (renderQuantity p b plant) 
             :: (renderInitialPrice p b plant)
             :: (renderSellingPrice p b plant)
@@ -258,6 +314,7 @@ renderButtons m =
   let
     -- Get list of buttons from current page
     buttonPage = (getButtonPage m.page m.buttons)
+    textures = List.filterMap fromDomImage m.images
   in
     -- Render the list of buttons
-    renderButtonList m.plotSize buttonPage m.plants
+    renderButtonList m.plotSize buttonPage m.plants textures

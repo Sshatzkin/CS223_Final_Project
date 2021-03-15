@@ -5,9 +5,7 @@ import Plants as P exposing (Plant)
 import Page exposing (Page(..))
 import Page as Pa 
 import Window exposing (..)
-
-
-
+import Json.Decode
 
   ---- MODEL ---- 
 type alias Model =
@@ -17,7 +15,8 @@ type alias Model =
     , plants : List Plant -- The current list of a player's plants.
     , page : Page --The current game page
     , buttons : Buttons -- All current game buttons (accross all pages)
-    , plotSize : PlotSize } -- The dimensions of a plot for rendering graphics
+    , plotSize : PlotSize -- The dimensions of a plot for rendering graphics
+    , images : List Json.Decode.Value } --The images loaded in from JS
 
 ---- FLAGS ---- 
 {-
@@ -26,6 +25,7 @@ type alias Model =
 type alias Flags =
     { width : Float
     , height : Float
+    , images : List Json.Decode.Value
     }
 
 ---- INITIALIZATION ----
@@ -45,4 +45,5 @@ initModel flag =
     , page = Farm
     , buttons = (initialButtons flag.width flag.height 150 120 initPlants) -- We define initialButtons in the Button module
     , plotSize = newPlotSize 150 120
+    , images = flag.images
     }

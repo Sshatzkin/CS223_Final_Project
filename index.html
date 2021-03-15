@@ -34,13 +34,43 @@
 
       containerHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
       containerWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
+      
+      // Loading in image URLs
+      // Credit to: https://github.com/joakin/elm-canvas/commit/138b9ea4120999d1c77a400f212d15eba39644e5
+      function loadImage(src) {
+        return new Promise((resolve, reject) => {
+          let image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = (err) => reject(err);
+          image.src = src;
+        });
+      }
 
+      let imageUrls = [ "https://i.postimg.cc/mgHV47f1/corn.png"
+                      , "https://i.postimg.cc/pVBL0Smp/tomato.png"
+                      , "https://i.postimg.cc/9FFFsB91/pumpkin.png"]
 
-      var flags = container.offsetHeight < 100 ? {width: window.innerWidth, height: window.innerHeight - 5} : {width: containerWidth, height: containerHeight};
-      var app = Elm.Main.init(
-        { node: node
-        , flags : flags
-      })
+      var ht = container.offsetHeight < 100 ? window.innerHeight - 5 : containerHeight
+      var wd = container.offsetHeight < 100 ? window.innerWidth : containerWidth
+
+      Promise.all(imageUrls.map(loadImage))
+        .then((imgs) => {
+          let app = Elm.Main.init(
+            { node: node
+            , flags : {width: wd, height: ht, images: imgs}
+            }
+          );
+        })
+        .catch((err) => alert ("Failed to load images\n\n" + err.path.map((i) => i.src).join("\n")));
+        
+     //var flags = container.offsetHeight < 100 
+     //             ? {width: window.innerWidth, height: window.innerHeight - 5} 
+     //             : {width: containerWidth, height: containerHeight};
+     // var app = Elm.Main.init(
+     //   { node: node
+     //   , flags : flags
+     // })
+
     </script>
 </body>
 
