@@ -12,7 +12,7 @@ import Html.Events as Events
 import Html.Events.Extra.Mouse as Mouse
 
 -- Our Libraries
-import Window exposing (Window)
+import Window exposing (Window, PlotSize)
 import Msg exposing (Msg(..))
 import Model exposing (Model)
 import Page exposing (Page(..))
@@ -74,7 +74,6 @@ displayFarm m =
       ((renderBG m)::(displayFarmText w coins) ++ (renderButtons m))
     ]
 
-
 {-
   Creates a renderable for the canvas background
 -}
@@ -117,45 +116,89 @@ displayFarmText w coins =
   Output:
     Canvas.Renderable of button
 -}
-renderPlot : Button -> Plant -> Canvas.Renderable
-renderPlot b p =
+
+{-
+  Determines the plant color based on the plant type
+
+  Input:
+    p - plant
+
+  Output
+    Color
+-}
+plantColor : Plant -> Color.Color
+plantColor p = 
+  case p.ptype of
+    Corn -> Color.yellow
+    Tomato -> Color.red
+    Pumpkin -> Color.orange
+    Carrot -> Color.orange
+    Raddish -> Color.purple
+    Pepper ->
+      case (modBy 4 (p.quantity - 1)) of
+        0 -> Color.green
+        1 -> Color.yellow
+        2 -> Color.orange
+        3 -> Color.red
+        _ -> Color.green
+      
+renderPlot : PlotSize -> Button -> Plant -> Canvas.Renderable
+renderPlot ps b p =
   -- Want to render differently if purchased or not
-  if p.purchased
+  if p.purchased && (p.countdown == 0)
   then
       let
-        color = case p.ptype of
-          Corn -> Color.yellow
-          Tomato -> Color.red
-          Pumpkin -> Color.orange
-          Carrot -> Color.orange
-          Raddish -> Color.purple
-          Pepper ->
-            case (modBy 4 (p.quantity - 1)) of
-               0 -> Color.green
-               1 -> Color.yellow
-               2 -> Color.orange
-               3 -> Color.red
-               _ -> Color.green
-        fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
+        color = plantColor p
+        --fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
       in
-        shapes [ fill color ] [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height * fillPercent) ]
+        shapes [ fill color ] [ rect ( b.x, (b.height + b.y)) b.width (-1 * b.height)]
     else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
 
 {-
-  Produces a Canvas Renderable from a single upgrade button
+  Renders the progress bar
+-}
+renderProgress : PlotSize -> Button -> Plant -> Canvas.Renderable
+renderProgress ps b p =
+  if p.purchased then
+    let
+      color = plantColor p
+      fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
+    in
+      shapes [fill color] [rect ( b.x + 0.6 * ps.width, (ps.height + b.y)) 
+                                (0.15 * ps.width) 
+                                (-1 * ps.height * fillPercent)]
+  else 
+    shapes [fill Color.gray] [rect ( b.x, b.y ) b.width 0]
+
+{-
+  Renders the plant quantity, which is displayed
+-}
+renderQuantity : PlotSize -> Button -> Plant -> Canvas.Renderable
+renderQuantity ps b p =
+  text [ font { size = 24, family = "sans-serif" }, align Center] --text settings
+       (b.x + 0.875 * ps.width, b.y + 30)
+       (fromInt p.quantity)
+
+{-
+  Produces a List of Canvas Renderables from a single upgrade button
 
   Args:
     b - button
     p - Plant
 
   Output:
-    Canvas.Renderable of button
+    Canvas.Renderable of button with upgrade price text
 -}
-renderUpgrade : Button -> Plant -> Canvas.Renderable
+renderUpgrade : Button -> Plant -> List (Canvas.Renderable)
 renderUpgrade b p = 
   if p.purchased
-  then shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width b.height]
-  else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
+  then 
+    shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width b.height]
+    :: [(text [ font { size = 14, family = "sans-serif" }] 
+              (b.x + 5, b.y + 15) 
+              ("Buy for $" ++ (fromInt (round p.upgradePrice))))]
+  else 
+    [shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]]
 
 {-
   Converts a list of buttons into a list of Canvas Renderables
@@ -167,17 +210,22 @@ renderUpgrade b p =
   Output:
     Canvas.Renderable of button
 -}
-renderButtonList : List Button -> List Plant -> List (Canvas.Renderable)
-renderButtonList bs ps =
+renderButtonList : PlotSize -> List Button -> List Plant -> List (Canvas.Renderable)
+renderButtonList p bs ps =
   let
     foo b =
       case b.btype of
         Plot ptype -> 
-          renderPlot b (P.getPlant ptype ps)
+          let 
+            plant = P.getPlant ptype ps 
+          in
+            renderPlot p b plant 
+            :: (renderQuantity p b plant) 
+            :: [renderProgress p b plant]
         Upgrade ptype -> 
           renderUpgrade b (P.getPlant ptype ps)
   in
-    List.map foo bs
+    List.concatMap foo bs
 
 {-
   Produces a list of Canvas Renderables representing all buttons on the current page
@@ -195,4 +243,4 @@ renderButtons m =
     buttonPage = (getButtonPage m.page m.buttons)
   in
     -- Render the list of buttons
-    renderButtonList buttonPage m.plants
+    renderButtonList m.plotSize buttonPage m.plants

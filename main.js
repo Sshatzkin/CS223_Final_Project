@@ -5162,7 +5162,7 @@ var $author$project$Plants$newPlant = F5(
 			price: p,
 			ptype: ptype,
 			purchased: false,
-			quantity: 1,
+			quantity: 0,
 			upgradePrice: A2($author$project$Plants$upgradeScale, 0, p),
 			value: val
 		};
@@ -5203,12 +5203,11 @@ var $author$project$Button$newButton = F5(
 	function (x, y, width, height, btype) {
 		return {btype: btype, height: height, width: width, x: x, y: y};
 	});
-var $author$project$Button$farmButtons = F3(
-	function (width, height, ptypes) {
+var $author$project$Button$farmButtons = F5(
+	function (width, height, plotwidth, plotheight, ptypes) {
 		var yShift = height / 4;
-		var upgradeHeight = 20;
-		var plotwidth = 100;
-		var plotheight = 100;
+		var upgradeHeight = plotheight * 0.15;
+		var progScalar = plotwidth / 8;
 		var numRows = 2;
 		var numPlotsPerRow = 3;
 		var widthMult = width / numPlotsPerRow;
@@ -5220,8 +5219,8 @@ var $author$project$Button$farmButtons = F3(
 					$author$project$Button$newButton,
 					(A2($elm$core$Basics$modBy, numPlotsPerRow, i) * widthMult) + xShift,
 					(heightMult * ((i / numPlotsPerRow) | 0)) + yShift,
-					plotwidth,
-					plotheight,
+					plotwidth * 0.55,
+					plotheight * 0.8,
 					$author$project$Button$Plot(p));
 			});
 		var makeUpgrade = F2(
@@ -5229,8 +5228,8 @@ var $author$project$Button$farmButtons = F3(
 				return A5(
 					$author$project$Button$newButton,
 					(A2($elm$core$Basics$modBy, numPlotsPerRow, i) * widthMult) + xShift,
-					(((heightMult * ((i / numPlotsPerRow) | 0)) + yShift) + plotheight) + 5,
-					plotwidth,
+					((heightMult * ((i / numPlotsPerRow) | 0)) + yShift) + (plotheight - (plotheight * 0.15)),
+					plotwidth * 0.55,
 					upgradeHeight,
 					$author$project$Button$Upgrade(p));
 			});
@@ -5257,16 +5256,22 @@ var $author$project$Plants$getPTypes = function (plants) {
 		},
 		plants);
 };
-var $author$project$Button$initialButtons = F3(
-	function (width, height, plants) {
+var $author$project$Button$initialButtons = F5(
+	function (width, height, pwidth, pheight, plants) {
 		return _List_fromArray(
 			[
-				A3(
+				A5(
 				$author$project$Button$farmButtons,
 				width,
 				height,
+				pwidth,
+				pheight,
 				$author$project$Plants$getPTypes(plants))
 			]);
+	});
+var $author$project$Window$newPlotSize = F2(
+	function (w, h) {
+		return {height: h, width: w};
 	});
 var $author$project$Window$newWindow = F2(
 	function (w, h) {
@@ -5275,11 +5280,12 @@ var $author$project$Window$newWindow = F2(
 var $author$project$Model$initModel = function (flag) {
 	var initPlants = $author$project$Plants$initPlants;
 	return {
-		buttons: A3($author$project$Button$initialButtons, flag.width, flag.height, initPlants),
+		buttons: A5($author$project$Button$initialButtons, flag.width, flag.height, 150, 120, initPlants),
 		coins: 5,
 		frame: 0,
 		page: $author$project$Page$Farm,
 		plants: initPlants,
+		plotSize: A2($author$project$Window$newPlotSize, 150, 120),
 		window: A2($author$project$Window$newWindow, flag.width, flag.height)
 	};
 };
@@ -5894,8 +5900,8 @@ var $author$project$Button$clickedAnyButton = F4(
 				return _Debug_todo(
 					'Button',
 					{
-						start: {line: 157, column: 12},
-						end: {line: 157, column: 22}
+						start: {line: 154, column: 12},
+						end: {line: 154, column: 22}
 					})('TWO OR MORE BUTTONS WERE CLICKED THIS SHOULD NOT HAPPEN');
 			}
 		}
@@ -5969,7 +5975,7 @@ var $elm$core$Basics$not = _Basics_not;
 var $author$project$Plants$togglePurchase = function (p) {
 	return _Utils_update(
 		p,
-		{purchased: !p.purchased});
+		{purchased: !p.purchased, quantity: 1});
 };
 var $author$project$Plants$plotClicked = F3(
 	function (plants, ptype, coins) {
@@ -6523,45 +6529,50 @@ var $author$project$ViewHelpers$renderBG = function (m) {
 				m.window.height)
 			]));
 };
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
 var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
 var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
 var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
 var $avh4$elm_color$Color$purple = A4($avh4$elm_color$Color$RgbaSpace, 117 / 255, 80 / 255, 123 / 255, 1.0);
 var $avh4$elm_color$Color$red = A4($avh4$elm_color$Color$RgbaSpace, 204 / 255, 0 / 255, 0 / 255, 1.0);
 var $avh4$elm_color$Color$yellow = A4($avh4$elm_color$Color$RgbaSpace, 237 / 255, 212 / 255, 0 / 255, 1.0);
-var $author$project$ViewHelpers$renderPlot = F2(
-	function (b, p) {
-		if (p.purchased) {
-			var fillPercent = (p.matAge - p.countdown) / p.matAge;
-			var color = function () {
-				var _v0 = p.ptype;
-				switch (_v0.$) {
-					case 'Corn':
-						return $avh4$elm_color$Color$yellow;
-					case 'Tomato':
-						return $avh4$elm_color$Color$red;
-					case 'Pumpkin':
-						return $avh4$elm_color$Color$orange;
-					case 'Carrot':
-						return $avh4$elm_color$Color$orange;
-					case 'Raddish':
-						return $avh4$elm_color$Color$purple;
-					default:
-						var _v1 = A2($elm$core$Basics$modBy, 4, p.quantity - 1);
-						switch (_v1) {
-							case 0:
-								return $avh4$elm_color$Color$green;
-							case 1:
-								return $avh4$elm_color$Color$yellow;
-							case 2:
-								return $avh4$elm_color$Color$orange;
-							case 3:
-								return $avh4$elm_color$Color$red;
-							default:
-								return $avh4$elm_color$Color$green;
-						}
-				}
-			}();
+var $author$project$ViewHelpers$plantColor = function (p) {
+	var _v0 = p.ptype;
+	switch (_v0.$) {
+		case 'Corn':
+			return $avh4$elm_color$Color$yellow;
+		case 'Tomato':
+			return $avh4$elm_color$Color$red;
+		case 'Pumpkin':
+			return $avh4$elm_color$Color$orange;
+		case 'Carrot':
+			return $avh4$elm_color$Color$orange;
+		case 'Raddish':
+			return $avh4$elm_color$Color$purple;
+		default:
+			var _v1 = A2($elm$core$Basics$modBy, 4, p.quantity - 1);
+			switch (_v1) {
+				case 0:
+					return $avh4$elm_color$Color$green;
+				case 1:
+					return $avh4$elm_color$Color$yellow;
+				case 2:
+					return $avh4$elm_color$Color$orange;
+				case 3:
+					return $avh4$elm_color$Color$red;
+				default:
+					return $avh4$elm_color$Color$green;
+			}
+	}
+};
+var $author$project$ViewHelpers$renderPlot = F3(
+	function (ps, b, p) {
+		if (p.purchased && (!p.countdown)) {
+			var color = $author$project$ViewHelpers$plantColor(p);
 			return A2(
 				$joakin$elm_canvas$Canvas$shapes,
 				_List_fromArray(
@@ -6574,7 +6585,7 @@ var $author$project$ViewHelpers$renderPlot = F2(
 						$joakin$elm_canvas$Canvas$rect,
 						_Utils_Tuple2(b.x, b.height + b.y),
 						b.width,
-						((-1) * b.height) * fillPercent)
+						(-1) * b.height)
 					]));
 		} else {
 			return A2(
@@ -6593,46 +6604,120 @@ var $author$project$ViewHelpers$renderPlot = F2(
 					]));
 		}
 	});
+var $author$project$ViewHelpers$renderProgress = F3(
+	function (ps, b, p) {
+		if (p.purchased) {
+			var fillPercent = (p.matAge - p.countdown) / p.matAge;
+			var color = $author$project$ViewHelpers$plantColor(p);
+			return A2(
+				$joakin$elm_canvas$Canvas$shapes,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$fill(color)
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$rect,
+						_Utils_Tuple2(b.x + (0.6 * ps.width), ps.height + b.y),
+						0.15 * ps.width,
+						((-1) * ps.height) * fillPercent)
+					]));
+		} else {
+			return A2(
+				$joakin$elm_canvas$Canvas$shapes,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$gray)
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$rect,
+						_Utils_Tuple2(b.x, b.y),
+						b.width,
+						0)
+					]));
+		}
+	});
+var $author$project$ViewHelpers$renderQuantity = F3(
+	function (ps, b, p) {
+		return A3(
+			$joakin$elm_canvas$Canvas$text,
+			_List_fromArray(
+				[
+					$joakin$elm_canvas$Canvas$Settings$Text$font(
+					{family: 'sans-serif', size: 24}),
+					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
+				]),
+			_Utils_Tuple2(b.x + (0.875 * ps.width), b.y + 30),
+			$elm$core$String$fromInt(p.quantity));
+	});
 var $author$project$ViewHelpers$renderUpgrade = F2(
 	function (b, p) {
 		return p.purchased ? A2(
-			$joakin$elm_canvas$Canvas$shapes,
-			_List_fromArray(
-				[
-					$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$green)
-				]),
-			_List_fromArray(
-				[
-					A3(
-					$joakin$elm_canvas$Canvas$rect,
-					_Utils_Tuple2(b.x, b.y),
-					b.width,
-					b.height)
-				])) : A2(
-			$joakin$elm_canvas$Canvas$shapes,
-			_List_fromArray(
-				[
-					$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$gray)
-				]),
+			$elm$core$List$cons,
+			A2(
+				$joakin$elm_canvas$Canvas$shapes,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$green)
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$rect,
+						_Utils_Tuple2(b.x, b.y),
+						b.width,
+						b.height)
+					])),
 			_List_fromArray(
 				[
 					A3(
-					$joakin$elm_canvas$Canvas$rect,
-					_Utils_Tuple2(b.x, b.y),
-					b.width,
-					b.height)
-				]));
+					$joakin$elm_canvas$Canvas$text,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Text$font(
+							{family: 'sans-serif', size: 14})
+						]),
+					_Utils_Tuple2(b.x + 5, b.y + 15),
+					'Buy for $' + $elm$core$String$fromInt(
+						$elm$core$Basics$round(p.upgradePrice)))
+				])) : _List_fromArray(
+			[
+				A2(
+				$joakin$elm_canvas$Canvas$shapes,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$gray)
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$rect,
+						_Utils_Tuple2(b.x, b.y),
+						b.width,
+						b.height)
+					]))
+			]);
 	});
-var $author$project$ViewHelpers$renderButtonList = F2(
-	function (bs, ps) {
+var $author$project$ViewHelpers$renderButtonList = F3(
+	function (p, bs, ps) {
 		var foo = function (b) {
 			var _v0 = b.btype;
 			if (_v0.$ === 'Plot') {
 				var ptype = _v0.a;
+				var plant = A2($author$project$Plants$getPlant, ptype, ps);
 				return A2(
-					$author$project$ViewHelpers$renderPlot,
-					b,
-					A2($author$project$Plants$getPlant, ptype, ps));
+					$elm$core$List$cons,
+					A3($author$project$ViewHelpers$renderPlot, p, b, plant),
+					A2(
+						$elm$core$List$cons,
+						A3($author$project$ViewHelpers$renderQuantity, p, b, plant),
+						_List_fromArray(
+							[
+								A3($author$project$ViewHelpers$renderProgress, p, b, plant)
+							])));
 			} else {
 				var ptype = _v0.a;
 				return A2(
@@ -6641,11 +6726,11 @@ var $author$project$ViewHelpers$renderButtonList = F2(
 					A2($author$project$Plants$getPlant, ptype, ps));
 			}
 		};
-		return A2($elm$core$List$map, foo, bs);
+		return A2($elm$core$List$concatMap, foo, bs);
 	});
 var $author$project$ViewHelpers$renderButtons = function (m) {
 	var buttonPage = A2($author$project$Button$getButtonPage, m.page, m.buttons);
-	return A2($author$project$ViewHelpers$renderButtonList, buttonPage, m.plants);
+	return A3($author$project$ViewHelpers$renderButtonList, m.plotSize, buttonPage, m.plants);
 };
 var $elm$html$Html$canvas = _VirtualDom_node('canvas');
 var $joakin$elm_canvas$Canvas$cnvs = A2($elm$html$Html$canvas, _List_Nil, _List_Nil);

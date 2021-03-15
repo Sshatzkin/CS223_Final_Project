@@ -17,7 +17,7 @@ type alias Model =
     , plants : List Plant -- The current list of a player's plants.
     , page : Page --The current game page
     , buttons : Buttons -- All current game buttons (accross all pages)
-    }
+    , plotSize : PlotSize } -- The dimensions of a plot for rendering graphics
 
 ---- FLAGS ---- 
 {-
@@ -43,5 +43,6 @@ initModel flag =
     , coins = 5
     , plants = initPlants -- We define initial plants in Plants module
     , page = Farm
-    , buttons = (initialButtons flag.width flag.height initPlants) -- We define initialButtons in the Button module
+    , buttons = (initialButtons flag.width flag.height 150 120 initPlants) -- We define initialButtons in the Button module
+    , plotSize = newPlotSize 150 120
     }

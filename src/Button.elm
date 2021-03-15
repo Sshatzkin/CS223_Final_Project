@@ -55,19 +55,17 @@ newButton x y width height btype =
   Returns ->
     a Farm button page
 -}
-farmButtons : Float -> Float -> List PType -> ButtonPage
-farmButtons width height ptypes =
+farmButtons : Float -> Float -> Float -> Float -> List PType -> ButtonPage
+farmButtons width height plotwidth plotheight ptypes =
   let
     -- Define a few constants for setting button locations
     numPlotsPerRow = 3
     numRows = 2
-    plotwidth = 100
-    plotheight = 100
-    upgradeHeight = 20
+    upgradeHeight = plotheight * 0.15--20
     widthMult = (width / numPlotsPerRow)  -- The "spacing" between each col's x-values
     xShift = (widthMult - plotwidth) / 2 -- The buffer before the first col
     yShift = height / 4 -- The buffer between the top and the first row
-
+    progScalar = plotwidth / 8 -- The multiplier for the progress bar in each plot
     heightMult = (height - yShift) / (toFloat numRows) -- The "spacing" between each row's y-values
     _ = Debug.log "Height" heightMult
 
@@ -77,8 +75,8 @@ farmButtons width height ptypes =
       newButton 
         (((toFloat (modBy numPlotsPerRow i)) * widthMult) + xShift) 
         ((heightMult) * (toFloat (i // numPlotsPerRow)) + yShift)
-        (toFloat (plotwidth)) 
-        (toFloat (plotheight)) 
+        ((plotwidth) * 0.55)
+        (plotheight * 0.8) 
         (Plot p)
 
     -- This function generates an upgrade button
@@ -86,11 +84,10 @@ farmButtons width height ptypes =
     makeUpgrade i p =
       newButton
         (((toFloat (modBy numPlotsPerRow i)) * widthMult) + xShift) 
-        ((heightMult) * (toFloat (i // numPlotsPerRow)) + yShift + plotheight + 5)
-        (toFloat (plotwidth)) 
-        (toFloat (upgradeHeight)) 
+        ((heightMult) * (toFloat (i // numPlotsPerRow)) + yShift + (plotheight - (plotheight * 0.15)))
+        (plotwidth * 0.55) 
+        (upgradeHeight)
         (Upgrade p)
-
     makeButtons i p =
       [makePlot i p, makeUpgrade i p]
   in
@@ -98,10 +95,10 @@ farmButtons width height ptypes =
 
   
 -- Initializes the model's buttons field
-initialButtons : Float -> Float -> List Plant -> Buttons
-initialButtons width height plants =
+initialButtons : Float -> Float -> Float -> Float -> List Plant -> Buttons
+initialButtons width height pwidth pheight plants =
   -- Right now, we only have one page of buttons
-  [farmButtons width height (getPTypes plants)]
+  [farmButtons width height pwidth pheight (getPTypes plants)]
 
 
 ---- BUTTON HANDLING FUNCTIONS ----

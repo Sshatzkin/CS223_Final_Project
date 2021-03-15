@@ -58,7 +58,7 @@ newPlant ptype name p val matAge =
   , matAge = matAge
   , ptype = ptype
   , purchased = False -- Initialized to False
-  , quantity = 1 -- Initialized to 0
+  , quantity = 0 -- Initialized to 0
   , upgradePrice = upgradeScale 0 (toFloat p)
   }
 
@@ -227,7 +227,7 @@ resetAge p =
 -}
 togglePurchase : Plant -> Plant
 togglePurchase p =
-  {p | purchased = not p.purchased}
+  {p | purchased = not p.purchased, quantity = 1}
 
 {-
   Defines the rate at which the price of an upgrade increases
