@@ -5242,14 +5242,14 @@ var $author$project$Button$newButton = F5(
 	});
 var $author$project$Button$farmButtons = F5(
 	function (width, height, plotwidth, plotheight, ptypes) {
-		var yShift = height / 4;
+		var yShift = height * (2 / 7);
 		var upgradeHeight = plotheight * 0.15;
 		var progScalar = plotwidth / 8;
 		var numRows = 2;
 		var numPlotsPerRow = 3;
 		var widthMult = width / numPlotsPerRow;
 		var xShift = (widthMult - plotwidth) / 2;
-		var heightMult = (height - yShift) / numRows;
+		var heightMult = (height - (yShift * 1.25)) / numRows;
 		var makePlot = F2(
 			function (i, p) {
 				return A5(
@@ -6162,7 +6162,7 @@ var $author$project$ViewHelpers$frameToTime = function (count) {
 var $author$project$Msg$Click = function (a) {
 	return {$: 'Click', a: a};
 };
-var $joakin$elm_canvas$Canvas$Settings$Text$Center = {$: 'Center'};
+var $joakin$elm_canvas$Canvas$Settings$Text$Left = {$: 'Left'};
 var $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommand = function (a) {
 	return {$: 'SettingCommand', a: a};
 };
@@ -6373,30 +6373,10 @@ var $author$project$ViewHelpers$displayFarmText = F2(
 				_List_fromArray(
 					[
 						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'monospace', size: 24}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
+						{family: 'HP simplified', size: 24}),
+						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Left)
 					]),
-				_Utils_Tuple2(w.width / 2, w.height / 10),
-				' Welcome to Mr. Chickie\'s Farm!'),
-				A3(
-				$joakin$elm_canvas$Canvas$text,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'monospace', size: 24}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
-					]),
-				_Utils_Tuple2(w.width / 2, w.height / 6),
-				' Grow plants and harvest them to earn money. '),
-				A3(
-				$joakin$elm_canvas$Canvas$text,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'monospace', size: 24}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
-					]),
-				_Utils_Tuple2(w.width / 2, w.height - 10),
+				_Utils_Tuple2(10, w.height - 10),
 				' Coins = ' + $elm$core$String$fromInt(coins))
 			]);
 	});
@@ -6558,7 +6538,7 @@ var $author$project$ViewHelpers$renderBG = function (m) {
 		_List_fromArray(
 			[
 				$joakin$elm_canvas$Canvas$Settings$fill(
-				A3($avh4$elm_color$Color$rgb255, 128, 255, 235))
+				A3($avh4$elm_color$Color$rgb255, 144, 218, 154))
 			]),
 		_List_fromArray(
 			[
@@ -6613,28 +6593,6 @@ var $joakin$elm_canvas$Canvas$Texture$fromDomImage = function (value) {
 		$elm$core$Result$toMaybe(
 			A2($elm$json$Json$Decode$decodeValue, $joakin$elm_canvas$Canvas$Internal$Texture$decodeTextureImage, value)));
 };
-var $elm$core$List$concatMap = F2(
-	function (f, list) {
-		return $elm$core$List$concat(
-			A2($elm$core$List$map, f, list));
-	});
-var $author$project$ViewHelpers$renderInitialPrice = F3(
-	function (ps, b, p) {
-		return p.purchased ? A3(
-			$joakin$elm_canvas$Canvas$text,
-			_List_Nil,
-			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
-			'') : A3(
-			$joakin$elm_canvas$Canvas$text,
-			_List_fromArray(
-				[
-					$joakin$elm_canvas$Canvas$Settings$Text$font(
-					{family: 'sans-serif', size: 24}),
-					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
-				]),
-			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
-			'$' + $elm$core$String$fromInt(p.price));
-	});
 var $elm$core$Array$fromListHelp = F3(
 	function (list, nodeList, nodeListSize) {
 		fromListHelp:
@@ -6670,7 +6628,163 @@ var $elm$core$Array$fromList = function (list) {
 		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
 	}
 };
-var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
+var $author$project$ViewHelpers$plantTextures = function (m) {
+	return $elm$core$Array$fromList(
+		A2(
+			$elm$core$List$take,
+			4,
+			A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images)));
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
+var $joakin$elm_canvas$Canvas$Settings$Text$Center = {$: 'Center'};
+var $author$project$ViewHelpers$renderInitialPrice = F3(
+	function (ps, b, p) {
+		return p.purchased ? A3(
+			$joakin$elm_canvas$Canvas$text,
+			_List_Nil,
+			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
+			'') : A3(
+			$joakin$elm_canvas$Canvas$text,
+			_List_fromArray(
+				[
+					$joakin$elm_canvas$Canvas$Settings$Text$font(
+					{family: 'HP simplified', size: 24}),
+					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
+				]),
+			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
+			'$' + $elm$core$String$fromInt(p.price));
+	});
+var $avh4$elm_color$Color$brown = A4($avh4$elm_color$Color$RgbaSpace, 193 / 255, 125 / 255, 17 / 255, 1.0);
 var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
 var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
 var $avh4$elm_color$Color$purple = A4($avh4$elm_color$Color$RgbaSpace, 117 / 255, 80 / 255, 123 / 255, 1.0);
@@ -6874,10 +6988,7 @@ var $joakin$elm_canvas$Canvas$texture = F3(
 var $author$project$ViewHelpers$renderPlot = F4(
 	function (ps, b, p, imgs) {
 		if (p.purchased) {
-			var planticon = A2(
-				$author$project$ViewHelpers$plantImage,
-				p,
-				$elm$core$Array$fromList(imgs));
+			var planticon = A2($author$project$ViewHelpers$plantImage, p, imgs);
 			var color = $author$project$ViewHelpers$plantColor(p);
 			if (planticon.$ === 'Nothing') {
 				return A2(
@@ -6919,7 +7030,7 @@ var $author$project$ViewHelpers$renderPlot = F4(
 				$joakin$elm_canvas$Canvas$shapes,
 				_List_fromArray(
 					[
-						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$gray)
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$brown)
 					]),
 				_List_fromArray(
 					[
@@ -6931,6 +7042,7 @@ var $author$project$ViewHelpers$renderPlot = F4(
 					]));
 		}
 	});
+var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
 var $author$project$ViewHelpers$renderProgress = F3(
 	function (ps, b, p) {
 		if (p.purchased) {
@@ -6974,7 +7086,7 @@ var $author$project$ViewHelpers$renderQuantity = F3(
 			_List_fromArray(
 				[
 					$joakin$elm_canvas$Canvas$Settings$Text$font(
-					{family: 'sans-serif', size: 24}),
+					{family: 'HP simplified', size: 24}),
 					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
 				]),
 			_Utils_Tuple2(b.x + (0.875 * ps.width), b.y + (0.3 * ps.height)),
@@ -6987,14 +7099,14 @@ var $author$project$ViewHelpers$renderSellingPrice = F3(
 			_List_fromArray(
 				[
 					$joakin$elm_canvas$Canvas$Settings$Text$font(
-					{family: 'sans-serif', size: 16}),
+					{family: 'HP simplified', size: 16}),
 					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
 				]),
-			_Utils_Tuple2(b.x + (0.875 * ps.width), b.y + (0.6 * ps.height)),
+			_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.6 * ps.height)),
 			'at $' + $elm$core$String$fromInt(p.value));
 	});
-var $author$project$ViewHelpers$renderUpgrade = F2(
-	function (b, p) {
+var $author$project$ViewHelpers$renderUpgrade = F3(
+	function (ps, b, p) {
 		return p.purchased ? A2(
 			$elm$core$List$cons,
 			A2(
@@ -7018,9 +7130,10 @@ var $author$project$ViewHelpers$renderUpgrade = F2(
 					_List_fromArray(
 						[
 							$joakin$elm_canvas$Canvas$Settings$Text$font(
-							{family: 'sans-serif', size: 14})
+							{family: 'HP simplified', size: 14}),
+							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
 						]),
-					_Utils_Tuple2(b.x + 5, b.y + 15),
+					_Utils_Tuple2(b.x + (ps.width * 0.275), b.y + 15),
 					'Buy for $' + $elm$core$String$fromInt(
 						$elm$core$Basics$round(p.upgradePrice)))
 				])) : _List_fromArray(
@@ -7066,8 +7179,9 @@ var $author$project$ViewHelpers$renderButtonList = F4(
 									])))));
 			} else {
 				var ptype = _v0.a;
-				return A2(
+				return A3(
 					$author$project$ViewHelpers$renderUpgrade,
+					p,
 					b,
 					A2($author$project$Plants$getPlant, ptype, ps));
 			}
@@ -7075,12 +7189,42 @@ var $author$project$ViewHelpers$renderButtonList = F4(
 		return A2($elm$core$List$concatMap, foo, bs);
 	});
 var $author$project$ViewHelpers$renderButtons = function (m) {
-	var textures = A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images);
 	var buttonPage = A2($author$project$Button$getButtonPage, m.page, m.buttons);
-	return A4($author$project$ViewHelpers$renderButtonList, m.plotSize, buttonPage, m.plants, textures);
+	return A4(
+		$author$project$ViewHelpers$renderButtonList,
+		m.plotSize,
+		buttonPage,
+		m.plants,
+		$author$project$ViewHelpers$plantTextures(m));
 };
-var $elm$html$Html$canvas = _VirtualDom_node('canvas');
-var $joakin$elm_canvas$Canvas$cnvs = A2($elm$html$Html$canvas, _List_Nil, _List_Nil);
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $author$project$ViewHelpers$guiTextures = function (m) {
+	return $elm$core$Array$fromList(
+		A2(
+			$elm$core$List$drop,
+			4,
+			A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images)));
+};
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
 		return _Json_wrap(
@@ -7090,6 +7234,218 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn = F2(
+	function (name, args) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'type',
+					$elm$json$Json$Encode$string('function')),
+					_Utils_Tuple2(
+					'name',
+					$elm$json$Json$Encode$string(name)),
+					_Utils_Tuple2(
+					'args',
+					A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, args))
+				]));
+	});
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$rotate = function (angle) {
+	return A2(
+		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
+		'rotate',
+		_List_fromArray(
+			[
+				$elm$json$Json$Encode$float(angle)
+			]));
+};
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$scale = F2(
+	function (x, y) {
+		return A2(
+			$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
+			'scale',
+			_List_fromArray(
+				[
+					$elm$json$Json$Encode$float(x),
+					$elm$json$Json$Encode$float(y)
+				]));
+	});
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$transform = F6(
+	function (a, b, c, d, e, f) {
+		return A2(
+			$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
+			'transform',
+			_List_fromArray(
+				[
+					$elm$json$Json$Encode$float(a),
+					$elm$json$Json$Encode$float(b),
+					$elm$json$Json$Encode$float(c),
+					$elm$json$Json$Encode$float(d),
+					$elm$json$Json$Encode$float(e),
+					$elm$json$Json$Encode$float(f)
+				]));
+	});
+var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$translate = F2(
+	function (x, y) {
+		return A2(
+			$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn,
+			'translate',
+			_List_fromArray(
+				[
+					$elm$json$Json$Encode$float(x),
+					$elm$json$Json$Encode$float(y)
+				]));
+	});
+var $joakin$elm_canvas$Canvas$Settings$Advanced$transform = function (transforms) {
+	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommands(
+		A2(
+			$elm$core$List$map,
+			function (t) {
+				switch (t.$) {
+					case 'Rotate':
+						var angle = t.a;
+						return $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$rotate(angle);
+					case 'Scale':
+						var x = t.a;
+						var y = t.b;
+						return A2($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$scale, x, y);
+					case 'Translate':
+						var x = t.a;
+						var y = t.b;
+						return A2($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$translate, x, y);
+					default:
+						var m11 = t.a.m11;
+						var m12 = t.a.m12;
+						var m21 = t.a.m21;
+						var m22 = t.a.m22;
+						var dx = t.a.dx;
+						var dy = t.a.dy;
+						return A6($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$transform, m11, m12, m21, m22, dx, dy);
+				}
+			},
+			transforms));
+};
+var $joakin$elm_canvas$Canvas$Settings$Advanced$Translate = F2(
+	function (a, b) {
+		return {$: 'Translate', a: a, b: b};
+	});
+var $joakin$elm_canvas$Canvas$Settings$Advanced$translate = $joakin$elm_canvas$Canvas$Settings$Advanced$Translate;
+var $author$project$ViewHelpers$renderGraphics = function (m) {
+	var width = m.window.width;
+	var images = $author$project$ViewHelpers$guiTextures(m);
+	var height = m.window.height;
+	var sky = A2(
+		$joakin$elm_canvas$Canvas$shapes,
+		_List_fromArray(
+			[
+				$joakin$elm_canvas$Canvas$Settings$fill(
+				A3($avh4$elm_color$Color$rgb255, 159, 223, 245))
+			]),
+		_List_fromArray(
+			[
+				A3(
+				$joakin$elm_canvas$Canvas$rect,
+				_Utils_Tuple2(0, 0),
+				width,
+				height * 0.2)
+			]));
+	var farm = function () {
+		var _v1 = A2($elm$core$Array$get, 0, images);
+		if (_v1.$ === 'Nothing') {
+			return A2(
+				$joakin$elm_canvas$Canvas$shapes,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$rect,
+						_Utils_Tuple2(width / 4, 0),
+						0,
+						0)
+					]));
+		} else {
+			var x = _v1.a;
+			return A3(
+				$joakin$elm_canvas$Canvas$texture,
+				_List_Nil,
+				_Utils_Tuple2(width / 4, 0),
+				x);
+		}
+	}();
+	var cloudXPos = (A2(
+		$elm$core$Basics$modBy,
+		750,
+		$elm$core$Basics$round(m.frame)) / 750) * (width * 1.5);
+	var clouds = function () {
+		var _v0 = A2($elm$core$Array$get, 1, images);
+		if (_v0.$ === 'Nothing') {
+			return _List_fromArray(
+				[
+					A2(
+					$joakin$elm_canvas$Canvas$shapes,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A3(
+							$joakin$elm_canvas$Canvas$rect,
+							_Utils_Tuple2(width / 4, 0),
+							0,
+							0)
+						]))
+				]);
+		} else {
+			var x = _v0.a;
+			return _List_fromArray(
+				[
+					A3(
+					$joakin$elm_canvas$Canvas$texture,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Advanced$transform(
+							_List_fromArray(
+								[
+									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, 0.75 * cloudXPos, 0)
+								]))
+						]),
+					_Utils_Tuple2(-10, 5),
+					x),
+					A3(
+					$joakin$elm_canvas$Canvas$texture,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Advanced$transform(
+							_List_fromArray(
+								[
+									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, 0.755 * cloudXPos, 0)
+								]))
+						]),
+					_Utils_Tuple2(20, 10),
+					x),
+					A3(
+					$joakin$elm_canvas$Canvas$texture,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Advanced$transform(
+							_List_fromArray(
+								[
+									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, -cloudXPos, 0)
+								]))
+						]),
+					_Utils_Tuple2(width, 7),
+					x)
+				]);
+		}
+	}();
+	return A2(
+		$elm$core$List$cons,
+		sky,
+		_Utils_ap(
+			clouds,
+			_List_fromArray(
+				[farm])));
+};
+var $elm$html$Html$canvas = _VirtualDom_node('canvas');
+var $joakin$elm_canvas$Canvas$cnvs = A2($elm$html$Html$canvas, _List_Nil, _List_Nil);
 var $elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
 		return A2(
@@ -7116,22 +7472,6 @@ var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
 };
 var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$empty = _List_Nil;
-var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn = F2(
-	function (name, args) {
-		return $elm$json$Json$Encode$object(
-			_List_fromArray(
-				[
-					_Utils_Tuple2(
-					'type',
-					$elm$json$Json$Encode$string('function')),
-					_Utils_Tuple2(
-					'name',
-					$elm$json$Json$Encode$string(name)),
-					_Utils_Tuple2(
-					'args',
-					A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, args))
-				]));
-	});
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$beginPath = A2($joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fn, 'beginPath', _List_Nil);
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$clearRect = F4(
 	function (x, y, width, height) {
@@ -7764,7 +8104,9 @@ var $author$project$ViewHelpers$displayFarm = function (m) {
 					$author$project$ViewHelpers$renderBG(m),
 					_Utils_ap(
 						A2($author$project$ViewHelpers$displayFarmText, w, coins),
-						$author$project$ViewHelpers$renderButtons(m))))
+						_Utils_ap(
+							$author$project$ViewHelpers$renderButtons(m),
+							$author$project$ViewHelpers$renderGraphics(m)))))
 			]));
 };
 var $author$project$Main$gameView = function (model) {

@@ -101,6 +101,20 @@ plantImage p tarray =
         3 -> get 8 tarray
         _ -> get 5 tarray
 
+{-
+  Returns an array of textures of plant icons
+-}
+plantTextures : Model -> Array Texture 
+plantTextures m = 
+  Array.fromList (List.take 4 (List.filterMap fromDomImage m.images))
+
+{-
+  Returns an array of textures with graphics for GUI
+-}
+guiTextures : Model -> Array Texture
+guiTextures m =
+  Array.fromList (List.drop 4 (List.filterMap fromDomImage m.images))
+----------------------------------------------------------------------------
 -- FARM DISPLAY FUNCTIONS -- 
 
 {-
@@ -124,13 +138,9 @@ displayFarm m =
     []
     [ Canvas.toHtml (truncate w.width, truncate w.height) 
       [Mouse.onClick Click]
-      ((renderBG m)::(displayFarmText w coins) ++ (renderButtons m))
+      ((renderBG m)::(displayFarmText w coins) ++ (renderButtons m) ++ (renderGraphics m))
 
     ]
-
-displayImages : List Texture -> List Canvas.Renderable
-displayImages textures = 
-  List.map (\t -> (Canvas.texture [] (50, 50) t)) textures
 
 {-
   Creates a renderable for the canvas background
@@ -139,7 +149,40 @@ renderBG : Model -> Canvas.Renderable
 renderBG m = 
   -- Color.rgb255 128 255 235 is the original green. White would be 255 255 255.
   --  You can find more colors in the CSS file written in hex #.....
-  shapes [ fill (Color.rgb255 128 255 235) ] [ rect ( 0, 0 ) m.window.width m.window.height ]
+  shapes [ fill (Color.rgb255 144 218 154) ] [ rect ( 0, 0 ) m.window.width m.window.height ]
+  
+{-
+  Produces a Renderables that are static game graphics not connected to gameplay
+-}
+renderGraphics : Model -> List Canvas.Renderable
+renderGraphics m =
+  let
+    width = m.window.width
+    height = m.window.height
+    images = guiTextures m
+    farm = case Array.get 0 images of 
+              Nothing -> shapes [] [rect (width / 4, 0) 0 0] --no image found
+              Just x -> Canvas.texture [] (width / 4, 0) x
+    
+    cloudXPos = ((toFloat (modBy 750 (round m.frame))) / 750) * (width * 1.5)
+    --rotation = degrees (m.frame * 3)
+    clouds = case Array.get 1 images of
+              Nothing -> [shapes [] [rect (width / 4, 0) 0 0]]
+              Just x -> [ Canvas.texture [transform [translate (0.75 * cloudXPos) 0]] 
+                                         (-10, 5) 
+                                         x
+                        , Canvas.texture [transform [translate (0.755 * cloudXPos) 0]]
+                                         (20, 10) 
+                                         x
+                        , Canvas.texture [transform [translate -cloudXPos 0]]
+                                         (width , 7) 
+                                         x
+                        ]
+                                      
+    
+    sky = shapes [fill (Color.rgb255 159 223 245)] [rect (0, 0) width (height * 0.2)]
+  in 
+    (sky) :: clouds ++ [farm]
 
 {-
   Displays the GUI for the Farm (header & coins)
@@ -152,14 +195,8 @@ renderBG m =
 -}
 displayFarmText : Window -> Int -> List (Canvas.Renderable)
 displayFarmText w coins = 
-  [ text [ font { size = 24, family = "monospace" }, align Center ]
-           ( w.width / 2, w.height / 10 )
-           " Welcome to Mr. Chickie's Farm!"
-  , text [ font { size = 24, family = "monospace" }, align Center ] 
-           ( w.width / 2, w.height / 6 )
-           " Grow plants and harvest them to earn money. "
-  , text [ font { size = 24, family = "monospace" }, align Center ]
-           ( w.width / 2, w.height - (10))
+  [ text [ font { size = 24, family = "HP simplified" }, align Left ]
+           ( 10, w.height - (10))
            (" Coins = " ++ String.fromInt coins)
   ]
 
@@ -173,14 +210,14 @@ displayFarmText w coins =
   Output:
     Canvas.Renderable of button
 -}    
-renderPlot : PlotSize -> Button -> Plant -> List Texture -> Canvas.Renderable
+renderPlot : PlotSize -> Button -> Plant -> Array Texture -> Canvas.Renderable
 renderPlot ps b p imgs =
   -- Want to render differently if purchased or not
-  if p.purchased --&& (p.countdown == 0)
+  if p.purchased
   then
       let
         color = plantColor p
-        planticon = plantImage p (Array.fromList imgs)
+        planticon = plantImage p imgs
       in
         case planticon of
           Nothing -> --could not find a corresponding plant image
@@ -192,10 +229,10 @@ renderPlot ps b p imgs =
               Canvas.texture [ shadow {blur = 10, color = Color.green, offset = (0, 0)}]
                              ( b.x, b.y)
                              i
-            else
+            else --regular plant image
               Canvas.texture [] ( b.x, b.y) i
-        
-    else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]
+    --the plant has not been purchased yet, so do not show it
+    else shapes [ fill Color.brown ] [ rect ( b.x, b.y ) b.width b.height]
 
 {-
   Produces a Canvas Renderable that represents the progress bar for harvests
@@ -220,7 +257,7 @@ renderProgress ps b p =
 -}
 renderQuantity : PlotSize -> Button -> Plant -> Canvas.Renderable
 renderQuantity ps b p =
-  text [ font { size = 24, family = "sans-serif" }, align Center]
+  text [ font { size = 24, family = "HP simplified" }, align Center]
        ( b.x + 0.875 * ps.width, b.y + 0.3 * ps.height)
        ( fromInt p.quantity)
 
@@ -229,8 +266,8 @@ renderQuantity ps b p =
 -}
 renderSellingPrice : PlotSize -> Button -> Plant -> Canvas.Renderable
 renderSellingPrice ps b p =
-  text [ font { size = 16, family = "sans-serif" }, align Center]
-       ( b.x + 0.875 * ps.width, b.y + 0.6 * ps.height)
+  text [ font { size = 16, family = "HP simplified" }, align Center]
+       ( b.x + 0.9 * ps.width, b.y + 0.6 * ps.height)
        ( "at $" ++ fromInt p.value)
 
 {-
@@ -243,7 +280,7 @@ renderInitialPrice ps b p =
   then
     text [] ( b.x + 0.275 * ps.width, b.y + 0.5 * ps.height) ""
   else 
-    text [ font { size = 24, family = "sans-serif" }, align Center ]
+    text [ font { size = 24, family = "HP simplified" }, align Center ]
          ( b.x + 0.275 * ps.width, b.y + 0.5 * ps.height)
          ( "$" ++ fromInt p.price)
 
@@ -257,13 +294,13 @@ renderInitialPrice ps b p =
   Output:
     List of Canvas.Renderable of button with upgrade price text
 -}
-renderUpgrade : Button -> Plant -> List (Canvas.Renderable)
-renderUpgrade b p = 
+renderUpgrade : PlotSize -> Button -> Plant -> List (Canvas.Renderable)
+renderUpgrade ps b p = 
   if p.purchased
   then 
     shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width b.height]
-    :: [(text [ font { size = 14, family = "sans-serif" }] 
-              (b.x + 5, b.y + 15) 
+    :: [(text [ font { size = 14, family = "HP simplified" }, align Center] 
+              (b.x + (ps.width * 0.275), b.y + 15) 
               ("Buy for $" ++ (fromInt (round p.upgradePrice))))]
   else 
     [shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]]
@@ -285,7 +322,7 @@ renderImage p =
   Output:
     Canvas.Renderable of button
 -}
-renderButtonList : PlotSize -> List Button -> List Plant -> List Texture -> List (Canvas.Renderable)
+renderButtonList : PlotSize -> List Button -> List Plant -> Array Texture -> List (Canvas.Renderable)
 renderButtonList p bs ps imgs =
   let
     foo b =
@@ -300,7 +337,7 @@ renderButtonList p bs ps imgs =
             :: (renderSellingPrice p b plant)
             :: [renderProgress p b plant]
         Upgrade ptype -> 
-          renderUpgrade b (P.getPlant ptype ps)
+          renderUpgrade p b (P.getPlant ptype ps)
   in
     List.concatMap foo bs
 
@@ -318,7 +355,6 @@ renderButtons m =
   let
     -- Get list of buttons from current page
     buttonPage = (getButtonPage m.page m.buttons)
-    textures = List.filterMap fromDomImage m.images
   in
     -- Render the list of buttons
-    renderButtonList m.plotSize buttonPage m.plants textures
+    renderButtonList m.plotSize buttonPage m.plants (plantTextures m)
