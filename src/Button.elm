@@ -61,7 +61,7 @@ farmButtons width height plotwidth plotheight ptypes =
     -- Define a few constants for setting button locations
     numPlotsPerRow = 3
     numRows = 2
-    upgradeHeight = plotheight * 0.15--20
+    upgradeHeight = plotheight * 0.1875
     widthMult = (width / numPlotsPerRow)  -- The "spacing" between each col's x-values
     xShift = (widthMult - plotwidth) / 2 -- The buffer before the first col
     yShift = height * (2/7) -- The buffer between the top and the first row
@@ -84,7 +84,9 @@ farmButtons width height plotwidth plotheight ptypes =
     makeUpgrade i p =
       newButton
         (((toFloat (modBy numPlotsPerRow i)) * widthMult) + xShift) 
-        ((heightMult) * (toFloat (i // numPlotsPerRow)) + yShift + (plotheight - (plotheight * 0.15)))
+        ((heightMult) * (toFloat (i // numPlotsPerRow)) 
+         + yShift 
+         + (plotheight - (plotheight * 0.15)))
         (plotwidth * 0.55) 
         (upgradeHeight)
         (Upgrade p)

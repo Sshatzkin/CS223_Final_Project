@@ -207,14 +207,14 @@ displayFarmText w coins =
     p - Plant
 
   Output:
-    Canvas.Renderable of button
+    List of Canvas.Renderable of button
 -}    
 renderPlot : PlotSize -> Button -> Plant -> Array Texture -> Array Texture -> List Canvas.Renderable
 renderPlot ps b p imgs graphics =
   let 
     plot = case (Array.get 2 graphics) of 
             Nothing -> shapes [] [rect (0, 0) 0 0]
-            Just x -> Canvas.texture [] (b.x - 10, b.y - 40) x
+            Just x -> Canvas.texture [] (b.x - 10, b.y - 38) x
   in
     -- Want to render differently if purchased or not
     if p.purchased
@@ -252,10 +252,11 @@ renderProgress ps b p =
     let
       color = plantColor p
       fillPercent = toFloat(p.matAge - p.countdown) / toFloat(p.matAge)
+      adjustedHeight = ps.height * 1.0375
     in
-      shapes [fill color] [rect ( b.x + 0.6 * ps.width, (ps.height + b.y)) 
+      shapes [fill color] [rect ( b.x + 0.6 * ps.width, (adjustedHeight + b.y)) 
                                 (0.15 * ps.width) 
-                                (-1 * ps.height * fillPercent)]
+                                (-1 * (adjustedHeight * fillPercent))]
   else 
     --no progress bar if plant has not been purchased
     shapes [fill Color.gray] [rect ( b.x, b.y ) b.width 0] 
@@ -268,18 +269,25 @@ renderQuantity : PlotSize -> Button -> Plant -> List Canvas.Renderable
 renderQuantity ps b p =
   if p.purchased 
   then
+    let 
+      xoffset = b.x + 0.9 * ps.width
+    in
+
     [ text [ font { size = 24, family = "HP simplified" }, align Center, fill Color.white]
-          ( b.x + 0.9 * ps.width, b.y + 0.2 * ps.height)
-          ( fromInt p.quantity)
+           ( xoffset, b.y + 0.2 * ps.height)
+           ( fromInt p.quantity)
     , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
-        ( b.x + 0.9 * ps.width, b.y + 0.4 * ps.height)
-        ( "at")
+           ( xoffset, b.y + 0.4 * ps.height)
+           ( "at")
     , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
-        ( b.x + 0.9 * ps.width, b.y + 0.6 * ps.height)
-        ( "$" ++ fromInt p.value)
+           ( xoffset, b.y + 0.6 * ps.height)
+           ( "$" ++ fromInt p.value)
     , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
-        ( b.x + 0.9 * ps.width, b.y + ps.height)
-        ( "$" ++ fromInt (p.value * p.quantity))
+           ( xoffset, b.y + 0.75 * ps.height)
+           ( "-----")
+    , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
+           ( xoffset, b.y + ps.height)
+           ( "$" ++ fromInt (p.value * p.quantity))
     ]
   else []
 
@@ -301,41 +309,55 @@ renderInitialPrice ps b p =
   Produces a List of Canvas Renderables from a single upgrade button
 
   Args:
+    ps - plot size
     b - button
     p - Plant
+    coins - coins
 
   Output:
     List of Canvas.Renderable of button with upgrade price text
 -}
-renderUpgrade : PlotSize -> Button -> Plant -> List (Canvas.Renderable)
-renderUpgrade ps b p = 
+renderUpgrade : PlotSize -> Button -> Int -> Plant -> List (Canvas.Renderable)
+renderUpgrade ps b coins p = 
   if p.purchased
   then 
-    shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width (b.height * 1.25)]
-    :: [(text [ font { size = 14, family = "HP simplified" }, align Center, fill Color.white] 
-              (b.x + (ps.width * 0.275), b.y + 15) 
-              ("Buy for $" ++ (fromInt (round p.upgradePrice))))]
+    let
+      buybox = 
+        if ( coins >= (round p.upgradePrice))
+        then shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width (b.height)]
+        else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width (b.height)]
+    in
+      buybox :: [(text [ font { size = 14, family = "HP simplified" }
+                       , align Center
+                       , fill Color.white] 
+                (b.x + (ps.width * 0.275), b.y + 15) 
+                ("Buy for $" ++ (fromInt (round p.upgradePrice))))]
   else 
     []
 
 {-
-  Converts a list of buttons into a list of Canvas Renderables
+  Takes a model and producees a list of Canvas Renderables
 
   Args:
-    bs - List of buttons
-    ps - List of plants
+    m -- model
 
   Output:
-    Canvas.Renderable of button
+    List of Canvas.Renderable of buttons
 -}
-renderButtonList : PlotSize -> List Button -> List Plant -> Array Texture -> Array Texture -> List (Canvas.Renderable)
-renderButtonList p bs ps imgs graphics =
+renderButtons : Model -> List (Canvas.Renderable)
+renderButtons m =
   let
+    p = m.plotSize
+    buttons = (getButtonPage m.page m.buttons)
+    plants = m.plants
+    imgs = plantTextures m 
+    graphics = guiTextures m 
+    coins = m.coins
     foo b =
       case b.btype of
         Plot ptype -> 
           let 
-            plant = P.getPlant ptype ps 
+            plant = P.getPlant ptype plants 
           in
             (renderPlot p b plant imgs graphics)
             ++ renderQuantity p b plant
@@ -343,24 +365,6 @@ renderButtonList p bs ps imgs graphics =
             ++ [renderProgress p b plant]
         
         Upgrade ptype -> 
-          renderUpgrade p b (P.getPlant ptype ps)
+          renderUpgrade p b coins (P.getPlant ptype plants)
   in
-    List.concatMap foo bs
-
-{-
-  Produces a list of Canvas Renderables representing all buttons on the current page
-
-  Args:
-    m - Model
-
-  Output:
-    List of Canvas.Renderables of all buttons
--}
-renderButtons : Model -> List (Canvas.Renderable)
-renderButtons m =
-  let
-    -- Get list of buttons from current page
-    buttonPage = (getButtonPage m.page m.buttons)
-  in
-    -- Render the list of buttons
-    renderButtonList m.plotSize buttonPage m.plants (plantTextures m) (guiTextures m)
+    List.concatMap foo buttons

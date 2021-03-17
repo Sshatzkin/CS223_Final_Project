@@ -5243,7 +5243,7 @@ var $author$project$Button$newButton = F5(
 var $author$project$Button$farmButtons = F5(
 	function (width, height, plotwidth, plotheight, ptypes) {
 		var yShift = height * (2 / 7);
-		var upgradeHeight = plotheight * 0.15;
+		var upgradeHeight = plotheight * 0.1875;
 		var progScalar = plotwidth / 8;
 		var numRows = 2;
 		var numPlotsPerRow = 3;
@@ -5939,8 +5939,8 @@ var $author$project$Button$clickedAnyButton = F4(
 				return _Debug_todo(
 					'Button',
 					{
-						start: {line: 154, column: 12},
-						end: {line: 154, column: 22}
+						start: {line: 156, column: 12},
+						end: {line: 156, column: 22}
 					})('TWO OR MORE BUTTONS WERE CLICKED THIS SHOULD NOT HAPPEN');
 			}
 		}
@@ -6554,6 +6554,11 @@ var $author$project$ViewHelpers$renderBG = function (m) {
 				m.window.height)
 			]));
 };
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -6794,11 +6799,6 @@ var $author$project$ViewHelpers$plantTextures = function (m) {
 			9,
 			A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images)));
 };
-var $elm$core$List$concatMap = F2(
-	function (f, list) {
-		return $elm$core$List$concat(
-			A2($elm$core$List$map, f, list));
-	});
 var $joakin$elm_canvas$Canvas$Settings$Text$Center = {$: 'Center'};
 var $author$project$ViewHelpers$renderInitialPrice = F3(
 	function (ps, b, p) {
@@ -7039,7 +7039,7 @@ var $author$project$ViewHelpers$renderPlot = F5(
 				return A3(
 					$joakin$elm_canvas$Canvas$texture,
 					_List_Nil,
-					_Utils_Tuple2(b.x - 10, b.y - 40),
+					_Utils_Tuple2(b.x - 10, b.y - 38),
 					x);
 			}
 		}();
@@ -7120,6 +7120,7 @@ var $author$project$ViewHelpers$renderProgress = F3(
 		if (p.purchased) {
 			var fillPercent = (p.matAge - p.countdown) / p.matAge;
 			var color = $author$project$ViewHelpers$plantColor(p);
+			var adjustedHeight = ps.height * 1.0375;
 			return A2(
 				$joakin$elm_canvas$Canvas$shapes,
 				_List_fromArray(
@@ -7130,9 +7131,9 @@ var $author$project$ViewHelpers$renderProgress = F3(
 					[
 						A3(
 						$joakin$elm_canvas$Canvas$rect,
-						_Utils_Tuple2(b.x + (0.6 * ps.width), ps.height + b.y),
+						_Utils_Tuple2(b.x + (0.6 * ps.width), adjustedHeight + b.y),
 						0.15 * ps.width,
-						((-1) * ps.height) * fillPercent)
+						(-1) * (adjustedHeight * fillPercent))
 					]));
 		} else {
 			return A2(
@@ -7153,59 +7154,76 @@ var $author$project$ViewHelpers$renderProgress = F3(
 	});
 var $author$project$ViewHelpers$renderQuantity = F3(
 	function (ps, b, p) {
-		return p.purchased ? _List_fromArray(
-			[
-				A3(
-				$joakin$elm_canvas$Canvas$text,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'HP simplified', size: 24}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
-						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
-					]),
-				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.2 * ps.height)),
-				$elm$core$String$fromInt(p.quantity)),
-				A3(
-				$joakin$elm_canvas$Canvas$text,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'HP simplified', size: 16}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
-						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
-					]),
-				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.4 * ps.height)),
-				'at'),
-				A3(
-				$joakin$elm_canvas$Canvas$text,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'HP simplified', size: 16}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
-						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
-					]),
-				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.6 * ps.height)),
-				'$' + $elm$core$String$fromInt(p.value)),
-				A3(
-				$joakin$elm_canvas$Canvas$text,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'HP simplified', size: 16}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
-						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
-					]),
-				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + ps.height),
-				'$' + $elm$core$String$fromInt(p.value * p.quantity))
-			]) : _List_Nil;
+		if (p.purchased) {
+			var xoffset = b.x + (0.9 * ps.width);
+			return _List_fromArray(
+				[
+					A3(
+					$joakin$elm_canvas$Canvas$text,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Text$font(
+							{family: 'HP simplified', size: 24}),
+							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+						]),
+					_Utils_Tuple2(xoffset, b.y + (0.2 * ps.height)),
+					$elm$core$String$fromInt(p.quantity)),
+					A3(
+					$joakin$elm_canvas$Canvas$text,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Text$font(
+							{family: 'HP simplified', size: 16}),
+							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+						]),
+					_Utils_Tuple2(xoffset, b.y + (0.4 * ps.height)),
+					'at'),
+					A3(
+					$joakin$elm_canvas$Canvas$text,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Text$font(
+							{family: 'HP simplified', size: 16}),
+							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+						]),
+					_Utils_Tuple2(xoffset, b.y + (0.6 * ps.height)),
+					'$' + $elm$core$String$fromInt(p.value)),
+					A3(
+					$joakin$elm_canvas$Canvas$text,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Text$font(
+							{family: 'HP simplified', size: 16}),
+							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+						]),
+					_Utils_Tuple2(xoffset, b.y + (0.75 * ps.height)),
+					'-----'),
+					A3(
+					$joakin$elm_canvas$Canvas$text,
+					_List_fromArray(
+						[
+							$joakin$elm_canvas$Canvas$Settings$Text$font(
+							{family: 'HP simplified', size: 16}),
+							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+						]),
+					_Utils_Tuple2(xoffset, b.y + ps.height),
+					'$' + $elm$core$String$fromInt(p.value * p.quantity))
+				]);
+		} else {
+			return _List_Nil;
+		}
 	});
-var $author$project$ViewHelpers$renderUpgrade = F3(
-	function (ps, b, p) {
-		return p.purchased ? A2(
-			$elm$core$List$cons,
-			A2(
+var $author$project$ViewHelpers$renderUpgrade = F4(
+	function (ps, b, coins, p) {
+		if (p.purchased) {
+			var buybox = (_Utils_cmp(
+				coins,
+				$elm$core$Basics$round(p.upgradePrice)) > -1) ? A2(
 				$joakin$elm_canvas$Canvas$shapes,
 				_List_fromArray(
 					[
@@ -7217,64 +7235,79 @@ var $author$project$ViewHelpers$renderUpgrade = F3(
 						$joakin$elm_canvas$Canvas$rect,
 						_Utils_Tuple2(b.x, b.y),
 						b.width,
-						b.height * 1.25)
-					])),
-			_List_fromArray(
-				[
-					A3(
-					$joakin$elm_canvas$Canvas$text,
-					_List_fromArray(
-						[
-							$joakin$elm_canvas$Canvas$Settings$Text$font(
-							{family: 'HP simplified', size: 14}),
-							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
-							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
-						]),
-					_Utils_Tuple2(b.x + (ps.width * 0.275), b.y + 15),
-					'Buy for $' + $elm$core$String$fromInt(
-						$elm$core$Basics$round(p.upgradePrice)))
-				])) : _List_Nil;
-	});
-var $author$project$ViewHelpers$renderButtonList = F5(
-	function (p, bs, ps, imgs, graphics) {
-		var foo = function (b) {
-			var _v0 = b.btype;
-			if (_v0.$ === 'Plot') {
-				var ptype = _v0.a;
-				var plant = A2($author$project$Plants$getPlant, ptype, ps);
-				return _Utils_ap(
-					A5($author$project$ViewHelpers$renderPlot, p, b, plant, imgs, graphics),
-					_Utils_ap(
-						A3($author$project$ViewHelpers$renderQuantity, p, b, plant),
-						_Utils_ap(
-							_List_fromArray(
-								[
-									A3($author$project$ViewHelpers$renderInitialPrice, p, b, plant)
-								]),
-							_List_fromArray(
-								[
-									A3($author$project$ViewHelpers$renderProgress, p, b, plant)
-								]))));
-			} else {
-				var ptype = _v0.a;
-				return A3(
-					$author$project$ViewHelpers$renderUpgrade,
-					p,
-					b,
-					A2($author$project$Plants$getPlant, ptype, ps));
-			}
-		};
-		return A2($elm$core$List$concatMap, foo, bs);
+						b.height)
+					])) : A2(
+				$joakin$elm_canvas$Canvas$shapes,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$gray)
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$rect,
+						_Utils_Tuple2(b.x, b.y),
+						b.width,
+						b.height)
+					]));
+			return A2(
+				$elm$core$List$cons,
+				buybox,
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$text,
+						_List_fromArray(
+							[
+								$joakin$elm_canvas$Canvas$Settings$Text$font(
+								{family: 'HP simplified', size: 14}),
+								$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+								$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+							]),
+						_Utils_Tuple2(b.x + (ps.width * 0.275), b.y + 15),
+						'Buy for $' + $elm$core$String$fromInt(
+							$elm$core$Basics$round(p.upgradePrice)))
+					]));
+		} else {
+			return _List_Nil;
+		}
 	});
 var $author$project$ViewHelpers$renderButtons = function (m) {
-	var buttonPage = A2($author$project$Button$getButtonPage, m.page, m.buttons);
-	return A5(
-		$author$project$ViewHelpers$renderButtonList,
-		m.plotSize,
-		buttonPage,
-		m.plants,
-		$author$project$ViewHelpers$plantTextures(m),
-		$author$project$ViewHelpers$guiTextures(m));
+	var plants = m.plants;
+	var p = m.plotSize;
+	var imgs = $author$project$ViewHelpers$plantTextures(m);
+	var graphics = $author$project$ViewHelpers$guiTextures(m);
+	var coins = m.coins;
+	var foo = function (b) {
+		var _v0 = b.btype;
+		if (_v0.$ === 'Plot') {
+			var ptype = _v0.a;
+			var plant = A2($author$project$Plants$getPlant, ptype, plants);
+			return _Utils_ap(
+				A5($author$project$ViewHelpers$renderPlot, p, b, plant, imgs, graphics),
+				_Utils_ap(
+					A3($author$project$ViewHelpers$renderQuantity, p, b, plant),
+					_Utils_ap(
+						_List_fromArray(
+							[
+								A3($author$project$ViewHelpers$renderInitialPrice, p, b, plant)
+							]),
+						_List_fromArray(
+							[
+								A3($author$project$ViewHelpers$renderProgress, p, b, plant)
+							]))));
+		} else {
+			var ptype = _v0.a;
+			return A4(
+				$author$project$ViewHelpers$renderUpgrade,
+				p,
+				b,
+				coins,
+				A2($author$project$Plants$getPlant, ptype, plants));
+		}
+	};
+	var buttons = A2($author$project$Button$getButtonPage, m.page, m.buttons);
+	return A2($elm$core$List$concatMap, foo, buttons);
 };
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
