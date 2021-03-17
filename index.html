@@ -46,12 +46,18 @@
         });
       }
 
-      let imageUrls = [ "https://i.postimg.cc/mgHV47f1/corn.png"
-                      , "https://i.postimg.cc/pVBL0Smp/tomato.png"
-                      , "https://i.postimg.cc/9FFFsB91/pumpkin.png"
-                      , "https://i.postimg.cc/HWMwqCqW/path18.png"
-                      , "https://i.postimg.cc/QtHVq6SF/barn.png"
-                      , "https://i.postimg.cc/2j7BGCqP/cloud.png"]
+      let imageUrls = [ "https://i.postimg.cc/wxVFv3Kv/corn.png"
+                      , "https://i.postimg.cc/JnKT9hMG/tomato.png"
+                      , "https://i.postimg.cc/6QfzvQ7Y/pumpkin.png"
+                      , "https://i.postimg.cc/WzC7vFKb/carrot.png"
+                      , "https://i.postimg.cc/8C4BCn3Y/radish.png"
+                      , "https://i.postimg.cc/fLgccSMj/greenpepper.png"
+                      , "https://i.postimg.cc/52MwSVWG/yellowpepper.png"
+                      , "https://i.postimg.cc/jSQy8Fsj/orangepepper.png"
+                      , "https://i.postimg.cc/hGDTN1j1/redpepper.png"
+                      , "https://i.postimg.cc/vBmBQ179/barn.png"
+                      , "https://i.postimg.cc/2j7BGCqP/cloud.png"
+                      , "https://i.postimg.cc/8ChqcDBb/plot.png"]
 
       var ht = container.offsetHeight < 100 ? window.innerHeight - 5 : containerHeight
       var wd = container.offsetHeight < 100 ? window.innerWidth : containerWidth
@@ -65,14 +71,6 @@
           );
         })
         .catch((err) => alert ("Failed to load images\n\n" + err.path.map((i) => i.src).join("\n")));
-        
-     //var flags = container.offsetHeight < 100 
-     //             ? {width: window.innerWidth, height: window.innerHeight - 5} 
-     //             : {width: containerWidth, height: containerHeight};
-     // var app = Elm.Main.init(
-     //   { node: node
-     //   , flags : flags
-     // })
 
     </script>
 </body>

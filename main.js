@@ -5249,7 +5249,7 @@ var $author$project$Button$farmButtons = F5(
 		var numPlotsPerRow = 3;
 		var widthMult = width / numPlotsPerRow;
 		var xShift = (widthMult - plotwidth) / 2;
-		var heightMult = (height - (yShift * 1.25)) / numRows;
+		var heightMult = (height - yShift) / numRows;
 		var makePlot = F2(
 			function (i, p) {
 				return A5(
@@ -5317,13 +5317,13 @@ var $author$project$Window$newWindow = F2(
 var $author$project$Model$initModel = function (flag) {
 	var initPlants = $author$project$Plants$initPlants;
 	return {
-		buttons: A5($author$project$Button$initialButtons, flag.width, flag.height, 150, 120, initPlants),
+		buttons: A5($author$project$Button$initialButtons, flag.width, flag.height, 150, 100, initPlants),
 		coins: 5,
 		frame: 0,
 		images: flag.images,
 		page: $author$project$Page$Farm,
 		plants: initPlants,
-		plotSize: A2($author$project$Window$newPlotSize, 150, 120),
+		plotSize: A2($author$project$Window$newPlotSize, 150, 100),
 		window: A2($author$project$Window$newWindow, flag.width, flag.height)
 	};
 };
@@ -6027,6 +6027,7 @@ var $author$project$Plants$plotClicked = F3(
 				A3($author$project$Plants$plantSet, $author$project$Plants$togglePurchase, ptype, plants),
 				-plant.price)) : $elm$core$Maybe$Nothing);
 	});
+var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$round = _Basics_round;
 var $author$project$Plants$upgradePlant = function (p) {
 	var level = p.quantity;
@@ -6053,7 +6054,7 @@ var $author$project$Plants$upgradeClicked = F3(
 		var plant = A2($author$project$Plants$getPlant, ptype, plants);
 		return plant.purchased ? ((_Utils_cmp(
 			coins,
-			$elm$core$Basics$round(plant.upgradePrice)) > 0) ? $elm$core$Maybe$Just(
+			$elm$core$Basics$round(plant.upgradePrice)) > -1) ? $elm$core$Maybe$Just(
 			_Utils_Tuple2(
 				A3($author$project$Plants$plantSet, $author$project$Plants$upgradePlant, ptype, plants),
 				-$elm$core$Basics$round(plant.upgradePrice))) : $elm$core$Maybe$Nothing) : $elm$core$Maybe$Nothing;
@@ -6150,10 +6151,12 @@ var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$ViewHelpers$frameToTime = function (count) {
 	var seconds = ($elm$core$Basics$round(count) / 60) | 0;
-	var secString = (A2($elm$core$Basics$modBy, 60, seconds) < 10) ? ('0' + $elm$core$String$fromInt(seconds)) : $elm$core$String$fromInt(
+	var secString = (A2($elm$core$Basics$modBy, 60, seconds) < 10) ? ('0' + $elm$core$String$fromInt(
+		A2($elm$core$Basics$modBy, 60, seconds))) : $elm$core$String$fromInt(
 		A2($elm$core$Basics$modBy, 60, seconds));
 	var mins = (seconds / 60) | 0;
-	var minString = (mins < 10) ? ('0' + $elm$core$String$fromInt(mins)) : $elm$core$String$fromInt(
+	var minString = (mins < 10) ? ('0' + $elm$core$String$fromInt(
+		A2($elm$core$Basics$modBy, 60, mins))) : $elm$core$String$fromInt(
 		A2($elm$core$Basics$modBy, 60, mins));
 	var hours = (mins / 60) | 0;
 	var hourString = (hours < 10) ? ('0' + $elm$core$String$fromInt(hours)) : $elm$core$String$fromInt(hours);
@@ -6219,6 +6222,16 @@ var $joakin$elm_canvas$Canvas$Settings$Text$align = function (alignment) {
 		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$textAlign(
 			$joakin$elm_canvas$Canvas$Settings$Text$textAlignToString(alignment)));
 };
+var $joakin$elm_canvas$Canvas$Internal$Canvas$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var $joakin$elm_canvas$Canvas$Internal$Canvas$SettingDrawOp = function (a) {
+	return {$: 'SettingDrawOp', a: a};
+};
+var $joakin$elm_canvas$Canvas$Settings$fill = function (color) {
+	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingDrawOp(
+		$joakin$elm_canvas$Canvas$Internal$Canvas$Fill(color));
+};
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$font = function (f) {
 	return A2(
 		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$field,
@@ -6238,9 +6251,6 @@ var $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableText = function (a) {
 var $joakin$elm_canvas$Canvas$Internal$Canvas$NotSpecified = {$: 'NotSpecified'};
 var $joakin$elm_canvas$Canvas$Renderable = function (a) {
 	return {$: 'Renderable', a: a};
-};
-var $joakin$elm_canvas$Canvas$Internal$Canvas$Fill = function (a) {
-	return {$: 'Fill', a: a};
 };
 var $joakin$elm_canvas$Canvas$Internal$Canvas$FillAndStroke = F2(
 	function (a, b) {
@@ -6364,6 +6374,11 @@ var $joakin$elm_canvas$Canvas$text = F3(
 						{maxWidth: $elm$core$Maybe$Nothing, point: point, text: str})
 				}));
 	});
+var $avh4$elm_color$Color$RgbaSpace = F4(
+	function (a, b, c, d) {
+		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
+	});
+var $avh4$elm_color$Color$white = A4($avh4$elm_color$Color$RgbaSpace, 255 / 255, 255 / 255, 255 / 255, 1.0);
 var $author$project$ViewHelpers$displayFarmText = F2(
 	function (w, coins) {
 		return _List_fromArray(
@@ -6374,7 +6389,8 @@ var $author$project$ViewHelpers$displayFarmText = F2(
 					[
 						$joakin$elm_canvas$Canvas$Settings$Text$font(
 						{family: 'HP simplified', size: 24}),
-						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Left)
+						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Left),
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 					]),
 				_Utils_Tuple2(10, w.height - 10),
 				' Coins = ' + $elm$core$String$fromInt(coins))
@@ -6486,13 +6502,6 @@ var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions = F3(
 				$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$eventDecoder));
 	});
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onClick = A2($mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions, 'click', $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$defaultOptions);
-var $joakin$elm_canvas$Canvas$Internal$Canvas$SettingDrawOp = function (a) {
-	return {$: 'SettingDrawOp', a: a};
-};
-var $joakin$elm_canvas$Canvas$Settings$fill = function (color) {
-	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingDrawOp(
-		$joakin$elm_canvas$Canvas$Internal$Canvas$Fill(color));
-};
 var $joakin$elm_canvas$Canvas$Internal$Canvas$Rect = F3(
 	function (a, b, c) {
 		return {$: 'Rect', a: a, b: b, c: c};
@@ -6500,10 +6509,6 @@ var $joakin$elm_canvas$Canvas$Internal$Canvas$Rect = F3(
 var $joakin$elm_canvas$Canvas$rect = F3(
 	function (pos, width, height) {
 		return A3($joakin$elm_canvas$Canvas$Internal$Canvas$Rect, pos, width, height);
-	});
-var $avh4$elm_color$Color$RgbaSpace = F4(
-	function (a, b, c, d) {
-		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
 	});
 var $avh4$elm_color$Color$scaleFrom255 = function (c) {
 	return c / 255;
@@ -6549,6 +6554,27 @@ var $author$project$ViewHelpers$renderBG = function (m) {
 				m.window.height)
 			]));
 };
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -6627,6 +6653,13 @@ var $elm$core$Array$fromList = function (list) {
 	} else {
 		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
 	}
+};
+var $author$project$ViewHelpers$guiTextures = function (m) {
+	return $elm$core$Array$fromList(
+		A2(
+			$elm$core$List$drop,
+			9,
+			A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images)));
 };
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
@@ -6758,7 +6791,7 @@ var $author$project$ViewHelpers$plantTextures = function (m) {
 	return $elm$core$Array$fromList(
 		A2(
 			$elm$core$List$take,
-			4,
+			9,
 			A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images)));
 };
 var $elm$core$List$concatMap = F2(
@@ -6779,50 +6812,16 @@ var $author$project$ViewHelpers$renderInitialPrice = F3(
 				[
 					$joakin$elm_canvas$Canvas$Settings$Text$font(
 					{family: 'HP simplified', size: 24}),
-					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
+					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+					$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 				]),
 			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
 			'$' + $elm$core$String$fromInt(p.price));
 	});
-var $avh4$elm_color$Color$brown = A4($avh4$elm_color$Color$RgbaSpace, 193 / 255, 125 / 255, 17 / 255, 1.0);
-var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
-var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
-var $avh4$elm_color$Color$purple = A4($avh4$elm_color$Color$RgbaSpace, 117 / 255, 80 / 255, 123 / 255, 1.0);
-var $avh4$elm_color$Color$red = A4($avh4$elm_color$Color$RgbaSpace, 204 / 255, 0 / 255, 0 / 255, 1.0);
-var $avh4$elm_color$Color$yellow = A4($avh4$elm_color$Color$RgbaSpace, 237 / 255, 212 / 255, 0 / 255, 1.0);
-var $author$project$ViewHelpers$plantColor = function (p) {
-	var _v0 = p.ptype;
-	switch (_v0.$) {
-		case 'Corn':
-			return $avh4$elm_color$Color$yellow;
-		case 'Tomato':
-			return $avh4$elm_color$Color$red;
-		case 'Pumpkin':
-			return $avh4$elm_color$Color$orange;
-		case 'Carrot':
-			return $avh4$elm_color$Color$orange;
-		case 'Radish':
-			return $avh4$elm_color$Color$purple;
-		default:
-			var _v1 = A2($elm$core$Basics$modBy, 4, p.quantity - 1);
-			switch (_v1) {
-				case 0:
-					return $avh4$elm_color$Color$green;
-				case 1:
-					return $avh4$elm_color$Color$yellow;
-				case 2:
-					return $avh4$elm_color$Color$orange;
-				case 3:
-					return $avh4$elm_color$Color$red;
-				default:
-					return $avh4$elm_color$Color$green;
-			}
-	}
-};
+var $avh4$elm_color$Color$black = A4($avh4$elm_color$Color$RgbaSpace, 0 / 255, 0 / 255, 0 / 255, 1.0);
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
-var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
 var $elm$core$Array$getHelp = F3(
 	function (shift, index, tree) {
@@ -6861,6 +6860,40 @@ var $elm$core$Array$get = F2(
 			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
 			A3($elm$core$Array$getHelp, startShift, index, tree)));
 	});
+var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
+var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
+var $avh4$elm_color$Color$purple = A4($avh4$elm_color$Color$RgbaSpace, 117 / 255, 80 / 255, 123 / 255, 1.0);
+var $avh4$elm_color$Color$red = A4($avh4$elm_color$Color$RgbaSpace, 204 / 255, 0 / 255, 0 / 255, 1.0);
+var $avh4$elm_color$Color$yellow = A4($avh4$elm_color$Color$RgbaSpace, 237 / 255, 212 / 255, 0 / 255, 1.0);
+var $author$project$ViewHelpers$plantColor = function (p) {
+	var _v0 = p.ptype;
+	switch (_v0.$) {
+		case 'Corn':
+			return $avh4$elm_color$Color$yellow;
+		case 'Tomato':
+			return $avh4$elm_color$Color$red;
+		case 'Pumpkin':
+			return $avh4$elm_color$Color$orange;
+		case 'Carrot':
+			return $avh4$elm_color$Color$orange;
+		case 'Radish':
+			return $avh4$elm_color$Color$purple;
+		default:
+			var _v1 = A2($elm$core$Basics$modBy, 4, p.quantity - 1);
+			switch (_v1) {
+				case 0:
+					return $avh4$elm_color$Color$green;
+				case 1:
+					return $avh4$elm_color$Color$yellow;
+				case 2:
+					return $avh4$elm_color$Color$orange;
+				case 3:
+					return $avh4$elm_color$Color$red;
+				default:
+					return $avh4$elm_color$Color$green;
+			}
+	}
+};
 var $author$project$ViewHelpers$plantImage = F2(
 	function (p, tarray) {
 		var _v0 = p.ptype;
@@ -6985,61 +7018,100 @@ var $joakin$elm_canvas$Canvas$texture = F3(
 					drawable: A2($joakin$elm_canvas$Canvas$Internal$Canvas$DrawableTexture, p, t)
 				}));
 	});
-var $author$project$ViewHelpers$renderPlot = F4(
-	function (ps, b, p, imgs) {
+var $author$project$ViewHelpers$renderPlot = F5(
+	function (ps, b, p, imgs, graphics) {
+		var plot = function () {
+			var _v1 = A2($elm$core$Array$get, 2, graphics);
+			if (_v1.$ === 'Nothing') {
+				return A2(
+					$joakin$elm_canvas$Canvas$shapes,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A3(
+							$joakin$elm_canvas$Canvas$rect,
+							_Utils_Tuple2(0, 0),
+							0,
+							0)
+						]));
+			} else {
+				var x = _v1.a;
+				return A3(
+					$joakin$elm_canvas$Canvas$texture,
+					_List_Nil,
+					_Utils_Tuple2(b.x - 10, b.y - 40),
+					x);
+			}
+		}();
 		if (p.purchased) {
 			var planticon = A2($author$project$ViewHelpers$plantImage, p, imgs);
 			var color = $author$project$ViewHelpers$plantColor(p);
 			if (planticon.$ === 'Nothing') {
-				return A2(
+				return _List_fromArray(
+					[
+						plot,
+						A2(
+						$joakin$elm_canvas$Canvas$shapes,
+						_List_fromArray(
+							[
+								$joakin$elm_canvas$Canvas$Settings$fill(color)
+							]),
+						_List_fromArray(
+							[
+								A3(
+								$joakin$elm_canvas$Canvas$rect,
+								_Utils_Tuple2(b.x, b.height + b.y),
+								b.width,
+								(-1) * b.height)
+							]))
+					]);
+			} else {
+				var i = planticon.a;
+				return (!p.countdown) ? _List_fromArray(
+					[
+						plot,
+						A3(
+						$joakin$elm_canvas$Canvas$texture,
+						_List_fromArray(
+							[
+								$joakin$elm_canvas$Canvas$Settings$Advanced$shadow(
+								{
+									blur: 30,
+									color: $avh4$elm_color$Color$green,
+									offset: _Utils_Tuple2(0, 0)
+								})
+							]),
+						_Utils_Tuple2(b.x, b.y),
+						i)
+					]) : _List_fromArray(
+					[
+						plot,
+						A3(
+						$joakin$elm_canvas$Canvas$texture,
+						_List_Nil,
+						_Utils_Tuple2(b.x, b.y),
+						i)
+					]);
+			}
+		} else {
+			return _List_fromArray(
+				[
+					plot,
+					A2(
 					$joakin$elm_canvas$Canvas$shapes,
 					_List_fromArray(
 						[
-							$joakin$elm_canvas$Canvas$Settings$fill(color)
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$black)
 						]),
 					_List_fromArray(
 						[
 							A3(
 							$joakin$elm_canvas$Canvas$rect,
-							_Utils_Tuple2(b.x, b.height + b.y),
+							_Utils_Tuple2(b.x, b.y),
 							b.width,
-							(-1) * b.height)
-						]));
-			} else {
-				var i = planticon.a;
-				return (!p.countdown) ? A3(
-					$joakin$elm_canvas$Canvas$texture,
-					_List_fromArray(
-						[
-							$joakin$elm_canvas$Canvas$Settings$Advanced$shadow(
-							{
-								blur: 10,
-								color: $avh4$elm_color$Color$green,
-								offset: _Utils_Tuple2(0, 0)
-							})
-						]),
-					_Utils_Tuple2(b.x, b.y),
-					i) : A3(
-					$joakin$elm_canvas$Canvas$texture,
-					_List_Nil,
-					_Utils_Tuple2(b.x, b.y),
-					i);
-			}
-		} else {
-			return A2(
-				$joakin$elm_canvas$Canvas$shapes,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$brown)
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$joakin$elm_canvas$Canvas$rect,
-						_Utils_Tuple2(b.x, b.y),
-						b.width,
-						b.height)
-					]));
+							b.height)
+						]))
+				]);
 		}
 	});
 var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
@@ -7081,29 +7153,53 @@ var $author$project$ViewHelpers$renderProgress = F3(
 	});
 var $author$project$ViewHelpers$renderQuantity = F3(
 	function (ps, b, p) {
-		return A3(
-			$joakin$elm_canvas$Canvas$text,
-			_List_fromArray(
-				[
-					$joakin$elm_canvas$Canvas$Settings$Text$font(
-					{family: 'HP simplified', size: 24}),
-					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
-				]),
-			_Utils_Tuple2(b.x + (0.875 * ps.width), b.y + (0.3 * ps.height)),
-			$elm$core$String$fromInt(p.quantity));
-	});
-var $author$project$ViewHelpers$renderSellingPrice = F3(
-	function (ps, b, p) {
-		return A3(
-			$joakin$elm_canvas$Canvas$text,
-			_List_fromArray(
-				[
-					$joakin$elm_canvas$Canvas$Settings$Text$font(
-					{family: 'HP simplified', size: 16}),
-					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
-				]),
-			_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.6 * ps.height)),
-			'at $' + $elm$core$String$fromInt(p.value));
+		return p.purchased ? _List_fromArray(
+			[
+				A3(
+				$joakin$elm_canvas$Canvas$text,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$Text$font(
+						{family: 'HP simplified', size: 24}),
+						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+					]),
+				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.2 * ps.height)),
+				$elm$core$String$fromInt(p.quantity)),
+				A3(
+				$joakin$elm_canvas$Canvas$text,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$Text$font(
+						{family: 'HP simplified', size: 16}),
+						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+					]),
+				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.4 * ps.height)),
+				'at'),
+				A3(
+				$joakin$elm_canvas$Canvas$text,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$Text$font(
+						{family: 'HP simplified', size: 16}),
+						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+					]),
+				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + (0.6 * ps.height)),
+				'$' + $elm$core$String$fromInt(p.value)),
+				A3(
+				$joakin$elm_canvas$Canvas$text,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$Text$font(
+						{family: 'HP simplified', size: 16}),
+						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+					]),
+				_Utils_Tuple2(b.x + (0.9 * ps.width), b.y + ps.height),
+				'$' + $elm$core$String$fromInt(p.value * p.quantity))
+			]) : _List_Nil;
 	});
 var $author$project$ViewHelpers$renderUpgrade = F3(
 	function (ps, b, p) {
@@ -7121,7 +7217,7 @@ var $author$project$ViewHelpers$renderUpgrade = F3(
 						$joakin$elm_canvas$Canvas$rect,
 						_Utils_Tuple2(b.x, b.y),
 						b.width,
-						b.height)
+						b.height * 1.25)
 					])),
 			_List_fromArray(
 				[
@@ -7131,52 +7227,34 @@ var $author$project$ViewHelpers$renderUpgrade = F3(
 						[
 							$joakin$elm_canvas$Canvas$Settings$Text$font(
 							{family: 'HP simplified', size: 14}),
-							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center)
+							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
+							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 						]),
 					_Utils_Tuple2(b.x + (ps.width * 0.275), b.y + 15),
 					'Buy for $' + $elm$core$String$fromInt(
 						$elm$core$Basics$round(p.upgradePrice)))
-				])) : _List_fromArray(
-			[
-				A2(
-				$joakin$elm_canvas$Canvas$shapes,
-				_List_fromArray(
-					[
-						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$gray)
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$joakin$elm_canvas$Canvas$rect,
-						_Utils_Tuple2(b.x, b.y),
-						b.width,
-						b.height)
-					]))
-			]);
+				])) : _List_Nil;
 	});
-var $author$project$ViewHelpers$renderButtonList = F4(
-	function (p, bs, ps, imgs) {
+var $author$project$ViewHelpers$renderButtonList = F5(
+	function (p, bs, ps, imgs, graphics) {
 		var foo = function (b) {
 			var _v0 = b.btype;
 			if (_v0.$ === 'Plot') {
 				var ptype = _v0.a;
 				var plant = A2($author$project$Plants$getPlant, ptype, ps);
-				return A2(
-					$elm$core$List$cons,
-					A4($author$project$ViewHelpers$renderPlot, p, b, plant, imgs),
-					A2(
-						$elm$core$List$cons,
+				return _Utils_ap(
+					A5($author$project$ViewHelpers$renderPlot, p, b, plant, imgs, graphics),
+					_Utils_ap(
 						A3($author$project$ViewHelpers$renderQuantity, p, b, plant),
-						A2(
-							$elm$core$List$cons,
-							A3($author$project$ViewHelpers$renderInitialPrice, p, b, plant),
-							A2(
-								$elm$core$List$cons,
-								A3($author$project$ViewHelpers$renderSellingPrice, p, b, plant),
-								_List_fromArray(
-									[
-										A3($author$project$ViewHelpers$renderProgress, p, b, plant)
-									])))));
+						_Utils_ap(
+							_List_fromArray(
+								[
+									A3($author$project$ViewHelpers$renderInitialPrice, p, b, plant)
+								]),
+							_List_fromArray(
+								[
+									A3($author$project$ViewHelpers$renderProgress, p, b, plant)
+								]))));
 			} else {
 				var ptype = _v0.a;
 				return A3(
@@ -7190,40 +7268,13 @@ var $author$project$ViewHelpers$renderButtonList = F4(
 	});
 var $author$project$ViewHelpers$renderButtons = function (m) {
 	var buttonPage = A2($author$project$Button$getButtonPage, m.page, m.buttons);
-	return A4(
+	return A5(
 		$author$project$ViewHelpers$renderButtonList,
 		m.plotSize,
 		buttonPage,
 		m.plants,
-		$author$project$ViewHelpers$plantTextures(m));
-};
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
-	});
-var $author$project$ViewHelpers$guiTextures = function (m) {
-	return $elm$core$Array$fromList(
-		A2(
-			$elm$core$List$drop,
-			4,
-			A2($elm$core$List$filterMap, $joakin$elm_canvas$Canvas$Texture$fromDomImage, m.images)));
+		$author$project$ViewHelpers$plantTextures(m),
+		$author$project$ViewHelpers$guiTextures(m));
 };
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
@@ -7368,14 +7419,14 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 			return A3(
 				$joakin$elm_canvas$Canvas$texture,
 				_List_Nil,
-				_Utils_Tuple2(width / 4, 0),
+				_Utils_Tuple2((width / 2) - (295 / 2), 0),
 				x);
 		}
 	}();
 	var cloudXPos = (A2(
 		$elm$core$Basics$modBy,
-		750,
-		$elm$core$Basics$round(m.frame)) / 750) * (width * 1.5);
+		2000,
+		$elm$core$Basics$round(m.frame)) / 2000) * (width * 1.6);
 	var clouds = function () {
 		var _v0 = A2($elm$core$Array$get, 1, images);
 		if (_v0.$ === 'Nothing') {
@@ -7407,7 +7458,7 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, 0.75 * cloudXPos, 0)
 								]))
 						]),
-					_Utils_Tuple2(-10, 5),
+					_Utils_Tuple2((-width) * 0.15, 5),
 					x),
 					A3(
 					$joakin$elm_canvas$Canvas$texture,
@@ -7419,7 +7470,7 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, 0.755 * cloudXPos, 0)
 								]))
 						]),
-					_Utils_Tuple2(20, 10),
+					_Utils_Tuple2(((-width) * 0.15) + 30, 10),
 					x),
 					A3(
 					$joakin$elm_canvas$Canvas$texture,
@@ -7428,7 +7479,7 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 							$joakin$elm_canvas$Canvas$Settings$Advanced$transform(
 							_List_fromArray(
 								[
-									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, -cloudXPos, 0)
+									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, (-cloudXPos) * 0.9, 0)
 								]))
 						]),
 					_Utils_Tuple2(width, 7),
@@ -7720,7 +7771,6 @@ var $joakin$elm_canvas$Canvas$renderShape = F2(
 							cmds)));
 		}
 	});
-var $avh4$elm_color$Color$black = A4($avh4$elm_color$Color$RgbaSpace, 0 / 255, 0 / 255, 0 / 255, 1.0);
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$NonZero = {$: 'NonZero'};
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fillRuleToString = function (fillRule) {
 	if (fillRule.$ === 'NonZero') {
@@ -8105,8 +8155,8 @@ var $author$project$ViewHelpers$displayFarm = function (m) {
 					_Utils_ap(
 						A2($author$project$ViewHelpers$displayFarmText, w, coins),
 						_Utils_ap(
-							$author$project$ViewHelpers$renderButtons(m),
-							$author$project$ViewHelpers$renderGraphics(m)))))
+							$author$project$ViewHelpers$renderGraphics(m),
+							$author$project$ViewHelpers$renderButtons(m)))))
 			]));
 };
 var $author$project$Main$gameView = function (model) {

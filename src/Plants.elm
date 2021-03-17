@@ -313,7 +313,7 @@ upgradeClicked plants ptype coins =
   in
     if (plant.purchased)
     then
-      if (coins > (round plant.upgradePrice))
+      if (coins >= (round plant.upgradePrice))
       then Just (plantSet upgradePlant ptype plants, -(round plant.upgradePrice))
       else Nothing
     else Nothing

@@ -66,7 +66,7 @@ farmButtons width height plotwidth plotheight ptypes =
     xShift = (widthMult - plotwidth) / 2 -- The buffer before the first col
     yShift = height * (2/7) -- The buffer between the top and the first row
     progScalar = plotwidth / 8 -- The multiplier for the progress bar in each plot
-    heightMult = (height - (yShift * 1.25)) / (toFloat numRows) -- The "spacing" between each row's y-values
+    heightMult = (height - (yShift)) / (toFloat numRows) -- The "spacing" between each row's y-values
     _ = Debug.log "Height" heightMult
 
     -- This function generates a plot button

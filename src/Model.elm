@@ -43,7 +43,7 @@ initModel flag =
     , coins = 5
     , plants = initPlants -- We define initial plants in Plants module
     , page = Farm
-    , buttons = (initialButtons flag.width flag.height 150 120 initPlants) -- We define initialButtons in the Button module
-    , plotSize = newPlotSize 150 120
+    , buttons = (initialButtons flag.width flag.height 150 100 initPlants) -- We define initialButtons in the Button module
+    , plotSize = newPlotSize 150 100
     , images = flag.images
     }
