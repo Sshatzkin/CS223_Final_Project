@@ -7420,6 +7420,21 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 		$elm$core$Basics$modBy,
 		3000,
 		$elm$core$Basics$round(m.frame)) / 3000) * (width * 3);
+	var sky = A2(
+		$joakin$elm_canvas$Canvas$shapes,
+		_List_fromArray(
+			[
+				$joakin$elm_canvas$Canvas$Settings$fill(
+				A3($avh4$elm_color$Color$rgb255, 159, 223, 245))
+			]),
+		_List_fromArray(
+			[
+				A3(
+				$joakin$elm_canvas$Canvas$rect,
+				_Utils_Tuple2(0, 0),
+				width,
+				98)
+			]));
 	var images = $author$project$ViewHelpers$guiTextures(m);
 	var tractor = function () {
 		var _v2 = A2($elm$core$Array$get, 3, images);
@@ -7452,21 +7467,6 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 		}
 	}();
 	var height = m.window.height;
-	var sky = A2(
-		$joakin$elm_canvas$Canvas$shapes,
-		_List_fromArray(
-			[
-				$joakin$elm_canvas$Canvas$Settings$fill(
-				A3($avh4$elm_color$Color$rgb255, 159, 223, 245))
-			]),
-		_List_fromArray(
-			[
-				A3(
-				$joakin$elm_canvas$Canvas$rect,
-				_Utils_Tuple2(0, 0),
-				width,
-				height * 0.2)
-			]));
 	var farm = function () {
 		var _v1 = A2($elm$core$Array$get, 0, images);
 		if (_v1.$ === 'Nothing') {

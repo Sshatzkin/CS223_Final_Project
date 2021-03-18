@@ -180,7 +180,7 @@ renderGraphics m =
                                          x
                         ]
                         
-    sky = shapes [fill (Color.rgb255 159 223 245)] [rect (0, 0) width (height * 0.2)]
+    sky = shapes [fill (Color.rgb255 159 223 245)] [rect (0, 0) width 98]
 
     tractor = case Array.get 3 images of
                 Nothing -> shapes [] [rect (width / 4, 0) 0 0] --no image found
