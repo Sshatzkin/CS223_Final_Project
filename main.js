@@ -5204,17 +5204,17 @@ var $author$project$Plants$newPlant = F5(
 			value: val
 		};
 	});
-var $author$project$Plants$carrot = A5($author$project$Plants$newPlant, $author$project$Plants$Carrot, 'Carrot', 10, 20, 1700);
+var $author$project$Plants$carrot = A5($author$project$Plants$newPlant, $author$project$Plants$Carrot, 'Carrot', 300, 325, 600);
 var $author$project$Plants$Corn = {$: 'Corn'};
-var $author$project$Plants$corn = A5($author$project$Plants$newPlant, $author$project$Plants$Corn, 'Corn', 1, 3, 300);
+var $author$project$Plants$corn = A5($author$project$Plants$newPlant, $author$project$Plants$Corn, 'Corn', 1, 1, 120);
 var $author$project$Plants$Pepper = {$: 'Pepper'};
-var $author$project$Plants$pepper = A5($author$project$Plants$newPlant, $author$project$Plants$Pepper, 'Pepper', 3000, 5000, 4000);
+var $author$project$Plants$pepper = A5($author$project$Plants$newPlant, $author$project$Plants$Pepper, 'Pepper', 5000, 5500, 1200);
 var $author$project$Plants$Pumpkin = {$: 'Pumpkin'};
-var $author$project$Plants$pumpkin = A5($author$project$Plants$newPlant, $author$project$Plants$Pumpkin, 'Pumpkin', 5, 10, 1500);
+var $author$project$Plants$pumpkin = A5($author$project$Plants$newPlant, $author$project$Plants$Pumpkin, 'Pumpkin', 50, 55, 420);
 var $author$project$Plants$Radish = {$: 'Radish'};
-var $author$project$Plants$radish = A5($author$project$Plants$newPlant, $author$project$Plants$Radish, 'Radish', 100, 300, 2200);
+var $author$project$Plants$radish = A5($author$project$Plants$newPlant, $author$project$Plants$Radish, 'Radish', 1200, 1100, 900);
 var $author$project$Plants$Tomato = {$: 'Tomato'};
-var $author$project$Plants$tomato = A5($author$project$Plants$newPlant, $author$project$Plants$Tomato, 'Tomato', 3, 5, 600);
+var $author$project$Plants$tomato = A5($author$project$Plants$newPlant, $author$project$Plants$Tomato, 'Tomato', 5, 6, 240);
 var $author$project$Plants$initPlants = _List_fromArray(
 	[$author$project$Plants$corn, $author$project$Plants$tomato, $author$project$Plants$pumpkin, $author$project$Plants$carrot, $author$project$Plants$radish, $author$project$Plants$pepper]);
 var $author$project$Button$Plot = function (a) {
@@ -5318,7 +5318,7 @@ var $author$project$Model$initModel = function (flag) {
 	var initPlants = $author$project$Plants$initPlants;
 	return {
 		buttons: A5($author$project$Button$initialButtons, flag.width, flag.height, 150, 100, initPlants),
-		coins: 5,
+		coins: 1,
 		frame: 0,
 		images: flag.images,
 		page: $author$project$Page$Farm,
@@ -5987,6 +5987,7 @@ var $author$project$Plants$getPlant = F2(
 			}
 		}
 	});
+var $elm$core$Basics$ge = _Utils_ge;
 var $author$project$Plants$harvestValue = function (p) {
 	return p.value * p.quantity;
 };
@@ -6022,12 +6023,11 @@ var $author$project$Plants$plotClicked = F3(
 		return plant.purchased ? ($author$project$Plants$isGrown(plant) ? $elm$core$Maybe$Just(
 			_Utils_Tuple2(
 				A3($author$project$Plants$plantSet, $author$project$Plants$resetAge, ptype, plants),
-				$author$project$Plants$harvestValue(plant))) : $elm$core$Maybe$Nothing) : ((_Utils_cmp(coins, plant.price) > 0) ? $elm$core$Maybe$Just(
+				$author$project$Plants$harvestValue(plant))) : $elm$core$Maybe$Nothing) : ((_Utils_cmp(coins, plant.price) > -1) ? $elm$core$Maybe$Just(
 			_Utils_Tuple2(
 				A3($author$project$Plants$plantSet, $author$project$Plants$togglePurchase, ptype, plants),
 				-plant.price)) : $elm$core$Maybe$Nothing);
 	});
-var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$round = _Basics_round;
 var $author$project$Plants$upgradePlant = function (p) {
 	var level = p.quantity;

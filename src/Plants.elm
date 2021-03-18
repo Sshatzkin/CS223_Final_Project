@@ -67,22 +67,22 @@ newPlant ptype name p val matAge =
   We can define a list of plants here for quick use elsewhere
 -}
 corn : Plant
-corn = newPlant Corn "Corn" 1 3 300 
+corn = newPlant Corn "Corn" 1 1 120 
 
 tomato : Plant
-tomato = newPlant Tomato "Tomato" 3 5 600
+tomato = newPlant Tomato "Tomato" 5 6 240
 
 pumpkin : Plant
-pumpkin = newPlant Pumpkin "Pumpkin" 5 10 1500
+pumpkin = newPlant Pumpkin "Pumpkin" 50 55 420
 
 carrot : Plant
-carrot = newPlant Carrot "Carrot" 10 20 1700
+carrot = newPlant Carrot "Carrot" 300 325 600
 
 radish : Plant
-radish = newPlant Radish "Radish" 100 300 2200
+radish = newPlant Radish "Radish" 1200 1100 900
 
 pepper : Plant
-pepper = newPlant Pepper "Pepper" 3000 5000 4000
+pepper = newPlant Pepper "Pepper" 5000 5500 1200
 
 
 ---- GET / SET FUNCTIONS ----
@@ -288,7 +288,7 @@ plotClicked plants ptype coins =
       then Just (plantSet resetAge ptype plants, harvestValue plant)
       else Nothing
     else
-      if (coins > plant.price)
+      if (coins >= plant.price)
       then Just (plantSet togglePurchase ptype plants, -plant.price)
       else Nothing
 

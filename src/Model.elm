@@ -40,7 +40,7 @@ initModel flag =
   in
     { frame = 0 
     , window = newWindow flag.width flag.height
-    , coins = 5
+    , coins = 1
     , plants = initPlants -- We define initial plants in Plants module
     , page = Farm
     , buttons = (initialButtons flag.width flag.height 150 100 initPlants) -- We define initialButtons in the Button module

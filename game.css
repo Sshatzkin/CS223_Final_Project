@@ -1,11 +1,11 @@
 body {
   margin: 0px;
   font-size: 2em; 
-  font-family: 'DotGothic16', sans-serif;
+  font-family: 'HP simplified', sans-serif;
 }
 
 pre {
-  font-family: 'DotGothic16', sans-serif;
+  font-family: 'HP simplified', sans-serif;
   margin: 100px auto;
 }
 
@@ -27,14 +27,21 @@ table {
 }
 
 #container {
-  border: 8px solid #56cfe1;
+  border: 0px solid rgb(0, 0, 0);
   width: 80%;
+  max-width: 800px;
+  min-width: 550px;
   height: 75%;
+  max-height: 800px;
+  border-radius: 25px;
+  overflow: hidden;
+  
 }
 
 #container,
 #game {
   background-color: rgb(144, 218, 154);
+  min-height: 500px;
 
 }
 
@@ -46,6 +53,7 @@ table {
   position: absolute;
   bottom: 10px;
   right: 10px;
+  color: white;
 }
 
 .ra {
@@ -62,6 +70,7 @@ td {
 }
 canvas {
   display: block;
+
 }
 
 .plant {
