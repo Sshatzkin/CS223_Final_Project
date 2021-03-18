@@ -6388,7 +6388,7 @@ var $author$project$ViewHelpers$displayFarmText = F2(
 				_List_fromArray(
 					[
 						$joakin$elm_canvas$Canvas$Settings$Text$font(
-						{family: 'HP simplified', size: 24}),
+						{family: 'Fugaz One', size: 24}),
 						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Left),
 						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 					]),
@@ -6811,7 +6811,7 @@ var $author$project$ViewHelpers$renderInitialPrice = F3(
 			_List_fromArray(
 				[
 					$joakin$elm_canvas$Canvas$Settings$Text$font(
-					{family: 'HP simplified', size: 24}),
+					{family: 'Fugaz One', size: 24}),
 					$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
 					$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 				]),
@@ -7155,7 +7155,7 @@ var $author$project$ViewHelpers$renderProgress = F3(
 var $author$project$ViewHelpers$renderQuantity = F3(
 	function (ps, b, p) {
 		if (p.purchased) {
-			var xoffset = b.x + (0.9 * ps.width);
+			var xoffset = b.x + (0.92 * ps.width);
 			return _List_fromArray(
 				[
 					A3(
@@ -7163,7 +7163,7 @@ var $author$project$ViewHelpers$renderQuantity = F3(
 					_List_fromArray(
 						[
 							$joakin$elm_canvas$Canvas$Settings$Text$font(
-							{family: 'HP simplified', size: 24}),
+							{family: 'Fugaz One', size: 24}),
 							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
 							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 						]),
@@ -7174,7 +7174,7 @@ var $author$project$ViewHelpers$renderQuantity = F3(
 					_List_fromArray(
 						[
 							$joakin$elm_canvas$Canvas$Settings$Text$font(
-							{family: 'HP simplified', size: 16}),
+							{family: 'Roboto', size: 16}),
 							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
 							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 						]),
@@ -7185,7 +7185,7 @@ var $author$project$ViewHelpers$renderQuantity = F3(
 					_List_fromArray(
 						[
 							$joakin$elm_canvas$Canvas$Settings$Text$font(
-							{family: 'HP simplified', size: 16}),
+							{family: 'Roboto', size: 16}),
 							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
 							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 						]),
@@ -7196,7 +7196,7 @@ var $author$project$ViewHelpers$renderQuantity = F3(
 					_List_fromArray(
 						[
 							$joakin$elm_canvas$Canvas$Settings$Text$font(
-							{family: 'HP simplified', size: 16}),
+							{family: 'Roboto', size: 16}),
 							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
 							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 						]),
@@ -7207,11 +7207,11 @@ var $author$project$ViewHelpers$renderQuantity = F3(
 					_List_fromArray(
 						[
 							$joakin$elm_canvas$Canvas$Settings$Text$font(
-							{family: 'HP simplified', size: 16}),
+							{family: 'Roboto', size: 16}),
 							$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
 							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 						]),
-					_Utils_Tuple2(xoffset, b.y + ps.height),
+					_Utils_Tuple2(xoffset, b.y + (0.9 * ps.height)),
 					'$' + $elm$core$String$fromInt(p.value * p.quantity))
 				]);
 		} else {
@@ -7260,7 +7260,7 @@ var $author$project$ViewHelpers$renderUpgrade = F4(
 						_List_fromArray(
 							[
 								$joakin$elm_canvas$Canvas$Settings$Text$font(
-								{family: 'HP simplified', size: 14}),
+								{family: 'Roboto', size: 14}),
 								$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Center),
 								$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 							]),

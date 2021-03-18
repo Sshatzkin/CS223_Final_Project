@@ -203,7 +203,7 @@ renderGraphics m =
 -}
 displayFarmText : Window -> Int -> List (Canvas.Renderable)
 displayFarmText w coins = 
-  [ text [ font { size = 24, family = "HP simplified" }, align Left, fill Color.white ]
+  [ text [ font { size = 24, family = "Fugaz One" }, align Left, fill Color.white ]
            ( 10, w.height - (10))
            (" Coins = " ++ String.fromInt coins)
   ]
@@ -279,23 +279,23 @@ renderQuantity ps b p =
   if p.purchased 
   then
     let 
-      xoffset = b.x + 0.9 * ps.width
+      xoffset = b.x + 0.92 * ps.width
     in
 
-    [ text [ font { size = 24, family = "HP simplified" }, align Center, fill Color.white]
+    [ text [ font { size = 24, family = "Fugaz One" }, align Center, fill Color.white]
            ( xoffset, b.y + 0.2 * ps.height)
            ( fromInt p.quantity)
-    , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
+    , text [ font { size = 16, family = "Roboto" }, align Center, fill Color.white]
            ( xoffset, b.y + 0.4 * ps.height)
            ( "at")
-    , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
+    , text [ font { size = 16, family = "Roboto" }, align Center, fill Color.white]
            ( xoffset, b.y + 0.6 * ps.height)
            ( "$" ++ fromInt p.value)
-    , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
+    , text [ font { size = 16, family = "Roboto" }, align Center, fill Color.white]
            ( xoffset, b.y + 0.75 * ps.height)
            ( "-----")
-    , text [ font { size = 16, family = "HP simplified" }, align Center, fill Color.white]
-           ( xoffset, b.y + ps.height)
+    , text [ font { size = 16, family = "Roboto" }, align Center, fill Color.white]
+           ( xoffset, b.y + 0.9 * ps.height)
            ( "$" ++ fromInt (p.value * p.quantity))
     ]
   else []
@@ -310,7 +310,7 @@ renderInitialPrice ps b p =
   then
     text [] ( b.x + 0.275 * ps.width, b.y + 0.5 * ps.height) ""
   else 
-    text [ font { size = 24, family = "HP simplified" }, align Center , fill Color.white]
+    text [ font { size = 24, family = "Fugaz One" }, align Center , fill Color.white]
          ( b.x + 0.275 * ps.width, b.y + 0.5 * ps.height)
          ( "$" ++ fromInt p.price)
 
@@ -336,7 +336,7 @@ renderUpgrade ps b coins p =
         then shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width (b.height)]
         else shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width (b.height)]
     in
-      buybox :: [(text [ font { size = 14, family = "HP simplified" }
+      buybox :: [(text [ font { size = 14, family = "Roboto" }
                        , align Center
                        , fill Color.white] 
                 (b.x + (ps.width * 0.275), b.y + 15) 
