@@ -4,10 +4,6 @@ module Plants exposing (..)
   the Plant type alias, and all functions that manipulate and update plants
 -}
 
-import Html
-import Html exposing (Html, text, div, br)
-import Html.Attributes exposing (id, class)
-
 type alias Plant = 
   { name : String
   , price : Int --The initial price of the plant (if not yet purchased)

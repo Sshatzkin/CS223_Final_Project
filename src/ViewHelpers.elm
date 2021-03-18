@@ -4,13 +4,10 @@ import Array exposing (Array, get)
 import Canvas exposing (rect, shapes, text)
 import Canvas.Settings exposing (fill)
 import Canvas.Settings.Text exposing (font, align, TextAlign(..))
-import Canvas.Settings.Advanced exposing (rotate, transform, translate, shadow)
-import Canvas.Texture exposing (fromDomImage, Source, Texture)
+import Canvas.Settings.Advanced exposing (transform, translate, shadow)
+import Canvas.Texture exposing (fromDomImage, Texture)
 import Color
-import Html
-import Html exposing (Html, div, br)
-import Html.Attributes exposing (id, class)
-import Html.Events as Events
+import Html exposing (Html, div)
 import Html.Events.Extra.Mouse as Mouse
 
 -- Our Libraries

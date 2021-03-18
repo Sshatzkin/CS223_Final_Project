@@ -1,8 +1,6 @@
 module Msg exposing (..)
 import Html.Events.Extra.Mouse as Mouse
 
-
-import Plants exposing (Plant)
 import Page exposing (Page)
 type Msg
     = NoOp

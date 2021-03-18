@@ -2,16 +2,10 @@ module Main exposing (..)
 
 import Browser
 import Browser.Events as BEvents
-import Canvas exposing (rect, shapes)
-import Canvas.Settings exposing (fill)
-import Canvas.Settings.Advanced exposing (rotate, transform, translate)
-import Color
 import Json.Decode as Decode
-import Json.Encode as Encode
 import Html
 import Html exposing (Html, text)
 import Html.Attributes exposing (id)
-import Html.Events as Events
 
 -- Our Libraries
 import Button exposing (clickedAnyButton, BType(..))
@@ -19,7 +13,6 @@ import Model exposing (..)
 import Msg exposing (Msg(..))
 import Page exposing (Page(..))
 import Plants as P
-import Plants exposing (Plant)
 import ViewHelpers as VH
 import Html
 

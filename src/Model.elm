@@ -3,7 +3,6 @@ module Model exposing (..)
 import Button exposing (Buttons, initialButtons)
 import Plants as P exposing (Plant)
 import Page exposing (Page(..))
-import Page as Pa 
 import Window exposing (..)
 import Json.Decode
 
