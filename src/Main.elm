@@ -144,11 +144,7 @@ view : Model -> Html Msg
 view model =
   Html.div
     [ id "game"]
-    [ gameView model
-    , Html.span 
-          [ id "frameRate"] 
-          [ text ("Time: " ++ VH.frameToTime model.frame)]--("Frame: " ++ String.fromFloat model.frame)]
-    ]
+    [ gameView model]
 
 {-
   Determines which game page should be displayed

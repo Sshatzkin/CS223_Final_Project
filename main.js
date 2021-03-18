@@ -6149,23 +6149,11 @@ var $author$project$Main$update = F2(
 	});
 var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $author$project$ViewHelpers$frameToTime = function (count) {
-	var seconds = ($elm$core$Basics$round(count) / 60) | 0;
-	var secString = (A2($elm$core$Basics$modBy, 60, seconds) < 10) ? ('0' + $elm$core$String$fromInt(
-		A2($elm$core$Basics$modBy, 60, seconds))) : $elm$core$String$fromInt(
-		A2($elm$core$Basics$modBy, 60, seconds));
-	var mins = (seconds / 60) | 0;
-	var minString = (mins < 10) ? ('0' + $elm$core$String$fromInt(
-		A2($elm$core$Basics$modBy, 60, mins))) : $elm$core$String$fromInt(
-		A2($elm$core$Basics$modBy, 60, mins));
-	var hours = (mins / 60) | 0;
-	var hourString = (hours < 10) ? ('0' + $elm$core$String$fromInt(hours)) : $elm$core$String$fromInt(hours);
-	return hourString + (':' + (minString + (':' + secString)));
-};
 var $author$project$Msg$Click = function (a) {
 	return {$: 'Click', a: a};
 };
 var $joakin$elm_canvas$Canvas$Settings$Text$Left = {$: 'Left'};
+var $joakin$elm_canvas$Canvas$Settings$Text$Right = {$: 'Right'};
 var $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommand = function (a) {
 	return {$: 'SettingCommand', a: a};
 };
@@ -6244,6 +6232,19 @@ var $joakin$elm_canvas$Canvas$Settings$Text$font = function (_v0) {
 	return $joakin$elm_canvas$Canvas$Internal$Canvas$SettingCommand(
 		$joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$font(
 			$elm$core$String$fromInt(size) + ('px ' + family)));
+};
+var $author$project$ViewHelpers$frameToTime = function (count) {
+	var seconds = ($elm$core$Basics$round(count) / 60) | 0;
+	var secString = (A2($elm$core$Basics$modBy, 60, seconds) < 10) ? ('0' + $elm$core$String$fromInt(
+		A2($elm$core$Basics$modBy, 60, seconds))) : $elm$core$String$fromInt(
+		A2($elm$core$Basics$modBy, 60, seconds));
+	var mins = (seconds / 60) | 0;
+	var minString = (mins < 10) ? ('0' + $elm$core$String$fromInt(
+		A2($elm$core$Basics$modBy, 60, mins))) : $elm$core$String$fromInt(
+		A2($elm$core$Basics$modBy, 60, mins));
+	var hours = (mins / 60) | 0;
+	var hourString = (hours < 10) ? ('0' + $elm$core$String$fromInt(hours)) : $elm$core$String$fromInt(hours);
+	return hourString + (':' + (minString + (':' + secString)));
 };
 var $joakin$elm_canvas$Canvas$Internal$Canvas$DrawableText = function (a) {
 	return {$: 'DrawableText', a: a};
@@ -6379,8 +6380,8 @@ var $avh4$elm_color$Color$RgbaSpace = F4(
 		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
 	});
 var $avh4$elm_color$Color$white = A4($avh4$elm_color$Color$RgbaSpace, 255 / 255, 255 / 255, 255 / 255, 1.0);
-var $author$project$ViewHelpers$displayFarmText = F2(
-	function (w, coins) {
+var $author$project$ViewHelpers$displayFarmText = F3(
+	function (w, coins, frame) {
 		return _List_fromArray(
 			[
 				A3(
@@ -6392,8 +6393,19 @@ var $author$project$ViewHelpers$displayFarmText = F2(
 						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Left),
 						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
 					]),
-				_Utils_Tuple2(10, w.height - 10),
-				' Coins = ' + $elm$core$String$fromInt(coins))
+				_Utils_Tuple2(20, w.height - 20),
+				' ElmBucks: $' + $elm$core$String$fromInt(coins)),
+				A3(
+				$joakin$elm_canvas$Canvas$text,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$Text$font(
+						{family: 'Fugaz One', size: 24}),
+						$joakin$elm_canvas$Canvas$Settings$Text$align($joakin$elm_canvas$Canvas$Settings$Text$Right),
+						$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$white)
+					]),
+				_Utils_Tuple2(w.width - 20, w.height - 20),
+				'Time: ' + $author$project$ViewHelpers$frameToTime(frame))
 			]);
 	});
 var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$defaultOptions = {preventDefault: true, stopPropagation: false};
@@ -6818,7 +6830,6 @@ var $author$project$ViewHelpers$renderInitialPrice = F3(
 			_Utils_Tuple2(b.x + (0.275 * ps.width), b.y + (0.5 * ps.height)),
 			'$' + $elm$core$String$fromInt(p.price));
 	});
-var $avh4$elm_color$Color$black = A4($avh4$elm_color$Color$RgbaSpace, 0 / 255, 0 / 255, 0 / 255, 1.0);
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
@@ -6860,6 +6871,7 @@ var $elm$core$Array$get = F2(
 			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
 			A3($elm$core$Array$getHelp, startShift, index, tree)));
 	});
+var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
 var $avh4$elm_color$Color$green = A4($avh4$elm_color$Color$RgbaSpace, 115 / 255, 210 / 255, 22 / 255, 1.0);
 var $avh4$elm_color$Color$orange = A4($avh4$elm_color$Color$RgbaSpace, 245 / 255, 121 / 255, 0 / 255, 1.0);
 var $avh4$elm_color$Color$purple = A4($avh4$elm_color$Color$RgbaSpace, 117 / 255, 80 / 255, 123 / 255, 1.0);
@@ -7018,8 +7030,9 @@ var $joakin$elm_canvas$Canvas$texture = F3(
 					drawable: A2($joakin$elm_canvas$Canvas$Internal$Canvas$DrawableTexture, p, t)
 				}));
 	});
-var $author$project$ViewHelpers$renderPlot = F5(
-	function (ps, b, p, imgs, graphics) {
+var $elm$core$Basics$truncate = _Basics_truncate;
+var $author$project$ViewHelpers$renderPlot = F6(
+	function (ps, b, p, imgs, graphics, coins) {
 		var plot = function () {
 			var _v1 = A2($elm$core$Array$get, 2, graphics);
 			if (_v1.$ === 'Nothing') {
@@ -7094,27 +7107,47 @@ var $author$project$ViewHelpers$renderPlot = F5(
 					]);
 			}
 		} else {
-			return _List_fromArray(
-				[
-					plot,
-					A2(
-					$joakin$elm_canvas$Canvas$shapes,
-					_List_fromArray(
-						[
-							$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$black)
-						]),
-					_List_fromArray(
-						[
-							A3(
-							$joakin$elm_canvas$Canvas$rect,
-							_Utils_Tuple2(b.x, b.y),
-							b.width,
-							b.height)
-						]))
-				]);
+			if (_Utils_cmp(coins, p.upgradePrice | 0) > -1) {
+				return _List_fromArray(
+					[
+						plot,
+						A2(
+						$joakin$elm_canvas$Canvas$shapes,
+						_List_fromArray(
+							[
+								$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$green)
+							]),
+						_List_fromArray(
+							[
+								A3(
+								$joakin$elm_canvas$Canvas$rect,
+								_Utils_Tuple2(b.x, b.y),
+								b.width,
+								b.height)
+							]))
+					]);
+			} else {
+				return _List_fromArray(
+					[
+						plot,
+						A2(
+						$joakin$elm_canvas$Canvas$shapes,
+						_List_fromArray(
+							[
+								$joakin$elm_canvas$Canvas$Settings$fill($avh4$elm_color$Color$gray)
+							]),
+						_List_fromArray(
+							[
+								A3(
+								$joakin$elm_canvas$Canvas$rect,
+								_Utils_Tuple2(b.x, b.y),
+								b.width,
+								b.height)
+							]))
+					]);
+			}
 		}
 	});
-var $avh4$elm_color$Color$gray = A4($avh4$elm_color$Color$RgbaSpace, 211 / 255, 215 / 255, 207 / 255, 1.0);
 var $author$project$ViewHelpers$renderProgress = F3(
 	function (ps, b, p) {
 		if (p.purchased) {
@@ -7284,7 +7317,7 @@ var $author$project$ViewHelpers$renderButtons = function (m) {
 			var ptype = _v0.a;
 			var plant = A2($author$project$Plants$getPlant, ptype, plants);
 			return _Utils_ap(
-				A5($author$project$ViewHelpers$renderPlot, p, b, plant, imgs, graphics),
+				A6($author$project$ViewHelpers$renderPlot, p, b, plant, imgs, graphics, coins),
 				_Utils_ap(
 					A3($author$project$ViewHelpers$renderQuantity, p, b, plant),
 					_Utils_ap(
@@ -7828,6 +7861,7 @@ var $joakin$elm_canvas$Canvas$renderShape = F2(
 							cmds)));
 		}
 	});
+var $avh4$elm_color$Color$black = A4($avh4$elm_color$Color$RgbaSpace, 0 / 255, 0 / 255, 0 / 255, 1.0);
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$NonZero = {$: 'NonZero'};
 var $joakin$elm_canvas$Canvas$Internal$CustomElementJsonApi$fillRuleToString = function (fillRule) {
 	if (fillRule.$ === 'NonZero') {
@@ -8188,7 +8222,6 @@ var $joakin$elm_canvas$Canvas$toHtml = F3(
 			attrs,
 			entities);
 	});
-var $elm$core$Basics$truncate = _Basics_truncate;
 var $author$project$ViewHelpers$displayFarm = function (m) {
 	var w = m.window;
 	var plants = m.plants;
@@ -8210,7 +8243,7 @@ var $author$project$ViewHelpers$displayFarm = function (m) {
 					$elm$core$List$cons,
 					$author$project$ViewHelpers$renderBG(m),
 					_Utils_ap(
-						A2($author$project$ViewHelpers$displayFarmText, w, coins),
+						A3($author$project$ViewHelpers$displayFarmText, w, coins, frame),
 						_Utils_ap(
 							$author$project$ViewHelpers$renderGraphics(m),
 							$author$project$ViewHelpers$renderButtons(m)))))
@@ -8225,9 +8258,6 @@ var $author$project$Main$gameView = function (model) {
 	}
 };
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-var $elm$html$Html$span = _VirtualDom_node('span');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -8237,18 +8267,7 @@ var $author$project$Main$view = function (model) {
 			]),
 		_List_fromArray(
 			[
-				$author$project$Main$gameView(model),
-				A2(
-				$elm$html$Html$span,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$id('frameRate')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						'Time: ' + $author$project$ViewHelpers$frameToTime(model.frame))
-					]))
+				$author$project$Main$gameView(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

@@ -135,7 +135,7 @@ displayFarm m =
     []
     [ Canvas.toHtml (truncate w.width, truncate w.height) 
       [Mouse.onClick Click]
-      ((renderBG m)::(displayFarmText w coins) ++ (renderGraphics m) ++ (renderButtons m))
+      ((renderBG m)::(displayFarmText w coins frame) ++ (renderGraphics m) ++ (renderButtons m))
 
     ]
 
@@ -198,11 +198,14 @@ renderGraphics m =
   Output:
     list of Canvas Renderables
 -}
-displayFarmText : Window -> Int -> List (Canvas.Renderable)
-displayFarmText w coins = 
+displayFarmText : Window -> Int -> Float -> List (Canvas.Renderable)
+displayFarmText w coins frame = 
   [ text [ font { size = 24, family = "Fugaz One" }, align Left, fill Color.white ]
-           ( 10, w.height - (10))
-           (" Coins = " ++ String.fromInt coins)
+         ( 20, w.height - 20)
+         (" ElmBucks: $" ++ String.fromInt coins)
+  , text [ font { size = 24, family = "Fugaz One" }, align Right, fill Color.white ]
+         ( w.width - 20, w.height - 20)
+         ("Time: " ++ frameToTime frame)
   ]
 
 {-
@@ -215,8 +218,8 @@ displayFarmText w coins =
   Output:
     List of Canvas.Renderable of button
 -}    
-renderPlot : PlotSize -> Button -> Plant -> Array Texture -> Array Texture -> List Canvas.Renderable
-renderPlot ps b p imgs graphics =
+renderPlot : PlotSize -> Button -> Plant -> Array Texture -> Array Texture -> Int -> List Canvas.Renderable
+renderPlot ps b p imgs graphics coins =
   let 
     plot = case (Array.get 2 graphics) of 
             Nothing -> shapes [] [rect (0, 0) 0 0]
@@ -246,7 +249,11 @@ renderPlot ps b p imgs graphics =
               else --regular plant image
                 [plot, Canvas.texture [] ( b.x, b.y) i]
       --the plant has not been purchased yet, so do not show it
-      else [plot, shapes [ fill Color.black ] [ rect ( b.x, b.y ) b.width b.height]]
+      else 
+        if (coins >= (truncate p.upgradePrice))
+          then [plot, shapes [ fill Color.green ] [ rect ( b.x, b.y ) b.width b.height]]
+        else 
+          [plot, shapes [ fill Color.gray ] [ rect ( b.x, b.y ) b.width b.height]]
 
 {-
   Produces a Canvas Renderable that represents the progress bar for harvests
@@ -365,7 +372,7 @@ renderButtons m =
           let 
             plant = P.getPlant ptype plants 
           in
-            (renderPlot p b plant imgs graphics)
+            (renderPlot p b plant imgs graphics coins)
             ++ renderQuantity p b plant
             ++ [renderInitialPrice p b plant]
             ++ [renderProgress p b plant]
