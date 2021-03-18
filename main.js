@@ -7416,7 +7416,41 @@ var $joakin$elm_canvas$Canvas$Settings$Advanced$Translate = F2(
 var $joakin$elm_canvas$Canvas$Settings$Advanced$translate = $joakin$elm_canvas$Canvas$Settings$Advanced$Translate;
 var $author$project$ViewHelpers$renderGraphics = function (m) {
 	var width = m.window.width;
+	var tractorXPos = (A2(
+		$elm$core$Basics$modBy,
+		3000,
+		$elm$core$Basics$round(m.frame)) / 3000) * (width * 3);
 	var images = $author$project$ViewHelpers$guiTextures(m);
+	var tractor = function () {
+		var _v2 = A2($elm$core$Array$get, 3, images);
+		if (_v2.$ === 'Nothing') {
+			return A2(
+				$joakin$elm_canvas$Canvas$shapes,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A3(
+						$joakin$elm_canvas$Canvas$rect,
+						_Utils_Tuple2(width / 4, 0),
+						0,
+						0)
+					]));
+		} else {
+			var x = _v2.a;
+			return A3(
+				$joakin$elm_canvas$Canvas$texture,
+				_List_fromArray(
+					[
+						$joakin$elm_canvas$Canvas$Settings$Advanced$transform(
+						_List_fromArray(
+							[
+								A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, tractorXPos - width, 0)
+							]))
+					]),
+				_Utils_Tuple2((-width) * 0.25, 55),
+				x);
+		}
+	}();
 	var height = m.window.height;
 	var sky = A2(
 		$joakin$elm_canvas$Canvas$shapes,
@@ -7458,25 +7492,12 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 	}();
 	var cloudXPos = (A2(
 		$elm$core$Basics$modBy,
-		2000,
-		$elm$core$Basics$round(m.frame)) / 2000) * (width * 1.6);
+		3000,
+		$elm$core$Basics$round(m.frame)) / 3000) * (width * 1.6);
 	var clouds = function () {
 		var _v0 = A2($elm$core$Array$get, 1, images);
 		if (_v0.$ === 'Nothing') {
-			return _List_fromArray(
-				[
-					A2(
-					$joakin$elm_canvas$Canvas$shapes,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A3(
-							$joakin$elm_canvas$Canvas$rect,
-							_Utils_Tuple2(width / 4, 0),
-							0,
-							0)
-						]))
-				]);
+			return _List_Nil;
 		} else {
 			var x = _v0.a;
 			return _List_fromArray(
@@ -7512,7 +7533,7 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 							$joakin$elm_canvas$Canvas$Settings$Advanced$transform(
 							_List_fromArray(
 								[
-									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, (-cloudXPos) * 0.9, 0)
+									A2($joakin$elm_canvas$Canvas$Settings$Advanced$translate, 0.9 * (-cloudXPos), 0)
 								]))
 						]),
 					_Utils_Tuple2(width, 7),
@@ -7525,8 +7546,11 @@ var $author$project$ViewHelpers$renderGraphics = function (m) {
 		sky,
 		_Utils_ap(
 			clouds,
-			_List_fromArray(
-				[farm])));
+			_Utils_ap(
+				_List_fromArray(
+					[farm]),
+				_List_fromArray(
+					[tractor]))));
 };
 var $elm$html$Html$canvas = _VirtualDom_node('canvas');
 var $joakin$elm_canvas$Canvas$cnvs = A2($elm$html$Html$canvas, _List_Nil, _List_Nil);

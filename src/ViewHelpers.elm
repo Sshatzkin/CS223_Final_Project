@@ -164,24 +164,33 @@ renderGraphics m =
               Nothing -> shapes [] [rect (width / 4, 0) 0 0] --no image found
               Just x -> Canvas.texture [] ((width / 2) - (295 / 2), 0) x
     
-    cloudXPos = ((toFloat (modBy 2000 (round m.frame))) / 2000) * (width * 1.6)
-    --rotation = degrees (m.frame * 3)
+    cloudXPos = ((toFloat (modBy 3000 (round m.frame))) / 3000) * (width * 1.6)
+
+    tractorXPos = ((toFloat (modBy 3000 (round m.frame))) / 3000) * (width * 3)
     clouds = case Array.get 1 images of
-              Nothing -> [shapes [] [rect (width / 4, 0) 0 0]]
+              Nothing -> []
               Just x -> [ Canvas.texture [transform [translate (0.75 * cloudXPos) 0]] 
                                          (-width * 0.15, 5) 
                                          x
                         , Canvas.texture [transform [translate (0.755 * cloudXPos) 0]]
                                          (-width * 0.15 + 30, 10) 
                                          x
-                        , Canvas.texture [transform [translate (-cloudXPos * 0.9) 0]]
+                        , Canvas.texture [transform [translate (0.9 * -cloudXPos) 0]]
                                          (width , 7) 
                                          x
                         ]
                         
     sky = shapes [fill (Color.rgb255 159 223 245)] [rect (0, 0) width (height * 0.2)]
+
+    tractor = case Array.get 3 images of
+                Nothing -> shapes [] [rect (width / 4, 0) 0 0] --no image found
+                Just x -> Canvas.texture [transform [translate (tractorXPos - (width)) 0]]
+                          (-width * 0.25, 55)
+                          x
+                          
+
   in 
-    (sky) :: clouds ++ [farm]
+    (sky) :: clouds ++ [farm] ++ [tractor]
 
 {-
   Displays the GUI for the Farm (header & coins)
