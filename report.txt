@@ -1,0 +1,29 @@
+https://github.com/Sshatzkin/CS223_Final_Project
+
+CS223 Final Project Report (Sam Shatzkin, Allison Zhang)
+
+For our final project, we made a farming simulation game called ElmVale.
+
+The object of the game is to earn ElmBucks and continue to unlock new plants. 
+You use ElmBucks to buy plants, which you can then harvest for money. 
+If you have enough money, you can unlock a new crop type.
+
+We primarily used Elm Canvas to render the graphics for our game interface (in the 
+ViewHelpers.elm module). All of our graphics are self-designed and imported through JavaScript.
+The Elm Canvas library allowed us to render those images on screen and animate
+certain features of the game (like the clouds and the tractor) by using Canvas
+settings to translate the image.
+
+Although Canvas allowed us greater flexibility with the UI, it also posed a big 
+challenge when we realized that we were unable to assign a click handling event
+to an individual Canvas renderable. In order to bypass this issue, we ended up writing
+our own click handling functions and buttons (in the Button.elm module). These functions
+determine if the player has made a valid click, and if so, pass on the corresponding
+update. Also, because Elm does not allow circular dependencies, we moved many of
+our essential data types (which contain game information stored in the model) into 
+separate modules.
+
+Some of the next steps on this project that we did not get to implement include 
+adding additional game features to keep the game interesting (like more plants/animals)
+and to implement some kind of page switching so there is a separate page for 
+the upgrade store or a game menu with instructions.
